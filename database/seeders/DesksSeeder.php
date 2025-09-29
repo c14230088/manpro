@@ -27,27 +27,24 @@ class DesksSeeder extends Seeder
 
         // Lab Pemrograman Dasar
         $desksPemrograman = [
-            ['location' => 'A1', 'wall' => false, 'condition' => 1],
-            ['location' => 'A2', 'wall' => false, 'condition' => 1],
-            ['location' => 'A3', 'wall' => false, 'condition' => 0],
-            ['location' => 'B1', 'wall' => false, 'condition' => 1],
-            ['location' => 'B2', 'wall' => true, 'condition' => 1],
-            ['location' => 'B3', 'wall' => false, 'condition' => 1],
+            ['location' => 'A1', 'condition' => 1],
+            ['location' => 'A2', 'condition' => 1],
+            ['location' => 'A3', 'condition' => 0],
+            ['location' => 'B1', 'condition' => 1],
+            ['location' => 'B2', 'condition' => 1],
+            ['location' => 'B3', 'condition' => 1],
         ];
 
         // Lab Jaringan Komputer
         $desksJaringan = [
-            ['location' => 'A1', 'wall' => false, 'condition' => 1],
-            ['location' => 'A2', 'wall' => false, 'condition' => 1],
-            ['location' => 'A3', 'wall' => false, 'condition' => 1],
-            ['location' => 'A4', 'wall' => false, 'condition' => 1],
-            ['location' => 'A5', 'wall' => false, 'condition' => 1],
-            ['location' => 'A6', 'wall' => true, 'condition' => 1],
-            ['location' => 'A7', 'wall' => false, 'condition' => 1],
-            ['location' => 'A8', 'wall' => false, 'condition' => 1],
-            ['location' => 'A9', 'wall' => false, 'condition' => 1],
-            ['location' => 'A10', 'wall' => false, 'condition' => 1],
-            ['location' => 'A11', 'wall' => false, 'condition' => 1],
+            ['location' => 'A1', 'condition' => 1],
+            ['location' => 'A3', 'condition' => 1],
+            ['location' => 'A4', 'condition' => 1],
+            ['location' => 'A5', 'condition' => 1],
+            ['location' => 'A7', 'condition' => 1],
+            ['location' => 'A8', 'condition' => 1],
+            ['location' => 'A9', 'condition' => 1],
+            ['location' => 'A10', 'condition' => 1],
         ];
 
         $this->createDesksForLab($labPemrograman, $desksPemrograman);
@@ -61,7 +58,7 @@ class DesksSeeder extends Seeder
                 'id' => Str::uuid(30),
                 'lab_id' => $lab->id,
                 'location' => $desk['location'],
-                'wall' => $desk['wall'],
+                // 'wall' => $desk['wall'],
                 'condition' => $desk['condition'],
                 'serial_code' => 'DESK-' . strtoupper(Str::random(8)),
                 'created_at' => now(),

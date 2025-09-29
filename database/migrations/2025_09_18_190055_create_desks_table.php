@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('desks', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->boolean('wall')->default(false); //buat denah per lab, wall ini antara dinding atau jalan yg ditengah ...
+            // $table->boolean('wall')->default(false); //buat denah per lab, wall ini antara dinding atau jalan yg ditengah ...
             $table->string('location'); //A1, A2 || XY coordinate
             $table->string('serial_code');
             $table->boolean('condition')->comment('0: rusak | 1: bagus'); // kayaknya ini gausah ... bagusan klo cek dari item di desk ini (jika item di desk ini ada yang rusak -> warning merah || component dari item rusak (RAM, dll) -> warning kuning)

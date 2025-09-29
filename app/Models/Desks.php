@@ -12,7 +12,7 @@ class Desks extends Model
 
     protected $fillable = [
         'id',
-        'wall',
+        // 'wall',
         'location',
         'serial_code',
         'condition',
