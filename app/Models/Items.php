@@ -30,7 +30,7 @@ class Items extends Model
         return $this->belongsTo(Desks::class);
     }
 
-    public function component()
+    public function components()
     {
         return $this->hasMany(Components::class, 'item_id');
     }

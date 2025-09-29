@@ -24,6 +24,8 @@ return new class extends Migration
             $table->uuid('lab_id');
             $table->foreign('lab_id')->references('id')->on('labs')->onDelete('cascade');
             $table->timestamps();
+
+            $table->unique(['location', 'lab_id']);
         });
     }
 

@@ -10,10 +10,11 @@ class LabsController extends Controller
 {
     public function getDesks(Labs $lab)
     {
-        $lab->load('desk.item.component');
+        $desks = $lab->desks()
+            ->with('items.components')
+            ->orderBy('location')
+            ->get();
 
-        $desks = $lab->desk->sortBy('location')->values();
-
-        return response()->json($desks);
+        return response()->json($desks->toArray());
     }
 }

@@ -21,7 +21,7 @@ class Labs extends Model
         'updated_at',
     ];
 
-    public function desk()
+    public function desks()
     {
         return $this->hasMany(Desks::class, 'lab_id');
     }

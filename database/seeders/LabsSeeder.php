@@ -15,10 +15,24 @@ class LabsSeeder extends Seeder
     public function run(): void
     {
         $labs = [
-[
+            [
                 'id' => Str::uuid(30),
                 'name' => 'Lab Pemrograman Dasar',
-                'location' => 'P2.02',
+                'location' => 'P2.06',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => Str::uuid(30),
+                'name' => 'Lab Studio',
+                'location' => 'P2.07',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => Str::uuid(30),
+                'name' => 'Lab Sistem Informasi',
+                'location' => 'P2.08',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -31,8 +45,22 @@ class LabsSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(30),
+                'name' => 'Lab Sistem Cerdas',
+                'location' => 'P2.07',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => Str::uuid(30),
                 'name' => 'Lab Multimedia',
-                'location' => 'P2.10',
+                'location' => 'P2.07B',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => Str::uuid(30),
+                'name' => 'Lab Virtual Reality',
+                'location' => 'P2.07A',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
