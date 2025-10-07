@@ -65,7 +65,7 @@
                     </h1>
                     <h1 class="font-dillan text-[8vw] font-bold xl:text-[5vw] text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
                         id="judul2">
-                        IRGL 2025</h1>
+                        LAB INFOR 2025</h1>
                 </div>
             </div>
             <div class="w-full mt-8">

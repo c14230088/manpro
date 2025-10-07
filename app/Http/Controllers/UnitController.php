@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -19,11 +20,11 @@ class UnitController extends Controller
     {
         return Socialite::driver('google')->redirect();
     }
-
+    
     function routeAdmin(Request $request)
     {
         $user = Socialite::driver('google')->stateless()->user(); //biarkan error, tpi jalan kok
-        if (strpos($user->email, '@john.petra.ac.id') === false || strpos($user->email, '@peter.petra.ac.id') === false) {
+        if (strpos($user->email, '@john.petra.ac.id') === false && strpos($user->email, '@peter.petra.ac.id') === false) {
             return redirect()->route('user.login')->with('error', 'Mohon gunakan email Petra dengan @john.petra.ac.id atau @peter.petra.ac.id');
         }
 

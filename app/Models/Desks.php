@@ -35,7 +35,6 @@ class Desks extends Model
     }
 
 
-
     //  'rusak', 'tidak_lengkap', 'bagus'.
 
     public function getOverallConditionAttribute()

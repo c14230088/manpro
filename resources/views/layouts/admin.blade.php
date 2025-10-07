@@ -10,8 +10,13 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
 
-    <title>Admin | @if(isset($title)) {{ $title }} @else @yield('title', 'Lab Infor') @endif</title>
-    <link rel="icon" href="{{ asset('assets/logo/irgl25.png') }}" type="image/svg+xml" />
+    <title>Admin | @if (isset($title))
+            {{ $title }}
+        @else
+            @yield('title', 'Lab Infor')
+        @endif
+    </title>
+    <link rel="icon" href="{{ asset('assets/logo/logo-robot.png') }}" type="image/svg+xml" />
     {{-- sweetalert cdn --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet" />
@@ -49,11 +54,11 @@
         <a class="mb-3 flex flex-col items-center justify-center border-b-2 border-solid border-gray-100 py-6 outline-none"
             href="#" data-te-ripple-init data-te-ripple-color="primary">
             <div class="flex items-center justify-center space-x-3 mb-3">
-                <img src="{{ asset('assets/logo/irgl25.png') }}" class="h-8" alt="irgl" loading="lazy" />
+                <img src="{{ asset('assets/logo/logo-robot.png') }}" class="h-8" alt="infor" loading="lazy" />
                 <div class="border-l-2 border-gray-300 h-8"></div>
-                <img src="{{ asset('assets/logo/logo-pcu.png') }}" class="h-8" alt="pcu" loading="lazy" />
+                <img src="{{ asset('assets/logo/logo-piciu.png') }}" class="h-8" alt="pcu" loading="lazy" />
             </div>
-            <span class="text-center font-bold">Informatics Rally Games and Logic Competition <br>2025</span>
+            <span class="text-center font-bold">Laboratorium Informatika <br>2025/2026</span>
         </a>
         <ul class="relative m-0 list-none px-[0.2rem] pb-12" data-te-sidenav-menu-ref>
             <li class="relative">
@@ -238,6 +243,43 @@
         </div>
     </div>
 
+    <div id="layout-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="layout-modal-title">
+
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[2000]"></div>
+
+        <div id="layout-modal-overlay" class="fixed inset-0 flex items-center justify-center p-4 z-[2001]">
+
+            <div id="layout-modal-area"
+                class="relative bg-white rounded-lg shadow-xl w-full max-w-3xl flex flex-col max-h-[90vh]">
+
+                <div class="flex justify-between items-center p-4 border-b border-gray-200 rounded-t">
+                    <h3 id="layout-modal-title" class="text-xl font-semibold text-gray-900">
+                    </h3>
+                    <button id="layout-modal-close-button" type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+
+                <div id="layout-modal-body" class="p-6 space-y-6 overflow-y-auto">
+                </div>
+
+                <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+                    <button id="layout-modal-footer-close-button" type="button"
+                        class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                        Tutup
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- Sidenav -->
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/tw-elements.umd.min.js"></script>
@@ -326,7 +368,47 @@
                 }, 400);
             }, autoHideTimeout);
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const layoutModal = document.getElementById('layout-modal');
+            const layoutModalTitle = document.getElementById('layout-modal-title');
+            const layoutModalBody = document.getElementById('layout-modal-body');
+            const overlay = document.getElementById('layout-modal-overlay');
+            const closeButtonHeader = document.getElementById('layout-modal-close-button');
+            const closeButtonFooter = document.getElementById('layout-modal-footer-close-button');
+
+            window.showLayoutModal = (title, bodyHTML) => {
+                if (layoutModal && layoutModalTitle && layoutModalBody) {
+                    layoutModalTitle.textContent = title;
+                    layoutModalBody.innerHTML = bodyHTML;
+                    layoutModal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+
+            window.hideLayoutModal = () => {
+                if (layoutModal) {
+                    layoutModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            };
+            if (closeButtonHeader) closeButtonHeader.addEventListener('click', window.hideLayoutModal);
+            if (closeButtonFooter) closeButtonFooter.addEventListener('click', window.hideLayoutModal);
+            if (overlay) {
+                overlay.addEventListener('click', function(event) {
+                    if (event.target === overlay && event.target != document.getElementById('layout-modal-area')) {
+                        window.hideLayoutModal();
+                    }
+                });
+            }
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && layoutModal && !layoutModal.classList.contains('hidden')) {
+                    window.hideLayoutModal();
+                }
+            });
+        });
     </script>
+
     @yield('script')
     @if (session('error-access'))
         <script>

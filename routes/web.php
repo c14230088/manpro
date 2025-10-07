@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LabsController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DesksController;
 use App\Http\Controllers\ItemsController;
 
 Route::get('/', [UnitController::class, 'login'])->name('user.login');
@@ -19,7 +20,10 @@ Route::get('/get/items', [ItemsController::class, 'getItems'])->name('user.get.i
 
 Route::prefix('admin')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
     Route::get('/labs', [AdminController::class, 'labs'])->name('admin.labs');
     Route::get('/labs/{lab}/desks', [LabsController::class, 'getDesks'])->name('admin.labs.desks');
+    Route::post('/labs/{lab}/desks/update/location/{desk}', [DesksController::class, 'updateLocation'])->name('admin.labs.desks.update.location');
+
     // Route::get('/booking', [AdminController::class, 'listBooking'])->name('admin.booking.list');
 });
