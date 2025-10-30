@@ -30,6 +30,11 @@ class UnitSeeder extends Seeder
                 'name' => 'Prodi Informatika',
                 'description' => 'Program Studi Informatika',
             ],
+            [
+                'id' => Str::uuid(30),
+                'name' => 'Mahasiswa',
+                'description' => 'Mahasiswa Petra',
+            ],
         ];
 
         foreach ($units as $unit) {

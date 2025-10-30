@@ -14,7 +14,7 @@ class Components extends Model
         'name',
         'serial_code',
         'condition',
-        'additional_information',
+        'spec_set_id',
         'item_id',
     ];
 
@@ -26,5 +26,9 @@ class Components extends Model
     public function item()
     {
         return $this->belongsTo(Items::class);
+    }
+    public function spec()
+    {
+        return $this->belongsTo(SpecSet::class, 'spec_set_id');
     }
 }

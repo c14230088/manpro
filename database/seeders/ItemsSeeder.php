@@ -6,6 +6,7 @@ use App\Models\Desks;
 use App\Models\Items;
 use App\Models\Labs;
 use App\Models\Unit;
+use App\Models\SpecSet;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -22,6 +23,11 @@ class ItemsSeeder extends Seeder
             $this->command->warn('⚠️ Units table kosong. Jalankan UnitsSeeder dulu!');
             return;
         }
+
+        $presetMonitor_id = SpecSet::where('display_name', '1920x1080 75Hz')->value('id');
+        $presetMouse_id = SpecSet::where('display_name', 'Dpi 800-8000 Black')->value('id');
+        $presetKeyboard_id = SpecSet::where('display_name', 'TKL Blue')->value('id');
+
 
         // Konfigurasi per lab
         $config = [
@@ -62,32 +68,19 @@ class ItemsSeeder extends Seeder
         $itemTemplates = [
             0 => [
                 'name' => 'Monitor LG 24 inch',
-                'additional_information' => [
-                    'resolution' => '1920x1080',
-                    'refresh_rate' => '75Hz'
-                ],
+                'spec_set_id' => $presetMonitor_id,
             ],
             1 => [
                 'name' => 'CPU Lenovo ThinkCentre',
-                'additional_information' => [
-                    'processor' => 'Intel i5',
-                    'ram' => '8GB',
-                    'storage' => '512GB SSD'
-                ],
+                'spec_set_id' => null,
             ],
             2 => [
                 'name' => 'Mouse Logitech G102',
-                'additional_information' => [
-                    'dpi' => '800-8000',
-                    'color' => 'Black'
-                ],
+                'spec_set_id' => $presetMouse_id,
             ],
             3 => [
                 'name' => 'Keyboard Redragon Mechanical',
-                'additional_information' => [
-                    'switch' => 'Blue',
-                    'layout' => 'TKL'
-                ],
+                'spec_set_id' => $presetKeyboard_id,
             ],
         ];
 
@@ -111,7 +104,7 @@ class ItemsSeeder extends Seeder
                         'serial_code' => strtoupper(substr($template['name'], 0, 3)) . '-' . strtoupper(Str::random(6)),
                         'type' => $type,
                         'condition' => 1,
-                        'additional_information' => json_encode($template['additional_information']),
+                        'spec_set_id' => $template['spec_set_id'],
                         'unit_id' => $units->random()->id,
                         'desk_id' => $desk->id,
                     ]);

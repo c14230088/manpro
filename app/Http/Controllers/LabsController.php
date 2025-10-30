@@ -11,10 +11,12 @@ class LabsController extends Controller
     public function getDesks(Labs $lab)
     {
         $desks = $lab->desks()
-            ->with('items.components')
+            ->with([
+                'items.components.spec.setValues.specAttributes', 
+                'items.spec.setValues.specAttributes'
+            ])
             ->orderBy('location')
             ->get();
-
         return response()->json($desks->toArray());
     }
 }

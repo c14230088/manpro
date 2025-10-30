@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Items;
 use App\Models\Components;
+use App\Models\SpecSet;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -26,6 +27,11 @@ class ComponentsSeeder extends Seeder
 
         $componentsCreated = 0;
 
+        $presetCPU_id = SpecSet::where('display_name', 'Intel Core i5 10th Gen')->value('id');
+        $presetRAM_id = SpecSet::where('display_name', 'Corsair 8GB DDR4')->value('id');
+        $presetSSD_id = SpecSet::where('display_name', 'Samsung 512GB NVMe PCIe 3.0')->value('id');
+
+
         foreach ($cpuItems as $cpu) {
             // 1. Processor Component
             Components::create([
@@ -33,15 +39,7 @@ class ComponentsSeeder extends Seeder
                 'name' => 'Intel Core i5 Processor',
                 'serial_code' => 'CPU-' . strtoupper(Str::random(3)) . '-' . strtoupper(Str::random(6)),
                 'condition' => 1,
-                'additional_information' => json_encode([
-                    'brand' => 'Intel',
-                    'model' => 'Core i5',
-                    'cores' => '6 cores',
-                    'threads' => '12 threads',
-                    'base_clock' => '2.9GHz',
-                    'boost_clock' => '4.1GHz',
-                    'generation' => '10th Gen'
-                ]),
+                'spec_set_id' => $presetCPU_id,
                 'item_id' => $cpu->id,
             ]);
             $componentsCreated++;
@@ -52,13 +50,7 @@ class ComponentsSeeder extends Seeder
                 'name' => 'DDR4 8GB RAM',
                 'serial_code' => 'RAM-' . strtoupper(Str::random(3)) . '-' . strtoupper(Str::random(6)),
                 'condition' => 1,
-                'additional_information' => json_encode([
-                    'type' => 'DDR4',
-                    'capacity' => '8GB',
-                    'speed' => '2666MHz',
-                    'brand' => 'Corsair',
-                    'latency' => 'CL16'
-                ]),
+                'spec_set_id' => $presetRAM_id,
                 'item_id' => $cpu->id,
             ]);
             $componentsCreated++;
@@ -69,12 +61,7 @@ class ComponentsSeeder extends Seeder
                 'name' => '512GB SSD',
                 'serial_code' => 'SSD-' . strtoupper(Str::random(3)) . '-' . strtoupper(Str::random(6)),
                 'condition' => 1,
-                'additional_information' => json_encode([
-                    'type' => 'NVMe SSD',
-                    'capacity' => '512GB',
-                    'interface' => 'PCIe 3.0',
-                    'brand' => 'Samsung'
-                ]),
+                'spec_set_id' => $presetSSD_id,
                 'item_id' => $cpu->id,
             ]);
             $componentsCreated++;

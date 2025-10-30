@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('components', function (Blueprint $table) { // RAM, STORAGE, Graph card, dll
             $table->uuid('id')->primary();
             $table->string('name');
-            $table->string('serial_code');
+            $table->string('serial_code')->unique();
             $table->boolean('condition')->comment('0: rusak | 1: bagus');
-            $table->json('additional_information')->nullable(); //spek" yang mau disimpan
-
+            
+            // $table->json('additional_information')->nullable(); //spek" yang mau disimpan
+            $table->uuid(column: 'spec_set_id');
+            $table->foreign('spec_set_id')->references('id')->on('spec_set')->onDelete('cascade');
+            
             // $table->uuid('unit_id'); // Components ini milik siapa, UPPK, PTIK atau mhsw
             // $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
 

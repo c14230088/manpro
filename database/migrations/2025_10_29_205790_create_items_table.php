@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('serial_code');
             $table->tinyInteger('type')->comment('0:monitor | 1: cpu | 2: mouse | 3: keyboard'); // setiap desks harus punya 4 item dengan type-type itu
             $table->boolean('condition')->comment('0: rusak | 1: bagus');
-            $table->json('additional_information')->nullable(); //spek" yang mau disimpan
+            // $table->json('additional_information')->nullable(); //spek" yang mau disimpan
+            $table->uuid(column: 'spec_set_id')->nullable();
+            $table->foreign('spec_set_id')->references('id')->on('spec_set')->onDelete('cascade');
 
             $table->uuid('unit_id'); // items ini milik siapa, UPPK, PTIK atau mhsw
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');

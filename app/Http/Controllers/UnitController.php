@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
 
 class UnitController extends Controller
 {
@@ -35,19 +36,20 @@ class UnitController extends Controller
 
         $user = User::firstOrCreate(
             [
-                'email' => $user->email
+                'email' => $user->email,
             ],
             [
                 'name' => $user->name,
                 'email' => $user->email,
                 'unit_id' => $mahasiswaUnit->id,
+                'id'=> Str::uuid(30),
             ]
         );
 
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('user.booking.form');
+        return redirect()->route('admin.labs');
     }
 
 

@@ -39,4 +39,9 @@ class Items extends Model
     {
         return $this->morphMany(Booking::class, 'bookable');
     }
+
+     public function spec()
+    {
+        return $this->belongsTo(SpecSet::class, 'spec_set_id');
+    }
 }
