@@ -81,6 +81,8 @@
         const labSelector = document.getElementById('lab-selector');
         const deskContainer = document.getElementById('desk-grid-container');
         let desks = [];
+        let newDesks = [];
+        let isAddDeskMode = false;
         let labConfig = {
             maxRows: 5,
             maxCols: 10
@@ -97,6 +99,20 @@
             }
         }
 
+        function cancelNewDesk(location) {
+            // Hanya berjalan jika sedang dalam mode tambah meja
+            if (!isAddDeskMode) return;
+
+            // Cari index meja baru berdasarkan lokasinya
+            const index = newDesks.findIndex(desk => desk.location === location);
+
+            // Jika ditemukan, hapus dari array
+            if (index > -1) {
+                newDesks.splice(index, 1);
+                renderDeskGrid(true); // Render ulang grid untuk menghilangkan meja
+            }
+        }
+
         function renderDeskGrid(isEditMode = false) {
             const scroller = document.getElementById('grid-scroller');
             const scrollPos = {
@@ -107,69 +123,88 @@
             const selectedLabId = labSelector.value;
             if (!selectedLabId) return;
 
-            const occupiedSlots = new Set(desks.map(d => d.location));
+            const allDesks = [...desks, ...newDesks];
+            const occupiedSlots = new Set(allDesks.map(d => d.location));
+
+            const addDeskBtnText = isAddDeskMode ? 'Selesai Menambah' : '+ Tambah Meja';
+            const addDeskBtnClass = isAddDeskMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200';
 
             let containerHTML =
                 `
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
-                    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <h2 class="text-xl font-semibold text-gray-800">Denah Meja Laboratorium</h2>
-                            <div class="flex items-center gap-4 text-sm mt-2 flex-wrap">
-                                <div class="flex items-center gap-2"><span class="w-4 h-4 bg-emerald-100 border-2 border-emerald-400 rounded"></span><span class="text-gray-600">Bagus</span></div>
-                                <div class="flex items-center gap-2"><span class="w-4 h-4 bg-amber-100 border-2 border-amber-400 rounded"></span><span class="text-gray-600">Tidak Lengkap</span></div>
-                                <div class="flex items-center gap-2"><span class="w-4 h-4 bg-rose-100 border-2 border-rose-400 rounded"></span><span class="text-gray-600">Rusak</span></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                             <div class="flex items-center border border-gray-200 rounded-lg p-1 bg-gray-50">
-                                 <button id="zoom-out-btn" class="p-2 rounded-md hover:bg-gray-200 transition-colors" title="Zoom Out"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg></button>
-                                 <button id="zoom-reset-btn" class="px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 rounded-md transition-colors" title="Reset Zoom"><span id="zoom-level-display">100%</span></button>
-                                 <button id="zoom-in-btn" class="p-2 rounded-md hover:bg-gray-200 transition-colors" title="Zoom In"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></button>
-                             </div>
-                            
-                            ${isEditMode ? `
-                                <button id="add-row-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" title="Tambah Baris">+ Baris</button>
-                                <button id="add-col-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" title="Tambah Kolom">+ Kolom</button>
-                            ` : ''}
-
-                            <button id="edit-layout-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${isEditMode ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
-                                ${isEditMode ? 'Simpan & Keluar' : 'Edit Denah'}
-                            </button>
-                        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+            <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800">Denah Meja Laboratorium</h2>
+                    <div class="flex items-center gap-4 text-sm mt-2 flex-wrap">
+                        <div class="flex items-center gap-2"><span class="w-4 h-4 bg-emerald-100 border-2 border-emerald-400 rounded"></span><span class="text-gray-600">Bagus</span></div>
+                        <div class="flex items-center gap-2"><span class="w-4 h-4 bg-amber-100 border-2 border-amber-400 rounded"></span><span class="text-gray-600">Tidak Lengkap</span></div>
+                        <div class="flex items-center gap-2"><span class="w-4 h-4 bg-rose-100 border-2 border-rose-400 rounded"></span><span class="text-gray-600">Rusak</span></div>
+                        ${isEditMode ? `<div class="flex items-center gap-2"><span class="w-4 h-4 bg-blue-100 border-2 border-dashed border-blue-400 rounded"></span><span class="text-gray-600">Baru</span></div>` : ''}
                     </div>
+                </div>
+                <div class="flex items-center gap-2">
+                     <div class="flex items-center border border-gray-200 rounded-lg p-1 bg-gray-50">
+                         <button id="zoom-out-btn" class="p-2 rounded-md hover:bg-gray-200 transition-colors" title="Zoom Out"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg></button>
+                         <button id="zoom-reset-btn" class="px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 rounded-md transition-colors" title="Reset Zoom"><span id="zoom-level-display">100%</span></button>
+                         <button id="zoom-in-btn" class="p-2 rounded-md hover:bg-gray-200 transition-colors" title="Zoom In"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></button>
+                     </div>
                     
-                    <div id="grid-scroller" class="overflow-x-auto pb-4">
-                        <div id="desk-grid" class="grid gap-4 min-w-max ${isEditMode ? 'edit-mode' : ''}" style="grid-template-columns: repeat(${labConfig.maxCols}, minmax(140px, 1fr)); grid-template-rows: repeat(${labConfig.maxRows}, auto);">`;
+                    ${isEditMode ? `
+                        <button id="add-desk-mode-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${addDeskBtnClass}" title="Aktifkan mode tambah meja">${addDeskBtnText}</button>
+                        <button id="add-row-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" title="Tambah Baris">+ Baris</button>
+                        <button id="add-col-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" title="Tambah Kolom">+ Kolom</button>
+                    ` : ''}
 
-            desks.forEach(desk => {
+                    <button id="edit-layout-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${isEditMode ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
+                        ${isEditMode ? 'Simpan & Keluar' : 'Edit Denah'}
+                    </button>
+                </div>
+            </div>
+            
+            <div id="grid-scroller" class="overflow-x-auto pb-4">
+                <div id="desk-grid" class="grid gap-4 min-w-max ${isEditMode ? 'edit-mode' : ''}" style="grid-template-columns: repeat(${labConfig.maxCols}, minmax(140px, 1fr)); grid-template-rows: repeat(${labConfig.maxRows}, auto);">`;
+
+            allDesks.forEach(desk => {
                 const row = desk.location.charCodeAt(0) - 64;
                 const col = parseInt(desk.location.substring(1));
-                let bgColorClass, iconColor, conditionText;
-                switch (desk.overall_condition) {
-                    case 'rusak':
-                        bgColorClass = 'bg-rose-50 border-rose-300 hover:bg-rose-100';
-                        iconColor = 'text-rose-600';
-                        conditionText = 'Rusak';
-                        break;
-                    case 'tidak_lengkap':
-                        bgColorClass = 'bg-amber-50 border-amber-300 hover:bg-amber-100';
-                        iconColor = 'text-amber-600';
-                        conditionText = 'Tidak Lengkap';
-                        break;
-                    default:
-                        bgColorClass = 'bg-emerald-50 border-emerald-300 hover:bg-emerald-100';
-                        iconColor = 'text-emerald-600';
-                        conditionText = 'Bagus';
-                        break;
+                let bgColorClass, iconColor, conditionText, draggableAttr, dblClickAttr;
+
+                if (desk.isNew) {
+                    bgColorClass = 'bg-blue-50 border-blue-400 border-dashed hover:bg-blue-100 cursor-pointer'; // Tambah cursor-pointer
+                    iconColor = 'text-blue-600';
+                    conditionText = 'Baru';
+                    draggableAttr = '';
+                    // dblClickAttr = `ondblclick="cancelNewDesk('${desk.location}')" title="Klik dua kali untuk batal"`; // MODIFIKASI: Tambah event double click
+                } else {
+                    dblClickAttr = '';
+                    draggableAttr = isEditMode ? 'draggable="true"' : '';
+                    switch (desk.overall_condition) {
+                        case 'rusak':
+                            bgColorClass = 'bg-rose-50 border-rose-300 hover:bg-rose-100';
+                            iconColor = 'text-rose-600';
+                            conditionText = 'Rusak';
+                            break;
+                        case 'tidak_lengkap':
+                            bgColorClass = 'bg-amber-50 border-amber-300 hover:bg-amber-100';
+                            iconColor = 'text-amber-600';
+                            conditionText = 'Tidak Lengkap';
+                            break;
+                        default:
+                            bgColorClass = 'bg-emerald-50 border-emerald-300 hover:bg-emerald-100';
+                            iconColor = 'text-emerald-600';
+                            conditionText = 'Bagus';
+                            break;
+                    }
                 }
-                containerHTML += `<div id="desk-${desk.id}" data-desk-id="${desk.id}" data-location="${desk.location}" style="grid-area: ${row} / ${col};" class="desk-item group transition-all duration-300 ease-in-out flex flex-col items-center justify-center p-5 border-2 rounded-xl min-h-36 ${bgColorClass}" ${isEditMode ? 'draggable="true"' : ''}>
-                            <div class="text-center pointer-events-none">
-                                <div class="mb-2"><svg class="w-8 h-8 mx-auto ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div>
-                                <span class="font-bold text-lg text-gray-800 block">${desk.location}</span>
-                                <span class="text-sm text-gray-600 mt-1 inline-block">${conditionText}</span>
-                            </div>
-                        </div>`;
+
+                containerHTML += `
+                <div id="desk-${desk.id || desk.location}" data-desk-id="${desk.id || ''}" data-location="${desk.location}" style="grid-area: ${row} / ${col};" class="desk-item group transition-all duration-300 ease-in-out flex flex-col items-center justify-center p-5 border-2 rounded-xl min-h-36 ${bgColorClass} ${desk.isNew ? 'new-desk-item' : ''}" ${draggableAttr} title="${desk.isNew ? 'Klik dua kali untuk batal' : ''}">
+                    <div class="text-center pointer-events-none">
+                        <div class="mb-2"><svg class="w-8 h-8 mx-auto ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div>
+                        <span class="font-bold text-lg text-gray-800 block">${desk.location}</span>
+                        <span class="text-sm text-gray-600 mt-1 inline-block">${conditionText}</span>
+                    </div>
+                </div>`;
             });
 
             if (isEditMode) {
@@ -177,8 +212,10 @@
                     for (let c = 1; c <= labConfig.maxCols; c++) {
                         const location = `${String.fromCharCode(64 + r)}${c}`;
                         if (!occupiedSlots.has(location)) {
-                            containerHTML +=
-                                `<div class="empty-slot transition-all duration-300 ease-in-out flex flex-col items-center justify-center p-5 border-2 rounded-xl min-h-36 bg-slate-50 border-slate-300 hover:bg-slate-100" data-location="${location}" style="grid-area: ${r} / ${c};">${location}</div>`;
+                            const slotClass = isAddDeskMode ? 'bg-slate-50 border-dashed border-slate-300 hover:bg-blue-100 hover:border-blue-400 cursor-pointer' : 'bg-slate-100 border-dashed border-slate-200';
+                            const slotContent = isAddDeskMode ? `<span class="text-slate-400 text-3xl">+</span>` : `<span class="text-slate-300 font-semibold">${location}</span>`;
+
+                            containerHTML += `<div class="empty-slot transition-all duration-300 ease-in-out flex flex-col items-center justify-center p-5 border-2 rounded-xl min-h-36 ${slotClass}" data-location="${location}" style="grid-area: ${r} / ${c};">${slotContent}</div>`;
                         }
                     }
                 }
@@ -187,7 +224,12 @@
             deskContainer.innerHTML = containerHTML;
 
             setupCommonListeners();
-            if (isEditMode) setupDragDropListeners();
+            if (isEditMode) {
+                setupDragDropListeners();
+                if (isAddDeskMode) {
+                    setupAddDeskListeners();
+                }
+            }
 
             applyZoom();
 
@@ -198,15 +240,16 @@
             }
         }
 
+
         function setupCommonListeners() {
             const zoomInBtn = document.getElementById('zoom-in-btn');
             const zoomOutBtn = document.getElementById('zoom-out-btn');
             const zoomResetBtn = document.getElementById('zoom-reset-btn');
 
+            // ... (kode zoom tetap sama) ...
             const maxZoom = 1.5,
                 minZoom = 0.5,
                 zoomStep = 0.1;
-
             zoomInBtn.addEventListener('click', () => {
                 if (currentZoom < maxZoom) {
                     currentZoom = Math.min(maxZoom, currentZoom + zoomStep);
@@ -224,14 +267,82 @@
                 applyZoom();
             });
 
-            document.getElementById('edit-layout-btn').addEventListener('click', function() {
+            // =========================================================
+            // === PERBAIKAN UTAMA ADA DI DALAM LISTENER INI =============
+            // =========================================================
+            document.getElementById('edit-layout-btn').addEventListener('click', async function() {
                 const deskGrid = document.getElementById('desk-grid');
                 const isCurrentlyEditMode = deskGrid && deskGrid.classList.contains('edit-mode');
-                renderDeskGrid(!isCurrentlyEditMode);
+
+                if (isCurrentlyEditMode) {
+                    // --- LOGIKA PENYIMPANAN BARU ---
+                    if (newDesks.length > 0) {
+                        const labId = labSelector.value;
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                        // Tampilkan loading state pada tombol
+                        this.disabled = true;
+                        this.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto"></div>`;
+
+                        try {
+                            const response = await fetch(`/admin/labs/${labId}/desks/batch-create`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    desks: newDesks
+                                })
+                            });
+
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                throw new Error(errorData.message || 'Server response was not ok.');
+                            }
+
+                            const data = await response.json();
+
+                            if (data.success && data.created_desks) {
+                                // **LANGKAH PENTING 1:** Gabungkan meja yang baru disimpan (dari server) ke array 'desks' utama.
+                                // Data dari server sudah tidak memiliki flag 'isNew' dan punya status default.
+                                desks = [...desks, ...data.created_desks];
+
+                                // **LANGKAH PENTING 2:** Kosongkan array meja baru.
+                                newDesks = [];
+                                // Jika Anda punya notifikasi, tampilkan di sini.
+                                // showToast('Berhasil!', data.message, 'success');
+                            } else {
+                                throw new Error(data.message || 'Gagal menyimpan meja baru.');
+                            }
+
+                        } catch (error) {
+                            console.error('Error creating desks:', error);
+                            alert('Gagal menyimpan meja baru: ' + error.message);
+
+                            // Kembalikan tombol ke state semula jika gagal
+                            this.disabled = false;
+                            this.textContent = 'Simpan & Keluar';
+                            return; // Jangan keluar dari mode edit jika gagal
+                        }
+                    }
+
+                    // --- KELUAR DARI MODE EDIT ---
+                    // Reset state dan render ulang grid dalam mode non-edit.
+                    // Karena newDesks sudah kosong dan desks sudah diperbarui, tampilan akan benar.
+                    isAddDeskMode = false;
+                    renderDeskGrid(false);
+
+                } else {
+                    // Masuk ke mode edit
+                    renderDeskGrid(true);
+                }
             });
 
             const addRowBtn = document.getElementById('add-row-btn');
             const addColBtn = document.getElementById('add-col-btn');
+            const addDeskModeBtn = document.getElementById('add-desk-mode-btn');
 
             if (addRowBtn) {
                 addRowBtn.addEventListener('click', () => {
@@ -243,6 +354,13 @@
             if (addColBtn) {
                 addColBtn.addEventListener('click', () => {
                     labConfig.maxCols++;
+                    renderDeskGrid(true);
+                });
+            }
+
+            if (addDeskModeBtn) {
+                addDeskModeBtn.addEventListener('click', () => {
+                    isAddDeskMode = !isAddDeskMode;
                     renderDeskGrid(true);
                 });
             }
@@ -282,20 +400,18 @@
                     const newLocation = zone.dataset.location;
                     const labId = labSelector.value;
 
-                    const originalDesks = JSON.parse(JSON.stringify(desks)); // Deep copy for rollback
+                    const originalDesks = JSON.parse(JSON.stringify(desks)); 
                     const movingDesk = desks.find(d => d.id == deskId);
                     const targetDesk = desks.find(d => d.location === newLocation);
 
-                    // --- Optimistic UI Update ---
-                    if (targetDesk) { // Swapping positions
+                    if (targetDesk) { 
                         const movingDeskOldLocation = movingDesk.location;
                         movingDesk.location = newLocation;
                         targetDesk.location = movingDeskOldLocation;
-                    } else { // Moving to an empty slot
+                    } else { 
                         movingDesk.location = newLocation;
                     }
-                    renderDeskGrid(true); // Re-render with the new local state
-
+                    renderDeskGrid(true); 
                     try {
                         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                         const response = await fetch(`/admin/labs/${labId}/desks/update/location/${deskId}`, {
@@ -316,18 +432,13 @@
 
                         if (data.success) {
                             showToast('Berhasil', data.message || `Posisi meja berhasil diperbarui.`, 'success');
-                            // [FIX] Tidak perlu `desks = data.desks` jika backend tidak mengirimkannya.
-                            // UI sudah benar berkat optimistic update di atas.
-                            // Jika backend MENGIRIMKAN data 'desks' yang sudah diupdate, baris di bawah bisa diaktifkan kembali.
-                            // desks = data.desks;
-                            // renderDeskGrid(true);
+                            
                         } else {
                             throw new Error(data.message || 'Gagal memperbarui posisi meja.');
                         }
 
                     } catch (error) {
                         console.error('Error updating desk location:', error);
-                        // Revert UI on failure
                         desks = originalDesks;
                         renderDeskGrid(true);
                         Swal.fire({
@@ -338,6 +449,56 @@
                     }
                 });
             });
+        }
+
+
+        function setupAddDeskListeners() {
+            const emptySlots = document.querySelectorAll('.empty-slot');
+            let isMouseDown = false;
+            let selectedSlots = new Set();
+
+            emptySlots.forEach(slot => {
+                slot.addEventListener('mousedown', (e) => {
+                    e.preventDefault(); 
+                    isMouseDown = true;
+                    const location = slot.dataset.location;
+                    if (!selectedSlots.has(location)) {
+                        selectedSlots.add(location);
+                        slot.classList.add('bg-blue-200', 'border-blue-500');
+                    }
+                });
+
+                slot.addEventListener('mouseover', () => {
+                    if (isMouseDown) {
+                        const location = slot.dataset.location;
+                        if (!selectedSlots.has(location)) {
+                            selectedSlots.add(location);
+                            slot.classList.add('bg-blue-200', 'border-blue-500');
+                        }
+                    }
+                });
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (!isMouseDown) return;
+                isMouseDown = false;
+
+                if (selectedSlots.size > 0) {
+                    selectedSlots.forEach(location => {
+                        const isOccupied = [...desks, ...newDesks].some(d => d.location === location);
+                        if (!isOccupied) {
+                            newDesks.push({
+                                location: location,
+                                isNew: true, 
+                            });
+                        }
+                    });
+                    selectedSlots.clear();
+                    renderDeskGrid(true); 
+                }
+            }, {
+                once: true
+            }); 
         }
 
         labSelector.addEventListener('change', async function() {
@@ -374,7 +535,7 @@
 
         function renderAdditionalInfo(spec) {
             if (!spec || !spec.set_values || spec.set_values.length === 0) {
-                return ''; 
+                return '';
             }
 
             let infoHtml = '<div class="mt-3 space-y-1">';
@@ -455,6 +616,20 @@
                 }
             }
         });
+
+        deskContainer.addEventListener('dblclick', function(event) {
+            const clickedDesk = event.target.closest('.new-desk-item');
+
+            const deskGrid = document.getElementById('desk-grid');
+            if (!clickedDesk || !deskGrid || !deskGrid.classList.contains('edit-mode')) {
+                return;
+            }
+
+            const location = clickedDesk.dataset.location;
+
+            cancelNewDesk(location);
+        });
+
     });
 </script>
 @endsection

@@ -24,6 +24,6 @@ Route::prefix('admin')->group(function () {
     Route::get('/labs', [AdminController::class, 'labs'])->name('admin.labs');
     Route::get('/labs/{lab}/desks', [LabsController::class, 'getDesks'])->name('admin.labs.desks');
     Route::post('/labs/{lab}/desks/update/location/{desk}', [DesksController::class, 'updateLocation'])->name('admin.labs.desks.update.location');
-
+    Route::post('/labs/{lab}/desks/batch-create', [DesksController::class, 'batchCreate'])->name('admin.labs.desks.batch.create');
     // Route::get('/booking', [AdminController::class, 'listBooking'])->name('admin.booking.list');
 });

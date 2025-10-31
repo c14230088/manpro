@@ -14,6 +14,7 @@ class Desks extends Model
         'location',
         'serial_code',
         'lab_id',
+        'condition',
     ];
 
     protected $hidden = [
