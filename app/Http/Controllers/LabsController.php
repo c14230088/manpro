@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Log;
 
 class LabsController extends Controller
 {
+    public function getLabs()
+    {
+        $labs = Labs::all(); 
+        return response()->json($labs);
+    }
+    
     public function getDesks(Labs $lab)
     {
         $desks = $lab->desks()

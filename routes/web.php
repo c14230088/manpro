@@ -17,6 +17,7 @@ Route::post('/booking', [UnitController::class, 'storeBooking'])->name('user.boo
 
 Route::get('/get/labs', [LabsController::class, 'getLabs'])->name('user.get.labs');
 Route::get('/get/items', [ItemsController::class, 'getItems'])->name('user.get.items');
+Route::get('/get/items/by-lab/{lab}', [ItemsController::class, 'getItemsByLab'])->name('user.get.items.by.lab');
 
 Route::prefix('admin')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
