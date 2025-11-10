@@ -72,7 +72,7 @@ class DesksController extends Controller
         ]);
     }
 
-    
+
     public function batchDelete(Request $request, $labId)
     {
         // 1. Validasi Input
@@ -101,34 +101,33 @@ class DesksController extends Controller
             // 3. Jalankan logika berdasarkan mode
             if ($deleteMode === 'delete_all') {
                 // OPSI 1: Hapus MEJA DAN ITEM
-                
+
                 // Hapus item dulu
                 Items::whereIn('desk_id', $idsOfDesks)->delete();
-                
+
                 // Hapus meja
                 $deletedCount = Desks::where('lab_id', $labId)
-                                    ->whereIn('id', $idsOfDesks)
-                                    ->delete();
-                                    
+                    ->whereIn('id', $idsOfDesks)
+                    ->delete();
+
                 if ($deletedCount == 0) {
-                     DB::rollBack();
+                    DB::rollBack();
                     return response()->json(['success' => false, 'message' => 'Tidak ada meja yang ditemukan untuk dihapus.'], 404);
                 }
-                
-                $message = $deletedCount . ' meja dan item terkait berhasil dihapus permanen.';
 
+                $message = $deletedCount . ' meja dan item terkait berhasil dihapus permanen.';
             } else {
                 // OPSI 2: Hapus ITEM SAJA
-                
+
                 $itemCount = Items::whereIn('desk_id', $idsOfDesks)->delete();
 
                 // Kita tidak menghapus meja, jadi $deletedCount = 0
                 // tapi kita perlu tahu berapa banyak item yang dihapus
                 if ($itemCount == 0) {
-                     DB::rollBack(); // Rollback jika tidak ada item sama sekali
+                    DB::rollBack(); // Rollback jika tidak ada item sama sekali
                     return response()->json(['success' => false, 'message' => 'Tidak ada item yang ditemukan di meja tersebut.'], 404);
                 }
-                
+
                 // Asumsi: Jika item dihapus, kondisi meja kembali 'bagus'
                 Desks::where('lab_id', $labId)
                     ->whereIn('id', $idsOfDesks)
@@ -144,13 +143,61 @@ class DesksController extends Controller
                 'success' => true,
                 'message' => $message
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error batch action: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Terjadi kesalahan pada server. ' . $e->getMessage()], 500);
         }
     }
-    
-}
 
+    public function storeItems(Request $request, $deskId)
+    {
+        $data = $request->only(['item_ids']);
+        $data['desk_id'] = $deskId;
+
+        $validator = Validator::make($data, [
+            'desk_id' => 'required|exists:desks,id',
+            'item_ids' => 'required|array|min:1',
+            'item_ids.*' => [
+                'required',
+                'string',
+                // item exists dan 'desk_id' masih NULL
+                Rule::exists('items', 'id')->whereNull('desk_id'),
+            ],
+        ], [
+            'desk_id.exists' => 'Meja yang dipilih tidak valid.',
+            'item_ids.required' => 'Tidak ada item yang dipilih.',
+            'item_ids.min' => 'Pilih minimal satu item.',
+            'item_ids.*.exists' => 'Satu atau lebih item yang dipilih tidak valid atau sudah digunakan di meja lain.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            Items::whereIn('id', $data['item_ids'])
+                ->update(['desk_id' => $deskId]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($data['item_ids']) . ' item berhasil ditambahkan ke meja ini.',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error storeItems: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan server saat menyimpan data.',
+            ], 500);
+        }
+    }
+}

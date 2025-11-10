@@ -12,9 +12,9 @@ class Desks extends Model
     protected $fillable = [
         'id',
         'location',
-        'serial_code',
         'lab_id',
-        'condition',
+        // 'serial_code',
+        // 'condition',
     ];
 
     protected $hidden = [
@@ -36,27 +36,35 @@ class Desks extends Model
     }
 
 
-    //  'rusak', 'tidak_lengkap', 'bagus'.
 
     public function getOverallConditionAttribute()
     {
 
         $this->loadMissing('items.components');
 
+        if ($this->items->isEmpty()) {
+            return 'item_kosong';
+        }
+
         foreach ($this->items as $item) {
-            if ($item->condition == 0) return 'rusak';
+            if ($item->condition == 0) return 'item_rusak';
 
             foreach ($item->components as $component) {
-                if ($component->condition == 0) return 'rusak';
+                if ($component->condition == 0) return 'component_rusak';
             }
         }
 
-        $requiredTypes = [0, 1, 2, 3];
-        $presentTypes = $this->items->pluck('type')->all();
+        $requiredTypeNames = ['KEYBOARD', 'CPU', 'MONITOR', 'MOUSE'];
 
-        foreach ($requiredTypes as $type) {
-            if (!in_array($type, $presentTypes)) {
-                return 'tidak_lengkap';
+        $presentTypeNames = $this->items
+            ->pluck('type.name')
+            ->map(fn($name) => strtoupper($name))
+            ->unique()
+            ->toArray();
+
+        foreach ($requiredTypeNames as $name) {
+            if (!in_array($name, $presentTypeNames)) {
+                return 'item_tidak_lengkap';
             }
         }
 

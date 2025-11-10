@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spec_set_value', function (Blueprint $table) {
+        Schema::create('spec_set_value', function (Blueprint $table) { // value dari attribute, tiap attribute bisa punya banyak value
             $table->uuid("id")->primary();
-            $table->uuid(column: 'spec_attributes_id');
-            $table->uuid(column: 'spec_set_id');
-            $table->foreign('spec_attributes_id')->references('id')->on('spec_attributes')->onDelete('cascade');
-            $table->foreign('spec_set_id')->references('id')->on('spec_set')->onDelete('cascade');
             $table->string("value");
+            
+            $table->uuid(column: 'spec_attributes_id');
+            $table->foreign('spec_attributes_id')->references('id')->on('spec_attributes')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -16,15 +16,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('serial_code')->unique();
             $table->boolean('condition')->comment('0: rusak | 1: bagus');
-            
-            // $table->json('additional_information')->nullable(); //spek" yang mau disimpan
-            $table->uuid(column: 'spec_set_id');
-            $table->foreign('spec_set_id')->references('id')->on('spec_set')->onDelete('cascade');
-            
-            // $table->uuid('unit_id'); // Components ini milik siapa, UPPK, PTIK atau mhsw
-            // $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
 
-            $table->uuid('item_id');
+            $table->uuid('type_id');
+            $table->foreign('type_id')->references('id')->on('types')->onDelete('cascade');
+
+            $table->uuid('unit_id')->nullable(); // Components ini milik siapa, UPPK, PTIK atau mhsw
+            $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
+
+            $table->uuid('item_id')->nullable(); // bisa bound ke suatu item, bisa free (misal: stock RAM) 
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
 
             $table->timestamps();

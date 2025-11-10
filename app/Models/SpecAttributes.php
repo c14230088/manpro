@@ -12,15 +12,11 @@ class SpecAttributes extends Model
     protected $table = 'spec_attributes';
 
     protected $fillable = [
-        'spec_type_id',
+        'id',
         'name',
     ];
 
-    public function specType()
-    {
-        return $this->belongsTo(SpecType::class);
-    }
-    public function setValues()
+    public function specValues()
     {
         return $this->hasMany(SpecSetValue::class);
     }

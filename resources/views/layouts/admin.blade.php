@@ -5,10 +5,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {{-- Script & CSS Utama --}}
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    {{-- TW Elements (hanya 1x) --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css" />
+
+    {{-- TomSelect (CSS & JS) --}}
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
     <title>Admin | @if (isset($title))
             {{ $title }}
@@ -17,13 +28,8 @@
         @endif
     </title>
     <link rel="icon" href="{{ asset('assets/logo/logo-robot.png') }}" type="image/svg+xml" />
-    {{-- sweetalert cdn --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-    <script src="https://cdn.tailwindcss.com/3.3.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -34,11 +40,536 @@
                     mono: ["ui-monospace", "monospace"],
                 },
             },
-            corePlugins: {
-                preflight: false,
-            },
         };
     </script>
+
+    {{-- ======================================================= --}}
+    {{-- [FIX] Style TomSelect & Resizable Sidebar               --}}
+    {{-- ======================================================= --}}
+    <style>
+        .ts-control {
+            display: block;
+            width: 100%;
+            padding-top: 0.80rem;
+            /* py-3 (custom) */
+            padding-bottom: 0.80rem;
+            /* py-3 (custom) */
+            padding-left: 1rem;
+            /* px-4 */
+            padding-right: 1rem;
+            /* px-4 */
+            font-size: 1rem;
+            /* text-base */
+            line-height: 1.5rem;
+            color: #1f2937;
+            /* text-gray-800 */
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            /* border-gray-300 */
+            border-radius: 0.5rem;
+            /* rounded-lg */
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        /* 2. Aturan .ts-control (STATE FOKUS) - INI YANG HILANG */
+        /* Menerjemahkan: focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent */
+        /* Saat di-klik, TomSelect menambah class .focus ke .ts-wrapper */
+        .ts-wrapper.focus .ts-control {
+            border-color: transparent !important;
+            /* focus-within:border-transparent */
+            box-shadow: 0 0 0 2px #6366f1;
+            /* focus-within:ring-2 focus-within:ring-indigo-500 */
+            outline: none;
+            /* Menghilangkan outline default browser */
+        }
+
+        .ts-wrapper.dropdown-active .ts-control {
+            display: block;
+            /* Paksa agar radius tetap 0.5rem (rounded-lg), JANGAN jadi 0 */
+            border-radius: 0.5rem !important;
+
+            /* Paksa agar border & shadow SAMA PERSIS dengan state FOKUS */
+            border: 2px solid black !important;
+            box-shadow: 0 0 0 2px #6366f1 !important;
+            outline: none !important;
+        }
+
+        /* 3. Aturan untuk item/pill yang DIPILIH */
+        /* Menerjemahkan: bg-indigo-100 text-indigo-700 rounded px-2 py-0.5 */
+        .ts-wrapper.multi .ts-control>div,
+        .ts-wrapper.single .ts-control .item {
+            background-color: #e0e7ff;
+            /* bg-indigo-100 */
+            color: #4338ca;
+            /* text-indigo-700 */
+            border-radius: 0.25rem;
+            /* rounded */
+            padding: 0.125rem 0.5rem;
+            /* py-0.5 px-2 */
+            margin: 0.125rem 0.25rem;
+            /* Jarak antar item */
+        }
+
+        .ts-control.dropdown-active {}
+
+        /* 4. Aturan Dropdown (Box Pilihan) */
+        /* Menerjemahkan: border-gray-300 rounded-lg shadow-lg */
+        .ts-dropdown {
+            border: 1px solid #d1d5db;
+            /* border-gray-300 */
+            border-radius: 0.5rem;
+            /* rounded-lg */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            /* shadow-lg */
+            z-index: 500 !important;
+            /* Pastikan di atas elemen lain */
+        }
+
+        /* 5. Aturan Opsi di dalam Dropdown */
+        /* Menerjemahkan: px-4 py-2 */
+        .ts-dropdown .option {
+            background-color: #ffffff;
+            padding: 0.5rem 1rem;
+        }
+
+        /* Menerjemahkan: bg-indigo-100 */
+        .ts-dropdown .option.active,
+        .ts-dropdown .option:hover {
+            background-color: #e0e7ff;
+        }
+
+        /* 6. Aturan 'Tambah baru...' */
+        /* Menerjemahkan: text-blue-600 */
+        .ts-dropdown .create {
+            color: #2563eb;
+        }
+
+        /* ============================================ */
+        /* CSS UNTUK RESIZER SIDEBAR (FIXED VERSION)    */
+        /* ============================================ */
+        :root {
+            --sidebar-width: 240px;
+        }
+
+        #sidenav-8 {
+            width: var(--sidebar-width);
+            transition: width 0s;
+        }
+
+        #main-content {
+            transition: margin-left 0s;
+        }
+
+        @media (min-width: 768px) {
+            #main-content {
+                margin-left: var(--sidebar-width);
+            }
+        }
+
+        #sidenav-resizer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background-color 0.2s;
+            z-index: 1040;
+        }
+
+        #sidenav-resizer:hover,
+        body.is-resizing #sidenav-resizer {
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.6));
+        }
+
+        body.is-resizing {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        #sidenav-resizer::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 40px;
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 2px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        #sidenav-resizer:hover::after,
+        body.is-resizing #sidenav-resizer::after {
+            opacity: 1;
+        }
+
+        /* ============================================ */
+        /* AKHIR CSS RESIZER SIDEBAR                    */
+        /* ============================================ */
+    </style>
+
+    {{-- ========================================================= --}}
+    {{-- STYLE UNTUK SWEETALERT & TOAST (MODERN COLORFUL) - FIXED  --}}
+    {{-- ========================================================= --}}
+    <style>
+        /* Base popup style dengan glassmorphism effect */
+        .swal2-container {
+            z-index: 9997 !important;
+        }
+
+        .swal2-popup {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85)) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 20px !important;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+            padding: 2rem !important;
+        }
+
+        /* Dark mode support */
+        .dark .swal2-popup {
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.95), rgba(31, 41, 55, 0.85)) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* ============================================ */
+        /* TOAST STYLING - WARNA SESUAI TYPE (FIXED)    */
+        /* ============================================ */
+
+        /* Base Toast Style */
+        .swal2-toast-custom.swal2-popup {
+            max-width: 400px !important;
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border-radius: 16px !important;
+            padding: 1rem 1.25rem !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.18) inset !important;
+            border: 2px solid !important;
+        }
+
+        /* SUCCESS TOAST - Hijau */
+        .swal2-toast-custom.swal2-popup.swal2-icon-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95)) !important;
+            border-color: rgba(16, 185, 129, 0.5) !important;
+        }
+
+        .dark .swal2-toast-custom.swal2-popup.swal2-icon-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9)) !important;
+        }
+
+        /* ERROR TOAST - Merah */
+        .swal2-toast-custom.swal2-popup.swal2-icon-error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95)) !important;
+            border-color: rgba(239, 68, 68, 0.5) !important;
+        }
+
+        .dark .swal2-toast-custom.swal2-popup.swal2-icon-error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9)) !important;
+        }
+
+        /* WARNING TOAST - Kuning/Orange */
+        .swal2-toast-custom.swal2-popup.swal2-icon-warning {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(249, 115, 22, 0.95)) !important;
+            border-color: rgba(251, 146, 60, 0.5) !important;
+        }
+
+        .dark .swal2-toast-custom.swal2-popup.swal2-icon-warning {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.9), rgba(249, 115, 22, 0.9)) !important;
+        }
+
+        /* INFO TOAST - Biru */
+        .swal2-toast-custom.swal2-popup.swal2-icon-info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.95)) !important;
+            border-color: rgba(59, 130, 246, 0.5) !important;
+        }
+
+        .dark .swal2-toast-custom.swal2-popup.swal2-icon-info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9)) !important;
+        }
+
+        /* NETWORK ERROR TOAST - Ungu/Purple */
+        .swal2-toast-network.swal2-popup {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.95), rgba(124, 58, 237, 0.95)) !important;
+            border-color: rgba(139, 92, 246, 0.5) !important;
+        }
+
+        .dark .swal2-toast-network.swal2-popup {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.9), rgba(124, 58, 237, 0.9)) !important;
+        }
+
+        /* Toast Title & Text - Selalu Putih untuk Toast Berwarna */
+        .swal2-toast-custom .swal2-title {
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            font-size: 1.125rem !important;
+            margin: 0 !important;
+        }
+
+        .swal2-toast-custom .swal2-html-container {
+            color: rgba(255, 255, 255, 0.95) !important;
+            font-size: 0.875rem !important;
+            margin: 0.25rem 0 0 0 !important;
+        }
+
+        /* Toast Icon - Putih dan Lebih Kecil */
+        .swal2-toast-custom .swal2-icon {
+            width: 2rem !important;
+            height: 2rem !important;
+            margin: 0 0.75rem 0 0 !important;
+            border-width: 2px !important;
+            border-color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .swal2-toast-custom.swal2-popup .swal2-icon .swal2-icon-content {
+            color: #ffffff !important;
+            font-size: 1.5rem !important;
+        }
+
+        .swal2-toast-custom.swal2-popup.swal2-icon-success .swal2-success-ring {
+            border-color: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .swal2-toast-custom.swal2-popup.swal2-icon-success .swal2-success [class^='swal2-success-line'] {
+            background-color: #ffffff !important;
+        }
+
+        .swal2-toast-custom.swal2-popup.swal2-icon-error .swal2-error [class^='swal2-x-mark-line'] {
+            background-color: #ffffff !important;
+        }
+
+        /* Timer Progress Bar - Putih Semi-transparan */
+        .swal2-toast-custom .swal2-timer-progress-bar {
+            background: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        /* Title styling (untuk Modal) */
+        .swal2-title {
+            color: #1f2937 !important;
+            font-weight: 700 !important;
+            font-size: 1.5rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .dark .swal2-title {
+            color: #f9fafb !important;
+        }
+
+        /* HTML container & text (untuk Modal) */
+        .swal2-html-container {
+            color: #4b5563 !important;
+            font-size: 1rem !important;
+            line-height: 1.6 !important;
+            margin: 0 !important;
+        }
+
+        .swal2-popup:not(.swal2-toast-custom) .swal2-html-container {
+            margin: 1.25em 1.6em 0.3em !important;
+        }
+
+        .dark .swal2-html-container {
+            color: #d1d5db !important;
+        }
+
+        /* Success icon (Modal) - Green */
+        .swal2-icon.swal2-success {
+            border-color: #10b981 !important;
+        }
+
+        .swal2-icon.swal2-success [class^='swal2-success-line'] {
+            background-color: #10b981 !important;
+        }
+
+        .swal2-icon.swal2-success .swal2-success-ring {
+            border-color: rgba(16, 185, 129, 0.3) !important;
+        }
+
+        /* Error icon (Modal) - Red */
+        .swal2-icon.swal2-error {
+            border-color: #ef4444 !important;
+        }
+
+        .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+            background-color: #ef4444 !important;
+        }
+
+        /* Warning icon (Modal) - Amber */
+        .swal2-icon.swal2-warning {
+            border-color: #f59e0b !important;
+            color: #f59e0b !important;
+        }
+
+        /* Info icon (Modal) - Blue */
+        .swal2-icon.swal2-info {
+            border-color: #3b82f6 !important;
+            color: #3b82f6 !important;
+        }
+
+        /* Confirm button - Indigo gradient */
+        .swal2-confirm {
+            background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+            color: white !important;
+            font-weight: 600 !important;
+            padding: 0.75rem 2rem !important;
+            border-radius: 12px !important;
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+            transition: all 0.3s ease !important;
+            font-size: 1rem !important;
+        }
+
+        .swal2-confirm:hover {
+            background: linear-gradient(135deg, #4f46e5, #4338ca) !important;
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.3) inset !important;
+            transform: translateY(-2px);
+        }
+
+        /* Cancel button - Gray */
+        .swal2-cancel {
+            background: rgba(229, 231, 235, 0.8) !important;
+            color: #374151 !important;
+            font-weight: 600 !important;
+            padding: 0.75rem 2rem !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(209, 213, 219, 0.8) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+            transition: all 0.3s ease !important;
+            font-size: 1rem !important;
+        }
+
+        .swal2-cancel:hover {
+            background: rgba(209, 213, 219, 0.9) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.3) inset !important;
+            transform: translateY(-2px);
+        }
+
+        .dark .swal2-cancel {
+            background: rgba(55, 65, 81, 0.8) !important;
+            color: #f9fafb !important;
+            border: 1px solid rgba(75, 85, 99, 0.8) !important;
+        }
+
+        /* Deny button */
+        .swal2-deny {
+            background: rgba(239, 68, 68, 0.1) !important;
+            color: #dc2626 !important;
+            font-weight: 600 !important;
+            padding: 0.75rem 2rem !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(239, 68, 68, 0.3) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1) !important;
+            transition: all 0.3s ease !important;
+            font-size: 1rem !important;
+        }
+
+        .swal2-deny:hover {
+            background: rgba(239, 68, 68, 0.2) !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Actions container */
+        .swal2-actions {
+            gap: 0.75rem !important;
+            margin-top: 1.5rem !important;
+        }
+
+        /* Timer progress bar (untuk Modal) */
+        .swal2-timer-progress-bar {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6) !important;
+            height: 4px !important;
+        }
+
+        /* Input fields */
+        .swal2-input,
+        .swal2-textarea {
+            border: 2px solid rgba(209, 213, 219, 0.5) !important;
+            border-radius: 12px !important;
+            padding: 0.75rem 1rem !important;
+            font-size: 1rem !important;
+            transition: all 0.3s ease !important;
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .swal2-input:focus,
+        .swal2-textarea:focus {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+            outline: none !important;
+        }
+
+        .dark .swal2-input,
+        .dark .swal2-textarea {
+            background: rgba(31, 41, 55, 0.8) !important;
+            color: #f9fafb !important;
+            border-color: rgba(75, 85, 99, 0.5) !important;
+        }
+
+        .swal2-container.swal2-center {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        /* Toast animations */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .swal2-toast-custom.swal2-show {
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+
+            /* Target Modal SAJA, bukan toast */
+            .swal2-popup:not(.swal2-toast-custom) {
+                padding: 1.5rem !important;
+                border-radius: 16px !important;
+            }
+
+            /* Target Ikon Modal SAJA */
+            .swal2-popup:not(.swal2-toast-custom) .swal2-icon {
+                width: 4rem !important;
+                height: 4rem !important;
+                margin: 1rem auto !important;
+            }
+
+            /* Target Title Modal SAJA */
+            .swal2-popup:not(.swal2-toast-custom) .swal2-title {
+                font-size: 1.25rem !important;
+            }
+
+            /* Buat TOAST full-width di mobile */
+            .swal2-toast-custom.swal2-popup {
+                width: auto !important;
+                max-width: none !important;
+                margin: 0.5em !important;
+            }
+        }
+    </style>
 
     @yield('style')
 </head>
@@ -47,10 +578,12 @@
 @endphp
 
 <body>
+    {{-- Sidenav (Resizable) --}}
     <nav id="sidenav-8"
-        class="fixed left-0 top-0 z-[1035] h-full min-h-[100vh] w-60 -translate-x-full overflow-hidden bg-white shadow-[0_4px_12px_0_rgba(0,0,0,0.07),_0_2px_4px_rgba(0,0,0,0.05)] data-[te-sidenav-hidden='false']:translate-x-0 dark:bg-zinc-800 invisible md:visible"
+        class="fixed left-0 top-0 z-[1035] h-full min-h-[100vh] -translate-x-full overflow-hidden bg-white shadow-[0_4px_12px_0_rgba(0,0,0,0.07),_0_2px_4px_rgba(0,0,0,0.05)] data-[te-sidenav-hidden='false']:translate-x-0 dark:bg-zinc-800 invisible md:visible"
         data-te-sidenav-init data-te-sidenav-hidden="false" data-te-sidenav-position="fixed" data-te-sidenav-mode="side"
         data-te-sidenav-accordion="true">
+
         <a class="mb-3 flex flex-col items-center justify-center border-b-2 border-solid border-gray-100 py-6 outline-none"
             href="#" data-te-ripple-init data-te-ripple-color="primary">
             <div class="flex items-center justify-center space-x-3 mb-3">
@@ -77,62 +610,48 @@
                     <span>Overview</span>
                 </a>
             </li>
-
             <li class="relative pt-4">
-                <span class="px-6 py-4 text-[0.6rem] font-bold uppercase text-gray-600 dark:text-gray-400">View</span>
+                <span class="px-6 py-4 text-[0.6rem] font-bold uppercase text-gray-600 dark:text-gray-400">Dashboards</span>
                 <a id="labs"
                     class="flex cursor-pointer items-center truncate rounded-[5px] px-6 py-[0.45rem] text-[0.85rem] text-gray-600 outline-none transition duration-300 ease-linear hover:bg-slate-50 hover:text-inherit hover:outline-none focus:bg-slate-50 focus:text-inherit focus:outline-none active:bg-slate-50 active:text-inherit active:outline-none data-[te-sidenav-state-active]:text-inherit data-[te-sidenav-state-focus]:outline-none motion-reduce:transition-none dark:text-gray-300 dark:hover:bg-white/10 dark:focus:bg-white/10 dark:active:bg-white/10"
                     href="{{ route('admin.labs') }}" data-te-sidenav-link-ref>
                     <span class="mr-4 [&>svg]:h-3.5 [&>svg]:w-3.5 [&>svg]:text-gray-400 dark:[&>svg]:text-gray-300">
                         <svg class="w-[50px] h-[50px] fill-[#8e8e8e]" viewBox="0 0 576 512"
                             xmlns="http://www.w3.org/2000/svg">
-
-                            <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                             <path
-                                d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z">
-                            </path>
-
+                                d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z" />
                         </svg>
                     </span>
                     <span>Laboratories</span>
                 </a>
-            </li>
-
-            {{-- <li class="relative pt-4">
-                <span class="px-6 py-4 text-[0.6rem] font-bold uppercase text-gray-600 dark:text-gray-400">Rally
-                    Games</span>
-            </li> --}}
-
-            {{-- <li class="relative pt-6">
-                <span class="px-6 py-4 text-[0.6rem] font-bold uppercase text-gray-600 dark:text-gray-400">Logout</span>
-                <a href="{{ route('admin.logout') }}"
+                <a id="items"
                     class="flex cursor-pointer items-center truncate rounded-[5px] px-6 py-[0.45rem] text-[0.85rem] text-gray-600 outline-none transition duration-300 ease-linear hover:bg-slate-50 hover:text-inherit hover:outline-none focus:bg-slate-50 focus:text-inherit focus:outline-none active:bg-slate-50 active:text-inherit active:outline-none data-[te-sidenav-state-active]:text-inherit data-[te-sidenav-state-focus]:outline-none motion-reduce:transition-none dark:text-gray-300 dark:hover:bg-white/10 dark:focus:bg-white/10 dark:active:bg-white/10"
-                    data-te-sidenav-link-ref>
+                    href="{{ route('admin.items') }}" data-te-sidenav-link-ref>
                     <span class="mr-4 [&>svg]:h-3.5 [&>svg]:w-3.5 [&>svg]:text-gray-400 dark:[&>svg]:text-gray-300">
-                        <svg class="w-[24px] h-[24px] fill-[#8e8e8e]" viewBox="0 0 512 512"
+                        <svg class="w-[50px] h-[50px] fill-[#8e8e8e]" viewBox="0 0 576 512"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
-                                d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z">
-                            </path>
+                                d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z" />
                         </svg>
                     </span>
-                    <span>Logout</span>
+                    <span>Items</span>
                 </a>
-            </li> --}}
+            </li>
+
         </ul>
+
+        {{-- Resizer Handle --}}
+        <div id="sidenav-resizer" title="Drag to resize sidebar"></div>
     </nav>
 
-    {{-- NAVBAR --}}
-    <!-- Main navigation container -->
+    {{-- Navbar Mobile --}}
     <nav
         class="flex-no-wrap relative flex w-full items-center justify-between bg-[#FBFBFB] py-2 shadow-md shadow-black/5 dark:bg-neutral-600 dark:shadow-black/10 lg:flex-wrap lg:justify-start lg:py-4 block md:hidden">
         <div class="flex w-full flex-wrap items-center justify-between px-3">
-            <!-- Hamburger button for mobile view -->
             <button
                 class="block border-0 bg-transparent px-2 text-neutral-500 hover:no-underline hover:shadow-none focus:no-underline focus:shadow-none focus:outline-none focus:ring-0 dark:text-neutral-200 sm:hidden"
                 type="button" data-te-collapse-init data-te-target="#navbarSupportedContent12"
                 aria-controls="navbarSupportedContent12" aria-expanded="false" aria-label="Toggle navigation">
-                <!-- Hamburger icon -->
                 <span class="[&>svg]:w-7">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-7 w-7">
                         <path fill-rule="evenodd"
@@ -142,119 +661,64 @@
                 </span>
             </button>
 
-            <!-- Collapsible navigation container -->
             <div class="!visible hidden flex-grow basis-[100%] items-center sm:!flex sm:basis-auto"
                 id="navbarSupportedContent12" data-te-collapse-item>
-                <!-- Left navigation links -->
                 <ul class="list-style-none mr-auto flex flex-col pl-0 sm:flex-row" data-te-navbar-nav-ref>
-                    {{-- Dashboard --}}
                     <li class="my-4 pl-2 sm:my-0 sm:pl-0 sm:pr-1" data-te-nav-item-ref>
                         <a class="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-300 dark:focus:text-neutral-300 sm:px-2 [&.active]:text-black/90 dark:[&.active]:text-zinc-400"
                             href="{{ route('admin.dashboard') }}" data-te-nav-link-ref>Overview</a>
                     </li>
-
-
                     <li class="relative pt-4">
                         <span
-                            class="px-6 py-4 text-[0.6rem] font-bold uppercase text-gray-600 dark:text-gray-400">View</span>
+                            class="px-6 py-4 text-[0.6rem] font-bold uppercase text-gray-600 dark:text-gray-400">Dashboards</span>
                         <a class="flex cursor-pointer items-center truncate rounded-[5px] px-6 py-[0.45rem] text-[0.85rem] text-gray-600 outline-none transition duration-300 ease-linear hover:bg-slate-50 hover:text-inherit hover:outline-none focus:bg-slate-50 focus:text-inherit focus:outline-none active:bg-slate-50 active:text-inherit active:outline-none data-[te-sidenav-state-active]:text-inherit data-[te-sidenav-state-focus]:outline-none motion-reduce:transition-none dark:text-gray-300 dark:hover:bg-white/10 dark:focus:bg-white/10 dark:active:bg-white/10"
                             href="{{ route('admin.labs') }}" data-te-sidenav-link-ref>
                             <span
                                 class="mr-4 [&>svg]:h-3.5 [&>svg]:w-3.5 [&>svg]:text-gray-400 dark:[&>svg]:text-gray-300">
                                 <svg class="w-[50px] h-[50px] fill-[#8e8e8e]" viewBox="0 0 576 512"
                                     xmlns="http://www.w3.org/2000/svg">
-
-                                    <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                                     <path
                                         d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z">
                                     </path>
-
                                 </svg>
                             </span>
                             <span>Laboratories</span>
                         </a>
+                        <a class="flex cursor-pointer items-center truncate rounded-[5px] px-6 py-[0.45rem] text-[0.85rem] text-gray-600 outline-none transition duration-300 ease-linear hover:bg-slate-50 hover:text-inherit hover:outline-none focus:bg-slate-50 focus:text-inherit focus:outline-none active:bg-slate-50 active:text-inherit active:outline-none data-[te-sidenav-state-active]:text-inherit data-[te-sidenav-state-focus]:outline-none motion-reduce:transition-none dark:text-gray-300 dark:hover:bg-white/10 dark:focus:bg-white/10 dark:active:bg-white/10"
+                            href="{{ route('admin.items') }}" data-te-sidenav-link-ref>
+                            <span
+                                class="mr-4 [&>svg]:h-3.5 [&>svg]:w-3.5 [&>svg]:text-gray-400 dark:[&>svg]:text-gray-300">
+                                <svg class="w-[50px] h-[50px] fill-[#8e8e8e]" viewBox="0 0 576 512"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z">
+                                    </path>
+                                </svg>
+                            </span>
+                            <span>Items</span>
+                        </a>
                     </li>
-
-                    {{-- <li class="relative pt-4">
-                        <span class="px-6 py-4 text-[0.6rem] font-bold uppercase text-gray-600 dark:text-gray-400">Rally
-                            Games</span>
-                    </li> --}}
                 </ul>
             </div>
-
-            <!-- Right elements -->
-            {{-- <div class="relative flex items-center">
-                <!-- Logout Icon -->
-                <a class="pl-2 my-auto sm:mb-0 sm:mr-4 text-secondary-500 transition duration-200 hover:text-secondary-400 hover:ease-in-out focus:text-secondary-400 disabled:text-black/30 motion-reduce:transition-none"
-                    href="{{ route('admin.logout') }}">
-                    <span class="[&>svg]:w-5">
-                        <svg class="w-[24px] h-[24px] fill-[#ff6b6b]" viewBox="0 0 512 512"
-                            xmlns="http://www.w3.org/2000/svg">
-
-                            <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                            <path
-                                d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z">
-                            </path>
-                        </svg>
-                    </span>
-                </a>
-            </div> --}}
         </div>
     </nav>
 
 
-    <div class="ml-0 md:ml-60 px-3 md:px-8 py-2 md:py-3">
+    {{-- Konten Utama --}}
+    <div id="main-content" class="px-3 md:px-8 py-2 md:py-3">
         <div class="mt-3">
             @yield('body')
         </div>
     </div>
 
-    <div id="toast-container"
-        class="grid gap-4 w-96 z-10 fixed top-6 sm:right-4 right-[50%] sm:translate-x-0 translate-x-1/2 max-w-[95%] sm:max-w-full">
-        <div class="pointer-events-auto mx-auto hidden w-full rounded-lg bg-danger-300 bg-clip-padding text-sm shadow-lg shadow-black/5 data-[te-toast-show]:block data-[te-toast-hide]:hidden dark:bg-neutral-600"
-            id="static-example" role="alert" aria-live="assertive" aria-atomic="true" data-te-autohide="false"
-            data-te-toast-init data-te-toast-hide>
-            <div
-                class="flex items-center justify-between rounded-t-lg border-b-2 border-neutral-100 border-opacity-100 bg-danger-300 bg-clip-padding px-4 pb-2 pt-2.5 dark:border-opacity-50 dark:bg-neutral-600">
-                <p class="font-bold text-neutral-500 dark:text-neutral-200">
-                    MDBootstrap
-                </p>
-                <div class="flex items-center">
-                    <p class="text-xs text-neutral-600 dark:text-neutral-300">
-                        11 mins ago
-                    </p>
-                    <button type="button"
-                        class="ml-2 box-content rounded-none border-none opacity-80 hover:no-underline hover:opacity-75 focus:opacity-100 focus:shadow-none focus:outline-none"
-                        data-te-toast-dismiss aria-label="Close">
-                        <span
-                            class="w-[1em] focus:opacity-100 disabled:pointer-events-none disabled:select-none disabled:opacity-25 [&.disabled]:pointer-events-none [&.disabled]:select-none [&.disabled]:opacity-25">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </span>
-                    </button>
-                </div>
-            </div>
-            <div
-                class="break-words rounded-b-lg bg-danger-300 px-4 py-4 text-neutral-700 dark:bg-neutral-600 dark:text-neutral-200">
-                Static Example
-            </div>
-        </div>
-    </div>
-
+    {{-- Custom Modal --}}
     <div id="layout-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="layout-modal-title">
-
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[2000]"></div>
-
         <div id="layout-modal-overlay" class="fixed inset-0 flex items-center justify-center p-4 z-[2001]">
-
             <div id="layout-modal-area"
                 class="relative bg-white rounded-lg shadow-xl w-full max-w-3xl flex flex-col max-h-[90vh]">
-
                 <div class="flex justify-between items-center p-4 border-b border-gray-200 rounded-t">
-                    <h3 id="layout-modal-title" class="text-xl font-semibold text-gray-900">
-                    </h3>
+                    <h3 id="layout-modal-title" class="text-xl font-semibold text-gray-900"></h3>
                     <button id="layout-modal-close-button" type="button"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
                         <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -265,111 +729,82 @@
                         <span class="sr-only">Close modal</span>
                     </button>
                 </div>
-
                 <div id="layout-modal-body" class="p-6 space-y-6 overflow-y-auto">
                 </div>
-
                 <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
                     <button id="layout-modal-footer-close-button" type="button"
                         class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                         Tutup
                     </button>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- Sidenav -->
-    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/tw-elements.umd.min.js"></script>
+
+    {{-- ========================================================= --}}
+    {{-- SCRIPT UTAMA LAYOUT (FIXED VERSION)                       --}}
+    {{-- ========================================================= --}}
     <script>
+        // Setup CSRF untuk JQuery AJAX
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        const TOAST_CONTAINER_LIMIT = 2;
 
-        function showToast(title, message, type = 'success', autoHideTimeout = 2000) {
-            const TYPE = {
-                success: {
-                    bg: 'bg-success-100',
-                    text: 'text-success-700',
-                    border: 'border-success/20',
-                    svg: '<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"></path>'
+        /**
+         * -----------------------------------------------------------------
+         * FUNGSI TOAST (Menggunakan SweetAlert2 dengan style custom)
+         * -----------------------------------------------------------------
+         */
+        function showToast(title, message = '', type = 'success', autoHideTimeout = 3000) {
+            const iconMap = {
+                success: 'success',
+                error: 'error',
+                warning: 'warning',
+                info: 'info'
+            };
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: autoHideTimeout,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
                 },
-                error: {
-                    bg: 'bg-danger-100',
-                    text: 'text-danger-700',
-                    border: 'border-danger-200',
-                    svg: '<path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clip-rule="evenodd"></path>'
-                },
-                warning: {
-                    bg: 'bg-warning-100',
-                    text: 'text-warning-700',
-                    border: 'border-warning-200',
-                    svg: '<path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"></path>'
-                },
-                info: {
-                    bg: 'bg-primary-100',
-                    text: 'text-primary-700',
-                    border: 'border-primary-200',
-                    svg: '<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"></path>'
+                customClass: {
+                    popup: 'swal2-popup swal2-toast-custom'
                 }
-            }
+            });
 
-            const toastTemplate = `
-            <div
-                class="toast max-w-full pointer-events-auto mx-auto mb-4 hidden w-96 rounded-lg ${TYPE[type].bg} bg-clip-padding text-sm ${TYPE[type].text} shadow-lg shadow-black/5 data-[te-toast-show]:block data-[te-toast-hide]:hidden"
-                role="alert" aria-live="assertive" aria-atomic="true" data-te-autohide="false">
-                <div
-                    class="flex items-center justify-between rounded-t-lg border-b-2 ${TYPE[type].border} ${TYPE[type].bg} bg-clip-padding px-4 pb-2 pt-2.5 ${TYPE[type].text}">
-                    <p class="flex items-center font-bold ${TYPE[type].text}">
-                        <span class="mr-2 h-4 w-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                ${TYPE[type].svg}
-                            </svg>
-                        </span>
-                        ${title}
-                    </p>
-                    <div class="flex items-center">
-                        <button type="button"
-                            class="ml-2 box-content rounded-none border-none opacity-80 hover:no-underline hover:opacity-75 focus:opacity-100 focus:shadow-none focus:outline-none"
-                            data-te-toast-dismiss aria-label="Close">
-                            <span
-                                class="w-[1em] focus:opacity-100 disabled:pointer-events-none disabled:select-none disabled:opacity-25 [&.disabled]:pointer-events-none [&.disabled]:select-none [&.disabled]:opacity-25">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                    stroke="currentColor" class="h-6 w-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-                <div class="message break-words rounded-b-lg ${TYPE[type].bg} px-4 py-4 ${TYPE[type].text}">
-                    ${message}
-                </div>
-            </div>
-            `
-            const toast = $(toastTemplate).prependTo('#toast-container');
-            $('.toast').attr('data-te-toast-show', true);
-            $('.toast').attr('data-te-toast-init', true);
-
-            const alertCount = $('#toast-container').children().length;
-            if (alertCount > TOAST_CONTAINER_LIMIT) {
-                $('#toast-container').children().last().remove();
-            }
-
-            setTimeout(() => {
-                toast.find('button').click();
-                setTimeout(() => {
-                    toast.remove();
-                }, 400);
-            }, autoHideTimeout);
+            Toast.fire({
+                icon: iconMap[type] || 'success',
+                title: title,
+                text: message
+            });
         }
 
+        /**
+         * -----------------------------------------------------------------
+         * CONTOH PENGGUNAAN showToast()
+         * -----------------------------------------------------------------
+         * showToast('Berhasil!', 'Data telah disimpan', 'success');
+         * showToast('Error!', 'Gagal menyimpan data', 'error');
+         * showToast('Peringatan', 'Periksa data Anda', 'warning');
+         * showToast('Info', 'Proses sedang berjalan', 'info');
+         */
+
+        // Event Listener untuk semua fungsionalitas layout
         document.addEventListener('DOMContentLoaded', function() {
+
+            // ============================================
+            // LOGIKA MODAL
+            // ============================================
             const layoutModal = document.getElementById('layout-modal');
             const layoutModalTitle = document.getElementById('layout-modal-title');
             const layoutModalBody = document.getElementById('layout-modal-body');
@@ -392,30 +827,84 @@
                     document.body.style.overflow = '';
                 }
             };
+
             if (closeButtonHeader) closeButtonHeader.addEventListener('click', window.hideLayoutModal);
             if (closeButtonFooter) closeButtonFooter.addEventListener('click', window.hideLayoutModal);
+
             if (overlay) {
                 overlay.addEventListener('click', function(event) {
-                    if (event.target === overlay && event.target != document.getElementById('layout-modal-area')) {
+                    if (event.target === overlay) {
                         window.hideLayoutModal();
                     }
                 });
             }
+
             document.addEventListener('keydown', (event) => {
                 if (event.key === 'Escape' && layoutModal && !layoutModal.classList.contains('hidden')) {
                     window.hideLayoutModal();
                 }
             });
+
+            // ============================================
+            // LOGIKA RESIZE SIDEBAR (FIXED VERSION)
+            // ============================================
+            const resizer = document.getElementById('sidenav-resizer');
+            const sidebar = document.getElementById('sidenav-8');
+            const mainContent = document.getElementById('main-content');
+
+            const minWidth = 200; // Lebar minimal sidebar (px)
+            const maxWidth = 500; // Lebar maksimal sidebar (px)
+
+            // Load saved width dari localStorage
+            const savedWidth = localStorage.getItem('sidebarWidth');
+            if (savedWidth) {
+                const newWidth = Math.max(minWidth, Math.min(parseInt(savedWidth), maxWidth));
+                document.documentElement.style.setProperty('--sidebar-width', newWidth + 'px');
+            }
+
+            // Fungsi untuk update width sidebar
+            const updateSidebarWidth = (newWidth) => {
+                newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
+                document.documentElement.style.setProperty('--sidebar-width', newWidth + 'px');
+            };
+
+            // Event handler saat drag
+            const doResize = (e) => {
+                updateSidebarWidth(e.clientX);
+            };
+
+            // Event handler saat selesai drag
+            const stopResize = () => {
+                document.removeEventListener('mousemove', doResize);
+                document.removeEventListener('mouseup', stopResize);
+                document.body.classList.remove('is-resizing');
+
+                const currentWidth = document.documentElement.style.getPropertyValue('--sidebar-width');
+                localStorage.setItem('sidebarWidth', parseInt(currentWidth));
+            };
+
+            // Event handler saat mulai drag
+            if (resizer) {
+                resizer.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    document.addEventListener('mousemove', doResize);
+                    document.addEventListener('mouseup', stopResize);
+                    document.body.classList.add('is-resizing');
+                });
+            }
         });
     </script>
 
     @yield('script')
+
+    {{-- Script untuk Flash Session --}}
     @if (session('error-access'))
         <script>
             Swal.fire({
                 icon: 'error',
-                title: 'Oops...',
+                title: 'Akses Ditolak',
                 text: '{{ session('error-access') }}',
+                confirmButtonText: 'OK'
             })
         </script>
     @endif
@@ -426,66 +915,16 @@
                 icon: 'error',
                 title: 'Oops...',
                 text: '{{ session('error') }}',
+                confirmButtonText: 'OK'
             });
         </script>
     @endif
 
-    <style>
-        .swal2-popup {
-            background-color: hsla(273, 30%, 24%, 0.1);
-            background-image:
-                radial-gradient(at 0% 0%, hsla(257, 42%, 16%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 80% 2%, hsla(266, 34%, 43%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 41% 28%, hsla(286, 25%, 30%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 0% 57%, hsla(319, 32%, 39%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 80% 58%, hsla(323, 37%, 34%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 80% 83%, hsla(317, 36%, 62%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, hsla(318, 30%, 50%, 0.1) 0px, transparent 50%);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 0 5px var(--glow), 0 0 10px var(--glow);
-            filter: brightness(135%);
-            -webkit-filter: brightness(135%);
-            -ms-filter: brightness(135%);
-        }
-
-        .swal2-title,
-        .swal2-html-container {
-            text-shadow: none !important;
-            /* background-clip: text; */
-            color: white !important;
-            font-weight: 600 !important;
-            background: none !important;
-            box-shadow: none !important;
-        }
-
-        .swal2-confirm {
-            text-shadow: 0 0 12px var(--glow);
-            background: none !important;
-            color: white !important;
-            font-weight: 600 !important;
-            border: solid var(--glow) 2.6px !important;
-            width: 100px !important;
-            box-shadow: 0 0 9px var(--glow) !important;
-        }
-
-        .swal2-confirm:hover {
-            box-shadow: 0 0 14px var(--glow) !important;
-
-        }
-
-        .swal2-confirm:active {
-            transform: scale(0.97);
-        }
-
-
-        .swal2-icon,
-        .swal2-success-circular-line-left,
-        .swal2-success-circular-line-right,
-        .swal2-success-fix {
-            background: transparent !important;
-        }
-    </style>
+    @if (session('success'))
+        <script>
+            showToast('Berhasil!', '{{ session('success') }}', 'success');
+        </script>
+    @endif
 </body>
 
 </html>

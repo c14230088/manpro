@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spec_attributes', function (Blueprint $table) {
+        Schema::create('spec_attributes', function (Blueprint $table) { // simpan attribute spec seperti : Size, Dimensi, Kapasitas, dll
             $table->uuid("id")->primary();
-            $table->uuid(column: 'spec_type_id');
-            $table->foreign('spec_type_id')->references('id')->on('spec_type')->onDelete('cascade');
             $table->string("name");
             $table->timestamps();
         });

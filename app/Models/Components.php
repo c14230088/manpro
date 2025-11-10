@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Models\Type;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Components extends Model
 {
@@ -14,7 +15,8 @@ class Components extends Model
         'name',
         'serial_code',
         'condition',
-        'spec_set_id',
+        'type_id',
+        'unit_id',
         'item_id',
     ];
 
@@ -27,8 +29,26 @@ class Components extends Model
     {
         return $this->belongsTo(Items::class);
     }
-    public function spec()
+    public function type()
     {
-        return $this->belongsTo(SpecSet::class, 'spec_set_id');
+        return $this->belongsTo(Type::class, 'type_id');
+    }
+    public function tool_specs()
+    {
+        return $this->morphMany(Tool_spec::class, 'tool');
+    }
+
+    public function specSetValues()
+    {
+        return $this->morphToMany(
+            SpecSetValue::class,
+            'tool',
+            'tool_specs',
+            'tool_id',
+            'spec_value_id'
+        )
+            ->withPivot('id')
+            ->withTimestamps()
+            ->using(Tool_spec::class);
     }
 }

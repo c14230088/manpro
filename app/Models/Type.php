@@ -5,24 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
-class SpecSet extends Model
+class Type extends Model
 {
     use HasUuids;
-    protected $table = 'spec_set';
+    protected $table = 'types';
 
     protected $fillable = [
-        'spec_type_id',
-        'display_name',
+        'id',
+        'name',
     ];
 
-    public function specType()
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+    public function items()
     {
-        return $this->belongsTo(SpecType::class);
-    }
-
-    public function setValues()
-    {
-        return $this->hasMany(SpecSetValue::class);
+        return $this->hasMany(Items::class);
     }
 
     public function components()

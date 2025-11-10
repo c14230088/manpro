@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spec_set', function (Blueprint $table) {
+        Schema::create('types', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid(column: 'spec_type_id');
-            $table->foreign('spec_type_id')->references('id')->on('spec_type')->onDelete('cascade');
-            $table->string("display_name");
+            $table->string('name');
+
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('spec_set');
+        Schema::dropIfExists('types');
     }
 };
