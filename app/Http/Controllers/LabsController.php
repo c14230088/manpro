@@ -13,7 +13,7 @@ class LabsController extends Controller
 
         return response()->json($labs);
     }
-
+    
     public function getDesks(Labs $lab)
     {
         $desks = $lab->desks()

@@ -15,6 +15,13 @@ Route::get('/logout', [UnitController::class, 'logout'])->name('user.logout');
 Route::get('/booking', [UnitController::class, 'formBooking'])->name('user.booking.form');
 Route::post('/booking', [UnitController::class, 'storeBooking'])->name('user.booking.request');
 
+<<<<<<< HEAD
+=======
+Route::get('/get/labs', [LabsController::class, 'getLabs'])->name('user.get.labs');
+Route::get('/get/items', [ItemsController::class, 'getItems'])->name('user.get.items');
+Route::get('/get/items/by-lab/{lab}', [ItemsController::class, 'getItemsByLab'])->name('user.get.items.by.lab');
+
+>>>>>>> 3171e224914640fbb47cfc9eb2d7499b8a3418f0
 Route::prefix('admin')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 

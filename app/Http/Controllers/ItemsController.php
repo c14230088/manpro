@@ -4,23 +4,36 @@ namespace App\Http\Controllers;
 
 use App\Models\Type;
 use App\Models\Desks;
-use App\Models\Items;
 use App\Models\Components;
 use Illuminate\Support\Str;
 use App\Models\SpecSetValue;
+use App\Models\Items;
+use App\Models\Labs;
 use Illuminate\Http\Request;
 use App\Models\SpecAttributes;
 use function Pest\Laravel\json;
-use Illuminate\Support\Facades\DB;
-
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class ItemsController extends Controller
 {
-    public function getItems() {}
+    public function getItems(){
+        $items = Items::all();
+        return response()->json($items);
+    }
 
+    public function getItemsByLab(Labs $lab)
+    {
+        // Mengambil item yang belum dipinjam, dikelompokkan berdasarkan tipenya, dan dihitung jumlahnya.
+        $available_items = Items::where('lab_id', $lab->id)
+            ->select('type', DB::raw('count(*) as available_count'))
+            ->groupBy('type')
+            ->get();
+
+        return response()->json($available_items);
+    }
     public function createItems(Request $request)
     {
         $data = $request->only(['is_component', 'name', 'serial_code', 'condition', 'type', 'specifications']);
