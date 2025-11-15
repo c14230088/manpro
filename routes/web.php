@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LabsController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ComponentsController;
 use App\Http\Controllers\DesksController;
 use App\Http\Controllers\ItemsController;
 
@@ -38,6 +39,10 @@ Route::prefix('admin')->group(function () {
     Route::get('/items/unaffiliated', [ItemsController::class, 'getUnaffiliatedItems'])->name('admin.items.unaffiliated');
     Route::post('/desks/{desk}/items', [DesksController::class, 'storeItems'])->name('admin.desks.store.items');
 
+    Route::get('/items/{item}/details', [ItemsController::class, 'getItemDetails'])->name('admin.items.details');
+    Route::get('/components/{component}/details', [ComponentsController::class, 'getComponentDetails'])->name('admin.components.details');
+
     Route::patch('/items/{item}/condition', [ItemsController::class, 'updateCondition'])->name('admin.items.updateCondition');
+    Route::patch('/components/{component}/condition', [ComponentsController::class, 'updateComponentCondition'])->name('admin.items.updateComponentCondition');
     Route::post('/items/{item}/attach-desk/{desk}', [ItemsController::class, 'attachToDesk'])->name('admin.items.attachToDesk');
 });

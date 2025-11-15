@@ -21,11 +21,24 @@ class UnitController extends Controller
     {
         return Socialite::driver('google')->redirect();
     }
-    
+
     function routeAdmin(Request $request)
     {
         $user = Socialite::driver('google')->stateless()->user(); //biarkan error, tpi jalan kok
-        if (strpos($user->email, '@john.petra.ac.id') === false && strpos($user->email, '@peter.petra.ac.id') === false) {
+
+        $allowed = [
+            '@john.petra.ac.id',
+            '@peter.petra.ac.id'
+        ];
+
+        $isAllowed = false;
+        foreach ($allowed as $domain) {
+            if (str_ends_with($user->email, $domain)) {
+                $isAllowed = true;
+                break;
+            }
+        }
+        if (!$isAllowed) {
             return redirect()->route('user.login')->with('error', 'Mohon gunakan email Petra dengan @john.petra.ac.id atau @peter.petra.ac.id');
         }
 
@@ -42,7 +55,7 @@ class UnitController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'unit_id' => $mahasiswaUnit->id,
-                'id'=> Str::uuid(30),
+                'id' => Str::uuid(30),
             ]
         );
 

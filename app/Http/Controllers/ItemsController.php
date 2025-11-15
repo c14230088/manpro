@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\DB;
 
 class ItemsController extends Controller
 {
-    public function getItems(){
+    public function getItems()
+    {
         $items = Items::all();
         return response()->json($items);
     }
@@ -34,10 +35,22 @@ class ItemsController extends Controller
 
         return response()->json($available_items);
     }
+    public function getItemDetails(Items $item)
+    {
+        $item->load([
+            'type',
+            'desk.lab',
+            'specSetValues.specAttributes',
+            'components.type',
+            'components.specSetValues.specAttributes',
+        ]);
+
+        return response()->json($item);
+    }
     public function createItems(Request $request)
     {
         $data = $request->only(['is_component', 'name', 'serial_code', 'condition', 'type', 'specifications']);
-        $valid = Validator::make($data, [
+        $rules = [
             'is_component' => 'required|boolean',
             'name' => 'required|string|max:255',
             'serial_code' => [
@@ -59,7 +72,34 @@ class ItemsController extends Controller
             'specifications.*.attribute' => 'required|max:255',
             'specifications.*.value' => 'required|max:255',
 
-        ], [
+        ];
+
+        if ($data['is_component'] == '0') { // berupa Item
+            $rules['new_components'] = 'nullable|array';
+            $rules['new_components.*.name'] = 'required|string|max:255';
+            $rules['new_components.*.serial_code'] = [
+                'required',
+                'string',
+                'max:255',
+                'distinct', // serial code unik di dalam array
+                // Cek keunikan di DB
+                function ($attribute, $value, $fail) {
+                    // $attribute akan menjadi "new_components.0.serial_code", kita cek $value
+                    $existsInItems = Items::where('serial_code', $value)->exists();
+                    $existsInComponents = Components::where('serial_code', $value)->exists();
+
+                    if ($existsInItems) $fail("Serial code komponen {$value} sudah terdaftar sebagai Item.");
+                    if ($existsInComponents) $fail("Serial code komponen {$value} sudah terdaftar sebagai Component.");
+                },
+            ];
+            $rules['new_components.*.condition'] = 'required|boolean';
+            $rules['new_components.*.type'] = 'required';
+            $rules['new_components.*.specifications'] = 'nullable|array';
+            $rules['new_components.*.specifications.*.attribute'] = 'required|max:255';
+            $rules['new_components.*.specifications.*.value'] = 'required|max:255';
+        }
+
+        $valid = Validator::make($data, $rules, [
             'is_component.required' => 'Mohon pilih jenis barang (Item atau Component).',
             'is_component.boolean' => 'Pilihan jenis barang hanya ada Item atau Component.',
 
@@ -83,6 +123,12 @@ class ItemsController extends Controller
 
             'specifications.*.value.required' => 'Setiap baris spesifikasi harus memiliki Nilai.',
             'specifications.*.value.max' => 'Value dari Spesifikasi barang tidak boleh lebih dari :max karakter.',
+
+            'new_components.*.name.required' => 'Nama Komponen baru di Item ini tidak boleh kosong.',
+            'new_components.*.serial_code.required' => 'Serial Code Komponen baru di Item ini tidak boleh kosong.',
+            'new_components.*.serial_code.distinct' => 'Ada Serial Code Komponen baru di Item ini yang duplikat.',
+            'new_components.*.condition.required' => 'Kondisi Komponen baru di Item ini harus dipilih.',
+            'new_components.*.type.required' => 'Tipe Komponen baru di Item ini harus dipilih.',
         ]);
 
         if ($valid->fails()) {
@@ -110,6 +156,24 @@ class ItemsController extends Controller
                     'condition' => $data['condition'],
                     'type_id' => $typeId,
                 ]);
+
+                $newComponentsData = $data['new_components'] ?? [];
+                if (!empty($newComponentsData)) {
+                    foreach ($newComponentsData as $compData) {
+                        $compTypeId = $this->getOrCreateType($compData['type']);
+
+                        $newComp = Components::create([
+                            'name' => $this->upperWords($compData['name']),
+                            'serial_code' => $compData['serial_code'],
+                            'condition' => $compData['condition'],
+                            'type_id' => $compTypeId,
+                            'item_id' => $barang->id, // Langsung kaitkan ke Item parent
+                        ]);
+
+                        // Proses Spesifikasi untuk Komponen (Child)
+                        $this->processSpecifications($newComp, $compData['specifications'] ?? []);
+                    }
+                }
             } else if ($data['is_component'] == true) {
                 $barang = Components::create([
                     'name' => $data['name'],
@@ -344,5 +408,24 @@ class ItemsController extends Controller
         }
 
         return $specValue->id;
+    }
+    private function processSpecifications($model, $specifications)
+    {
+        if (empty($specifications) || !is_array($specifications)) {
+            return;
+        }
+
+        foreach ($specifications as $specRow) {
+            if (empty($specRow['attribute']) || empty($specRow['value'])) {
+                continue;
+            }
+
+            $specValueId = $this->getOrCreateSpecification(
+                $specRow['attribute'],
+                $specRow['value']
+            );
+
+            $model->specSetValues()->attach($specValueId);
+        }
     }
 }
