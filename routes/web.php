@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ComponentsController;
 use App\Http\Controllers\DesksController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\RepairController;
 
 Route::get('/', [UnitController::class, 'login'])->name('user.login');
 Route::get('/processLogin/auth/google', [UnitController::class, 'processLogin'])->name('user.processLogin');
@@ -34,15 +35,19 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/items', [AdminController::class, 'items'])->name('admin.items');
     Route::post('/items', [ItemsController::class, 'createItems'])->name('admin.items.create');
+    Route::post('/items/set', [ItemsController::class, 'createItemSet'])->name('admin.items.set.create');
 
     Route::get('/items/filters', [ItemsController::class, 'getItemFilters'])->name('admin.items.filters'); // return all types dan all specsAttribute beserta valuesnya
     Route::get('/items/unaffiliated', [ItemsController::class, 'getUnaffiliatedItems'])->name('admin.items.unaffiliated');
     Route::post('/desks/{desk}/items', [DesksController::class, 'storeItems'])->name('admin.desks.store.items');
-
+    
     Route::get('/items/{item}/details', [ItemsController::class, 'getItemDetails'])->name('admin.items.details');
     Route::get('/components/{component}/details', [ComponentsController::class, 'getComponentDetails'])->name('admin.components.details');
-
+    
     Route::patch('/items/{item}/condition', [ItemsController::class, 'updateCondition'])->name('admin.items.updateCondition');
     Route::patch('/components/{component}/condition', [ComponentsController::class, 'updateComponentCondition'])->name('admin.items.updateComponentCondition');
     Route::post('/items/{item}/attach-desk/{desk}', [ItemsController::class, 'attachToDesk'])->name('admin.items.attachToDesk');
+    
+    // repair
+    Route::post('/item/items/repair', [RepairController::class, 'applyRepair'])->name('admin.items.repair');
 });

@@ -15,6 +15,9 @@ class Items extends Model
         'name',
         'serial_code',
         'condition',
+        'produced_at',
+        
+        'set_id',
         'type_id',
         'unit_id',
         'desk_id',
@@ -44,6 +47,10 @@ class Items extends Model
     {
         return $this->belongsTo(Type::class, 'type_id');
     }
+    public function set()
+    {
+        return $this->belongsTo(Set::class, 'set_id');
+    }
 
     public function tool_specs()
     {
@@ -62,5 +69,10 @@ class Items extends Model
             ->withPivot('id')
             ->withTimestamps()
             ->using(Tool_spec::class);
+    }
+    
+    public function repairs()
+    {
+        return $this->morphMany(Repair::class, 'itemable');
     }
 }

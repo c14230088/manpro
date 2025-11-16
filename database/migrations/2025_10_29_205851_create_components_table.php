@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('serial_code')->unique();
             $table->boolean('condition')->comment('0: rusak | 1: bagus');
 
+            $table->timestamp('produced_at')->nullable(); // kapan dibuatnya item ini.
+
             $table->uuid('type_id');
             $table->foreign('type_id')->references('id')->on('types')->onDelete('cascade');
 

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->uuid('unit_id')->nullable(); //ptik, uppk, kalab, asdos, aslab, mhsw biasa
-            
+
             // $table->timestamp('email_verified_at')->nullable();
             // $table->string('password'); //pake akun google aja, atau mau kasih password lagi? password gunanya jika butuh authentikasi lebih
 
@@ -32,11 +32,13 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->uuid('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
             $table->integer('last_activity')->index();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -27,12 +27,12 @@ class UnitSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(30),
-                'name' => 'Prodi Informatika',
+                'name' => 'PRODI INFORMATIKA',
                 'description' => 'Program Studi Informatika',
             ],
             [
                 'id' => Str::uuid(30),
-                'name' => 'Mahasiswa',
+                'name' => 'MAHASISWA',
                 'description' => 'Mahasiswa Petra',
             ],
         ];

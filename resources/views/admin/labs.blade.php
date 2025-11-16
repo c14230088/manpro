@@ -941,7 +941,6 @@
             const closeButtonHeader = document.getElementById('layout-modal-close-button');
             const closeButtonFooter = document.getElementById('layout-modal-footer-close-button');
 
-            // PERBAIKAN: Perbesar Modal Detail (Modal 1)
             if (layoutModalArea) {
                 layoutModalArea.classList.remove('max-w-3xl');
                 layoutModalArea.classList.add('max-w-5xl');
@@ -977,7 +976,6 @@
             if (closeButtonFooter) closeButtonFooter.addEventListener('click', window.hideLayoutModal);
             if (overlay) {
                 overlay.addEventListener('click', function(event) {
-                    // PERBAIKAN: Cek jika target adalah overlay, BUKAN area modal atau anaknya
                     if (event.target === overlay) { 
                         window.hideLayoutModal();
                     }
@@ -1046,7 +1044,6 @@
                 addItemCancelBtn.addEventListener('click', closeAddItemModal);
                 addItemSaveBtn.addEventListener('click', submitAddItems);
 
-                // PERBAIKAN 2: Tambahkan listener ke overlay modal KEDUA
                 if (addItemModalOverlay) {
                     addItemModalOverlay.addEventListener('click', function(event) {
                         // Cek jika target adalah overlay, BUKAN area modal atau anaknya

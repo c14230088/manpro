@@ -7,10 +7,10 @@
         <div class="m-2">
             <div class=" flex">
                 <h1 class="font-bold text-xl">Welcome</h1>
-                {{-- <h1 class="font-bold text-xl uppercase">, {{ $name }}</h1> --}}
+                <h1 class="font-bold text-xl uppercase">, {{ $name }}</h1>
             </div>
             <div>
-                {{-- <h1 class=" text-gray-400 font-bold text-sm">Dari Unit  {{ $divisi }}</h1> --}}
+                <h1 class=" text-gray-400 font-bold text-sm">Dari Unit  {{ $unit }}</h1>
             </div>
         </div>
 @endsection

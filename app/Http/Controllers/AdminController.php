@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\SpecAttributes;
 use Database\Seeders\specification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 
 class AdminController extends Controller
@@ -18,8 +19,8 @@ class AdminController extends Controller
 
     public static function dashboard()
     {
-        // AUTH login, truws ambil name and unit->name
-        return view('admin.dashboard');
+        $admin = Auth::user();
+        return view('admin.dashboard', ['name' => $admin->name, 'unit' => $admin->unit->name]);
     }
 
     public static function labs()
@@ -30,6 +31,10 @@ class AdminController extends Controller
     }
 
     public function items(Request $request)
+        // BELUM UPDATE LOGIC UNTUK STATUS dan LOKASI PERBAIKAN
+        // jika dari item.repairs ada 1 repair yang punya status == 2 atau 3, 
+        // maka lokasi berada di tempat perbaikan dan di blade harus ganti warna label dan tulisan
+        // SERTA KONDISI item dan component harus diupdate jadi "Dalam Perbaikan" atau berdasarkan repair->status (pending or progress) instead of bagus or rusak
     {
         $types = Type::orderBy('name')->get();
         $specification = SpecAttributes::with('specValues')->orderBy('name')->get();

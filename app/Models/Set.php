@@ -10,14 +10,18 @@ class Set extends Model
     use HasUuids;
 
     protected $fillable = [
-        // Set hanya catat "kekeluargaan" item, dan 
+        // Set hanya catat "kekeluargaan" item
         'id',
         'name',
-        'producted_at', // antara period_id atau ini
+        'note',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
     ];
+    public function items()
+    {
+        return $this->hasMany(Items::class);
+    }
 }

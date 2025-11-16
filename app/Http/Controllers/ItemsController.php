@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Set;
+use App\Models\Labs;
 use App\Models\Type;
 use App\Models\Desks;
+use App\Models\Items;
 use App\Models\Components;
 use Illuminate\Support\Str;
 use App\Models\SpecSetValue;
-use App\Models\Items;
-use App\Models\Labs;
 use Illuminate\Http\Request;
 use App\Models\SpecAttributes;
 use function Pest\Laravel\json;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 
 class ItemsController extends Controller
 {
@@ -47,9 +48,79 @@ class ItemsController extends Controller
 
         return response()->json($item);
     }
+
+    public function createItemSet(Request $request)
+    {
+        Log::info($request->all());
+        // MASIH KURANG CREATE COMPONENTS DI DALAM ITEM !
+        $data = $request->validate([
+            'set_name' => 'required|string|max:255',
+            'set_note' => 'nullable|string',
+            'items' => 'required|array|size:4',
+            'items.*' => 'required|array'
+        ], [
+            'set_name.required' => 'Nama Set wajib diisi.',
+            'items.required' => 'Data item wajib diisi.',
+            'items.array' => 'Data item harus berupa array.',
+            'items.size' => 'Set harus terdiri dari 4 item.',
+        ]);
+
+        $itemTemplates = $request->input('items'); // Ambil array 4 item
+        $createdItems = [];
+
+        DB::beginTransaction();
+        try {
+            $set = Set::create([
+                'name' => $this->upperWords($data['set_name']),
+                'note' => $data['set_note'] ?? null,
+            ]);
+
+            foreach ($itemTemplates as $index => $itemData) {
+
+                $newItemData = $itemData;
+
+                $newItemData['set_id'] = $set->id;
+
+                $itemRequest = new Request($newItemData);
+                $itemRequest->headers->set('Accept', 'application/json');
+
+                $response = $this->createItems($itemRequest);
+
+                $responseContent = json_decode($response->getContent(), true);
+
+                if (!$response->isSuccessful()) {
+                    $errorMessage = $responseContent['message'] ?? 'Terjadi kesalahan tidak diketahui.';
+
+                    $itemNumber = $index + 1;
+                    $sn = $newItemData['serial_code'] ?? 'SN-KOSONG';
+                    throw new \Exception("Gagal membuat item ke-{$itemNumber} (SN: {$sn}): {$errorMessage}");
+                }
+
+                $createdItems[] = $responseContent['data'];
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Set '{$set->name}' dengan 4 item berhasil dibuat!",
+                'set_id' => $set->id,
+                'created_items' => $createdItems
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error createItemSet: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function createItems(Request $request)
     {
-        $data = $request->only(['is_component', 'name', 'serial_code', 'condition', 'type', 'specifications']);
+        $data = $request->only(['is_component', 'name', 'serial_code', 'condition', 'type', 'specifications', 'produced_at', 'set_id']);
         $rules = [
             'is_component' => 'required|boolean',
             'name' => 'required|string|max:255',
@@ -65,6 +136,7 @@ class ItemsController extends Controller
                     if ($existsInComponents) $fail("Serial code {$attribute} sudah terdaftar sebagai Component.");
                 },
             ],
+            'produced_at' => 'nullable|date',
             'condition' => 'required|boolean',
             'type' => 'required', // Bisa UUID atau string dengan prefix 'new::' kalau type baru
 
@@ -72,6 +144,7 @@ class ItemsController extends Controller
             'specifications.*.attribute' => 'required|max:255',
             'specifications.*.value' => 'required|max:255',
 
+            'set_id' => 'nullable|uuid|exists:sets,id',
         ];
 
         if ($data['is_component'] == '0') { // berupa Item
@@ -97,6 +170,7 @@ class ItemsController extends Controller
             $rules['new_components.*.specifications'] = 'nullable|array';
             $rules['new_components.*.specifications.*.attribute'] = 'required|max:255';
             $rules['new_components.*.specifications.*.value'] = 'required|max:255';
+            $rules['new_components.*.produced_at'] = 'nullable|date';
         }
 
         $valid = Validator::make($data, $rules, [
@@ -110,6 +184,10 @@ class ItemsController extends Controller
             'serial_code.required' => 'Mohon lengkapi Serial code barang.',
             'serial_code.string' => 'Serial code harus berupa teks.',
             'serial_code.max' => 'Serial code tidak boleh lebih dari :max karakter.',
+
+            'produced_at.date' => 'Tanggal produksi (item Dibuat) tidak valid.',
+            'set_id.uuid' => 'Format Set ID tidak valid.',
+            'set_id.exists' => 'Set ID yang dipilih tidak ditemukan.',
 
             'condition.required' => 'Mohon tentukan kondisi barang.',
             'condition.boolean' => 'Kondisi barang hanya boleh berupa Rusak atau Bagus.',
@@ -129,6 +207,7 @@ class ItemsController extends Controller
             'new_components.*.serial_code.distinct' => 'Ada Serial Code Komponen baru di Item ini yang duplikat.',
             'new_components.*.condition.required' => 'Kondisi Komponen baru di Item ini harus dipilih.',
             'new_components.*.type.required' => 'Tipe Komponen baru di Item ini harus dipilih.',
+            'new_components.*.produced_at.date' => 'Tanggal produksi Komponen (Komponen Dibuat) tidak valid.',
         ]);
 
         if ($valid->fails()) {
@@ -154,6 +233,8 @@ class ItemsController extends Controller
                     'name' => $data['name'],
                     'serial_code' => $data['serial_code'],
                     'condition' => $data['condition'],
+                    'produced_at' => $data['produced_at'] ?? null,
+                    'set_id' => $data['set_id'] ?? null,
                     'type_id' => $typeId,
                 ]);
 
@@ -166,6 +247,7 @@ class ItemsController extends Controller
                             'name' => $this->upperWords($compData['name']),
                             'serial_code' => $compData['serial_code'],
                             'condition' => $compData['condition'],
+                            'produced_at' => $compData['produced_at'] ?? null,
                             'type_id' => $compTypeId,
                             'item_id' => $barang->id, // Langsung kaitkan ke Item parent
                         ]);
@@ -179,11 +261,13 @@ class ItemsController extends Controller
                     'name' => $data['name'],
                     'serial_code' => $data['serial_code'],
                     'condition' => $data['condition'],
+                    'produced_at' => $data['produced_at'] ?? null,
                     'type_id' => $typeId,
                 ]);
             }
 
             if (is_null($barang)) {
+                DB::rollBack();
                 if ($request->wantsJson()) {
                     return response()->json(['success' => false, 'message' => 'Terjadi Kesalahan saat proses menyimpan Barang.'], 500);
                 }
@@ -211,7 +295,7 @@ class ItemsController extends Controller
             DB::commit();
 
             if ($request->wantsJson()) {
-                return response()->json(['success' => true, 'message' => 'Barang berhasil ditambahkan!']);
+                return response()->json(['success' => true, 'message' => 'Barang berhasil ditambahkan!', 'data' => $barang]);
             }
 
             return redirect()->route('admin.items.index')->with('success', 'Barang berhasil ditambahkan!');

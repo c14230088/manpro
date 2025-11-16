@@ -15,6 +15,8 @@ class Components extends Model
         'name',
         'serial_code',
         'condition',
+        'produced_at',
+
         'type_id',
         'unit_id',
         'item_id',
@@ -50,5 +52,9 @@ class Components extends Model
             ->withPivot('id')
             ->withTimestamps()
             ->using(Tool_spec::class);
+    }
+    public function repairs()
+    {
+        return $this->morphMany(Repair::class, 'itemable');
     }
 }

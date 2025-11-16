@@ -17,6 +17,11 @@ class UnitController extends Controller
         return view('login', ['title' => 'User | Login']);
     }
 
+    private function upperWords(?string $text): string
+    {
+        return strtoupper(trim($text ?? ''));
+    }
+
     function processLogin()
     {
         return Socialite::driver('google')->redirect();
@@ -42,9 +47,9 @@ class UnitController extends Controller
             return redirect()->route('user.login')->with('error', 'Mohon gunakan email Petra dengan @john.petra.ac.id atau @peter.petra.ac.id');
         }
 
-        $mahasiswaUnit = Unit::where('name', 'Mahasiswa')->first();
+        $mahasiswaUnit = Unit::where('name', 'MAHASISWA')->first();
         if (!$mahasiswaUnit) {
-            return redirect()->route('user.login')->with('error', 'Mohon gunakan email Petra dengan @john.petra.ac.id atau @peter.petra.ac.id');
+            return redirect()->route('user.login')->with('error', 'Unit Mahasiswa tidak ditemukan, silakan hubungi admin.');
         }
 
         $user = User::firstOrCreate(
@@ -62,7 +67,13 @@ class UnitController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('admin.labs');
+        // route ke user.* jangan ke ADMIN (kalau bukan admin, cek apakah sudah ada unit_id, kalo belum berarti new mahasiswa.)
+        // ganti pake middleware
+        if ($user->unit_id === $mahasiswaUnit->id) {
+            return redirect()->route('user.booking.form');
+        } else {
+            return redirect()->route('admin.labs');
+        }
     }
 
 

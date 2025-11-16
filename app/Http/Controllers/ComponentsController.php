@@ -33,7 +33,7 @@ class ComponentsController extends Controller
                 'new_condition' => $component->condition
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error updateComponentCondition: ' . $e->getMessage());
+            Log::error('Error updateComponentCondition: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Gagal mengubah kondisi komponen.'], 500);
         }
     }
