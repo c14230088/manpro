@@ -51,8 +51,6 @@ class ItemsController extends Controller
 
     public function createItemSet(Request $request)
     {
-        Log::info($request->all());
-        // MASIH KURANG CREATE COMPONENTS DI DALAM ITEM !
         $data = $request->validate([
             'set_name' => 'required|string|max:255',
             'set_note' => 'nullable|string',
@@ -120,7 +118,7 @@ class ItemsController extends Controller
 
     public function createItems(Request $request)
     {
-        $data = $request->only(['is_component', 'name', 'serial_code', 'condition', 'type', 'specifications', 'produced_at', 'set_id']);
+        $data = $request->only(['is_component', 'name', 'serial_code', 'condition', 'type', 'specifications', 'produced_at', 'set_id', 'new_components']);
         $rules = [
             'is_component' => 'required|boolean',
             'name' => 'required|string|max:255',

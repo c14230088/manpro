@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Labs;
+use App\Models\Type;
 use App\Models\Items;
 use App\Models\Repair;
 use App\Models\Booking;
 use App\Models\Components;
+use App\Models\SpecAttributes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,7 +27,17 @@ class RepairController extends Controller
         }])
             ->orderBy('reported_at', 'desc')
             ->get();
-        return view('admin.repairs', ['repairs' => $repairs]);
+
+        $labs = Labs::all();
+        $types = Type::all();
+        $specification = SpecAttributes::with('specValues')->get();
+
+        return view('admin.repairs', [
+            'repairs'       => $repairs,
+            'labs'          => $labs,
+            'types'         => $types,
+            'specification' => $specification
+        ]);
     }
 
     public function applyRepair(Request $request)
@@ -113,12 +126,17 @@ class RepairController extends Controller
     }
 
     public function updateRepairStatus(Request $request, Repair $repair)
-    // masih belum benar, jika status item mau diupdate ke completed, harus tanya apakah hasil repair sukses atau tidak
     // jika parent kondisi sukses maka semua child juga sukses, begitu juga sebaliknya
     {
         $validated = $request->validate([
             'status' => 'required|integer|in:0,1,2',
-            'condition' => 'required|boolean' // true = sudah bagus, false = masih rusak (gagal perbaikan)
+            'is_successful' => 'nullable|boolean', // true = sudah bagus, false = masih rusak (gagal perbaikan)
+            'repair_notes' => 'nullable|string|max:255'
+        ], [
+            'status.in' => 'Status perbaikan tidak valid. Hanya boleh Pending, In Progress, atau Completed.',
+            'is_successful.boolean' => 'Status keberhasilan perbaikan tidak valid, hanya Sukses dan Gagal.',
+            'repair_notes.string' => 'Catatan perbaikan harus berupa teks.',
+            'repair_notes.max' => 'Catatan perbaikan maksimal 255 karakter.'
         ]);
 
         DB::beginTransaction();
@@ -146,6 +164,18 @@ class RepairController extends Controller
                 if (!$repair->started_at) {
                     $repair->started_at = $currentTime;
                 }
+                if (!isset($validated['is_successful'])) {
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Status keberhasilan (Sukses atau Gagal) perbaikan harus diisi saat menyelesaikan perbaikan.',
+                        ], 400);
+                    }
+                    return redirect()->back()->with('error', 'Status keberhasilan (Sukses atau Gagal) perbaikan harus diisi saat menyelesaikan perbaikan.');
+                }
+
+                $repair->is_successful = $validated['is_successful'];
+                $repair->repair_notes = $validated['repair_notes'] ?? '-';
             }
             $repair->save(); // item parent repair
 
@@ -173,6 +203,9 @@ class RepairController extends Controller
                             $childRepair->status = 2; // Ikut Selesai
                             $childRepair->started_at = $repair->started_at;
                             $childRepair->completed_at = $repair->completed_at;
+
+                            $childRepair->is_successful = $repair->is_successful;
+                            $childRepair->repair_notes = 'Catatan Reparasi Item Induk: ' . $repair->repair_notes;
                         }
                         $childRepair->save();
                     }

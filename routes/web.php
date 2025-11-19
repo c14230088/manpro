@@ -36,7 +36,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/items', [AdminController::class, 'items'])->name('admin.items');
     Route::post('/items', [ItemsController::class, 'createItems'])->name('admin.items.create');
     Route::post('/items/set', [ItemsController::class, 'createItemSet'])->name('admin.items.set.create');
-
+    
     Route::get('/items/filters', [ItemsController::class, 'getItemFilters'])->name('admin.items.filters'); // return all types dan all specsAttribute beserta valuesnya
     Route::get('/items/unaffiliated', [ItemsController::class, 'getUnaffiliatedItems'])->name('admin.items.unaffiliated');
     Route::post('/desks/{desk}/items', [DesksController::class, 'storeItems'])->name('admin.desks.store.items');
@@ -49,5 +49,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/items/{item}/attach-desk/{desk}', [ItemsController::class, 'attachToDesk'])->name('admin.items.attachToDesk');
     
     // repair
+    Route::get('/repairs', [RepairController::class, 'viewRepairs'])->name('admin.repairs');
+    Route::patch('/repairs/{repair}/status', [RepairController::class, 'updateRepairStatus'])->name('admin.repairs.updateStatus');
     Route::post('/item/items/repair', [RepairController::class, 'applyRepair'])->name('admin.items.repair');
 });

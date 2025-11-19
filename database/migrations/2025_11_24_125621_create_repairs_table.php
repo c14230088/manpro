@@ -21,6 +21,9 @@ return new class extends Migration
             $table->text('issue_description');
             $table->unsignedTinyInteger('status')->default('0')->comment('0: Pending | 1: In Progress | 2: Completed | 3: Terbawa karena Item induk sedang diperbaiki'); // pending, in_progress, completed
 
+            $table->boolean('is_successful')->nullable()->comment('null: belum selesai | true: perbaikan berhasil | false: perbaikan gagal');
+            $table->text('repair_notes')->nullable();
+
             $table->dateTime('reported_at')->nullable();
             $table->dateTime('started_at')->nullable();
             $table->dateTime('completed_at')->nullable();
