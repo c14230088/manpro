@@ -16,7 +16,7 @@ class Items extends Model
         'serial_code',
         'condition',
         'produced_at',
-        
+
         'set_id',
         'type_id',
         'unit_id',
@@ -36,11 +36,6 @@ class Items extends Model
     public function components()
     {
         return $this->hasMany(Components::class, 'item_id');
-    }
-
-    public function bookings()
-    {
-        return $this->morphMany(Booking::class, 'bookable');
     }
 
     public function type()
@@ -70,9 +65,30 @@ class Items extends Model
             ->withTimestamps()
             ->using(Tool_spec::class);
     }
-    
+
     public function repairs()
     {
-        return $this->morphMany(Repair::class, 'itemable');
+        return $this->morphToMany(
+            Repair::class,
+            'itemable',
+            'repairs_items',
+            'itemable_id',
+            'repair_id'
+        )
+            ->withPivot(['id', 'started_at', 'completed_at', 'issue_description', 'status', 'is_successful', 'repair_notes'])
+            ->using(Repairs_item::class);
+    }
+
+    public function bookings()
+    {
+        return $this->morphToMany(
+            Booking::class,
+            'bookable',
+            'bookings_items',
+            'bookable_id',
+            'booking_id'
+        )
+            ->withPivot(['id', 'type', 'returner_id', 'returned_at', 'returned_status', 'returned_detail'])
+            ->using(Bookings_item::class);
     }
 }

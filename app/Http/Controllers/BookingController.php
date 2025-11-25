@@ -12,7 +12,7 @@ class BookingController extends Controller
 {
     public function formBooking()
     {
-        return view('booking');
+        return view('user.booking');
     }
 
     /**

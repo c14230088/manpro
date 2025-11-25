@@ -11,16 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('permissions', function (Blueprint $table) {
+        Schema::create('permission_groups', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
             $table->text('description')->nullable();
-
-            $table->string('url'); // pakai url atau route name?
-            $table->enum('action', ['GET', 'POST', 'PATCH', "DELETE", "PUT"])->default('VIEW');
-
-            $table->uuid('permission_group_id')->nullable();
-            $table->foreign('permission_group_id')->references('id')->on('permission_groups')->onDelete('set null'); // instead of hapus, jadikan gapunya group parent saja
             $table->timestamps();
         });
     }
@@ -30,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('permissions');
+        Schema::dropIfExists('permission_groups');
     }
 };

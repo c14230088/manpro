@@ -4,7 +4,7 @@
 
 @section('body')
     <div class="flex flex-col md:flex-row w-full py-4 shadow-md items-center justify-center mb-5 px-6 md:px-4">
-        <h1 class="text-center text-4xl uppercase font-bold mb-2 md:mb-0">Tracking Perbaikan</h1>
+        <h1 class="text-center text-4xl uppercase font-bold mb-2 md:mb-0">Daftar Perbaikan</h1>
     </div>
 
     {{-- ========================================================= --}}
@@ -18,19 +18,19 @@
                 {{-- Status Perbaikan --}}
                 <div>
                     <label for="filter_repair_status" class="block text-sm font-semibold text-gray-700 mb-2">Status
-                        Perbaikan</label>
+                        Item</label>
                     <select id="filter_repair_status" class="filter-input" placeholder="Semua Status...">
                         <option value="">Semua Status</option>
                         <option value="0">Pending</option>
                         <option value="1">In Progress</option>
                         <option value="2">Completed</option>
-                        <option value="3">Terbawa (Parent)</option>
                     </select>
                 </div>
 
                 {{-- Lab --}}
                 <div>
-                    <label for="filter_lab_select" class="block text-sm font-semibold text-gray-700 mb-2">Laboratorium</label>
+                    <label for="filter_lab_select"
+                        class="block text-sm font-semibold text-gray-700 mb-2">Laboratorium</label>
                     <select id="filter_lab_select" class="filter-input" placeholder="Semua Lab...">
                         <option value="">Semua Laboratorium</option>
                         @foreach ($labs as $lab)
@@ -59,7 +59,6 @@
                     <select id="filter_spec_attr" class="filter-input" placeholder="Pilih Atribut...">
                         <option value="">Semua Atribut</option>
                         @foreach ($specification as $spec)
-                            {{-- Simpan values di data-values untuk di-load JS ke dropdown value --}}
                             <option value="{{ $spec->id }}" data-values='@json($spec->specValues)'>
                                 {{ $spec->name }}</option>
                         @endforeach
@@ -75,12 +74,11 @@
                     </select>
                 </div>
 
-                {{-- ⬇️ FILTER BARU: PELAPOR ⬇️ --}}
+                {{-- Pelapor --}}
                 <div>
                     <label for="filter_reporter" class="block text-sm font-semibold text-gray-700 mb-2">Pelapor</label>
                     <select id="filter_reporter" class="filter-input" placeholder="Semua Pelapor...">
                         <option value="">Semua Pelapor</option>
-                        {{-- Ambil unique reporter dari collection repairs --}}
                         @foreach ($repairs->unique('reported_by') as $r)
                             @if ($r->reporter)
                                 <option value="{{ $r->reporter->name }}">{{ $r->reporter->name }}</option>
@@ -88,8 +86,6 @@
                         @endforeach
                     </select>
                 </div>
-                {{-- ⬆️ ---------------------- ⬆️ --}}
-
             </div>
 
             {{-- Tombol Aksi Filter --}}
@@ -103,8 +99,7 @@
                         <button
                             class="relative z-[2] flex items-center rounded-r bg-primary px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-primary-800 active:shadow-lg"
                             type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                class="h-5 w-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
                                 <path fill-rule="evenodd"
                                     d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
                                     clip-rule="evenodd" />
@@ -145,171 +140,193 @@
                                     Lokasi / Lab</th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Keluhan</th>
+                                    Keluhan & Catatan</th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Pelapor</th>
+                                    Pelapor & Tiket</th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Status</th>
-                                {{-- ⬇️ KOLOM BARU ⬇️ --}}
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                     data-te-datatable-sortable="true">
-                                    Waktu Pengerjaan</th>
-                                {{-- ⬆️ ----------- ⬆️ --}}
+                                    Waktu</th>
                                 <th scope="col"
                                     class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse ($repairs as $repair)
+                            @foreach ($repairs as $repair)
+                                {{-- Merge Items dan Components dalam satu loop --}}
                                 @php
-                                    $item = $repair->itemable;
-                                    $isItem = $repair->itemable_type === 'App\Models\Items';
-                                    $itemName = $item->name ?? 'Unknown';
-                                    $itemCode = $item->serial_code ?? '-';
-                                    $itemTypeId = $item->type_id ?? '';
-                                    $itemTypeName = $item->type->name ?? 'N/A';
-
-                                    // Logic Lokasi & Lab ID untuk Filter
-                                    $labId = 'null';
-                                    $locationName = 'Gudang / Belum Terpasang';
-
-                                    if ($isItem) {
-                                        if ($item->desk) {
-                                            $labId = $item->desk->lab_id;
-                                            $locationName =
-                                                $item->desk->lab->name . ' - Meja ' . $item->desk->location;
-                                        }
-                                    } else {
-                                        // Component
-                                        if ($item->item && $item->item->desk) {
-                                            $labId = $item->item->desk->lab_id;
-                                            $locationName =
-                                                $item->item->desk->lab->name .
-                                                ' - Meja ' .
-                                                $item->item->desk->location;
-                                        }
-                                    }
-
-                                    // Logic Spesifikasi untuk Filter (Array of Spec IDs)
-                                    $specValueIds = [];
-                                    if ($item->specSetValues) {
-                                        $specValueIds = $item->specSetValues->pluck('id')->toArray();
-                                    }
-                                    $specJson = json_encode($specValueIds);
-
-                                    // Badge Status
-                                    $statusLabel = '';
-                                    $statusClass = '';
-                                    switch ($repair->status) {
-                                        case 0:
-                                            $statusLabel = 'Pending';
-                                            $statusClass = 'bg-gray-100 text-gray-800';
-                                            break;
-                                        case 1:
-                                            $statusLabel = 'In Progress';
-                                            $statusClass = 'bg-blue-100 text-blue-800';
-                                            break;
-                                        case 2:
-                                            $statusLabel = 'Completed';
-                                            $statusClass = 'bg-green-100 text-green-800';
-                                            break;
-                                        case 3:
-                                            $statusLabel = 'Terbawa';
-                                            $statusClass = 'bg-purple-100 text-purple-800';
-                                            break;
-                                    }
+                                    // Tambahkan flag untuk membedakan
+                                    $mergedItems = $repair->items
+                                        ->map(function ($item) {
+                                            $item->is_component = false;
+                                            return $item;
+                                        })
+                                        ->concat(
+                                            $repair->components->map(function ($comp) {
+                                                $comp->is_component = true;
+                                                return $comp;
+                                            }),
+                                        );
                                 @endphp
 
-                                {{-- ⬇️ Tambahkan data-reporter untuk filter JS ⬇️ --}}
-                                <tr class="repair-row" data-repair-status="{{ $repair->status }}"
-                                    data-lab-id="{{ $labId }}" data-type-id="{{ $itemTypeId }}"
-                                    data-specs="{{ $specJson }}"
-                                    data-reporter="{{ $repair->reporter->name ?? '' }}"
-                                    data-search-text="{{ strtolower($itemName . ' ' . $itemCode . ' ' . ($repair->reporter->name ?? '') . ' ' . $repair->issue_description) }}">
+                                @foreach ($mergedItems as $item)
+                                    @php
+                                        $pivot = $item->pivot;
 
-                                    {{-- Kolom 1: Barang --}}
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-bold text-gray-900">{{ $itemName }}</div>
-                                        <div class="text-xs text-gray-500 font-mono">{{ $itemCode }}</div>
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700 mt-1">
-                                            {{ $isItem ? 'Item' : 'Comp' }}: {{ $itemTypeName }}
-                                        </span>
-                                    </td>
+                                        $itemName = $item->name ?? 'Unknown';
+                                        $itemCode = $item->serial_code ?? '-';
+                                        $itemTypeId = $item->type_id ?? '';
+                                        $itemTypeName = $item->type->name ?? 'N/A';
 
-                                    {{-- Kolom 2: Lokasi --}}
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-700">{{ $locationName }}</div>
-                                    </td>
+                                        // Logic Lokasi
+                                        $labId = 'null';
+                                        $locationName = 'Gudang / Belum Terpasang';
+                                        if (!$item->is_component) {
+                                            if ($item->desk) {
+                                                $labId = $item->desk->lab_id;
+                                                $locationName =
+                                                    $item->desk->lab->name . ' - Meja ' . $item->desk->location;
+                                            }
+                                        } else {
+                                            if ($item->item && $item->item->desk) {
+                                                $labId = $item->item->desk->lab_id;
+                                                $locationName =
+                                                    $item->item->desk->lab->name .
+                                                    ' - Meja ' .
+                                                    $item->item->desk->location;
+                                            }
+                                        }
 
-                                    {{-- Kolom 3: Masalah --}}
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-600 max-w-xs whitespace-normal break-words">
-                                            {{ Str::limit($repair->issue_description, 50) }}
-                                        </div>
-                                    </td>
+                                        // Logic Spesifikasi Filter
+                                        $specValueIds = [];
+                                        if ($item->specSetValues) {
+                                            $specValueIds = $item->specSetValues->pluck('id')->toArray();
+                                        }
+                                        $specJson = json_encode($specValueIds);
 
-                                    {{-- Kolom 4: Pelapor --}}
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{ $repair->reporter->name ?? 'System' }}</div>
-                                        <div class="text-xs text-gray-500">Lapor:
-                                            {{ $repair->reported_at ? \Carbon\Carbon::parse($repair->reported_at)->format('d M Y, H:i') : '-' }}
-                                        </div>
-                                    </td>
+                                        // Badge Status (Dari Pivot)
+                                        $statusLabel = '';
+                                        $statusClass = '';
+                                        switch ($pivot->status) {
+                                            case 0:
+                                                $statusLabel = 'Pending';
+                                                $statusClass = 'bg-gray-100 text-gray-800';
+                                                break;
+                                            case 1:
+                                                $statusLabel = 'In Progress';
+                                                $statusClass = 'bg-blue-100 text-blue-800';
+                                                break;
+                                            case 2:
+                                                $statusLabel = $pivot->is_successful
+                                                    ? 'Completed (Sukses)'
+                                                    : 'Completed (Gagal)';
+                                                $statusClass = $pivot->is_successful
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800';
+                                                break;
+                                            case 3:
+                                                $statusLabel = 'Terbawa';
+                                                $statusClass = 'bg-purple-100 text-purple-800';
+                                                break;
+                                        }
+                                    @endphp
 
-                                    {{-- Kolom 5: Status --}}
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">
-                                            {{ $statusLabel }}
-                                        </span>
-                                    </td>
+                                    <tr class="repair-row" data-repair-status="{{ $pivot->status }}"
+                                        data-lab-id="{{ $labId }}" data-type-id="{{ $itemTypeId }}"
+                                        data-specs="{{ $specJson }}"
+                                        data-reporter="{{ $repair->reporter->name ?? '' }}"
+                                        data-search-text="{{ strtolower($itemName . ' ' . $itemCode . ' ' . ($repair->reporter->name ?? '') . ' ' . $pivot->issue_description . ' ' . $repair->name) }}">
 
-                                    {{-- ⬇️ Kolom 6: Waktu Pengerjaan (BARU) ⬇️ --}}
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex flex-col gap-1">
-                                            <div class="text-xs text-gray-600">
-                                                <span class="font-semibold text-gray-500">Mulai:</span>
-                                                {{ $repair->started_at ? \Carbon\Carbon::parse($repair->started_at)->format('d/m/y H:i') : '-' }}
+                                        {{-- Kolom 1: Barang --}}
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-bold text-gray-900">{{ $itemName }}</div>
+                                            <div class="text-xs text-gray-500 font-mono">{{ $itemCode }}</div>
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700 mt-1">
+                                                {{ $item->is_component ? 'Component' : 'Item' }}: {{ $itemTypeName }}
+                                            </span>
+                                        </td>
+
+                                        {{-- Kolom 2: Lokasi --}}
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-700">{{ $locationName }}</div>
+                                        </td>
+
+                                        {{-- Kolom 3: Keluhan & Notes (Dari Pivot) --}}
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-900 font-medium mb-1">Keluhan:</div>
+                                            <div class="text-xs text-gray-600 max-w-xs whitespace-normal break-words mb-2">
+                                                {{ Str::limit($pivot->issue_description, 60) }}
                                             </div>
-                                            <div class="text-xs text-gray-600">
-                                                <span class="font-semibold text-gray-500">Selesai:</span>
-                                                {{ $repair->completed_at ? \Carbon\Carbon::parse($repair->completed_at)->format('d/m/y H:i') : '-' }}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    {{-- ⬆️ ------------------------------ ⬆️ --}}
+                                            @if ($pivot->repair_notes)
+                                                <div class="text-xs text-gray-500">
+                                                    <span class="font-semibold">Catatan:</span>
+                                                    {{ Str::limit($pivot->repair_notes, 50) }}
+                                                </div>
+                                            @endif
+                                        </td>
 
-                                    {{-- Kolom 7: Aksi --}}
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <button type="button"
-                                            class="btn-open-update-status px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 text-xs font-semibold rounded-md shadow-sm focus:outline-none transition-colors"
-                                            data-repair-id="{{ $repair->id }}"
-                                            data-current-status="{{ $repair->status }}"
-                                            data-item-name="{{ $itemName }}"
-                                            data-issue="{{ $repair->issue_description }}">
-                                            Update Status
-                                        </button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr id="no-data-row">
-                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">
-                                        Belum ada data perbaikan.
-                                    </td>
-                                </tr>
-                            @endforelse
-                            {{-- Row Khusus Jika Filter Tidak Menemukan Hasil --}}
-                            <tr id="filter-no-result" class="hidden">
-                                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
-                                    Tidak ada data yang cocok dengan filter Anda.
-                                </td>
-                            </tr>
+                                        {{-- Kolom 4: Pelapor & Tiket --}}
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ $repair->reporter->name ?? 'System' }}</div>
+                                            <div class="text-xs text-gray-400 mt-1" title="{{ $repair->name }}">Tiket:
+                                                {{ Str::limit($repair->name, 15) }}</div>
+                                        </td>
+
+                                        {{-- Kolom 5: Status (Dari Pivot) --}}
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">
+                                                {{ $statusLabel }}
+                                            </span>
+                                        </td>
+
+                                        {{-- Kolom 6: Waktu (Dari Pivot) --}}
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex flex-col gap-1">
+                                                <div class="text-xs text-gray-600">
+                                                    <span class="font-semibold text-gray-500">Lapor:</span>
+                                                    {{ $repair->created_at ? $repair->created_at->format('d/m H:i') : '-' }}
+                                                </div>
+                                                @if ($pivot->started_at)
+                                                    <div class="text-xs text-gray-600">
+                                                        <span class="font-semibold text-gray-500">Mulai:</span>
+                                                        {{ \Carbon\Carbon::parse($pivot->started_at)->format('d/m H:i') }}
+                                                    </div>
+                                                @endif
+                                                @if ($pivot->completed_at)
+                                                    <div class="text-xs text-gray-600">
+                                                        <span class="font-semibold text-gray-500">Selesai:</span>
+                                                        {{ \Carbon\Carbon::parse($pivot->completed_at)->format('d/m H:i') }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </td>
+
+                                        {{-- Kolom 7: Aksi --}}
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            {{-- Kirim ID Item (pivot owner) bukan ID Repair --}}
+                                            <button type="button"
+                                                class="btn-open-update-status px-3 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700 text-xs font-semibold rounded-md shadow-sm focus:outline-none transition-colors"
+                                                data-repair-id="{{ $repair->id }}"
+                                                data-itemable-id="{{ $item->id }}"
+                                                data-current-status="{{ $pivot->status }}"
+                                                data-current-success="{{ $pivot->is_successful }}"
+                                                data-current-notes="{{ $pivot->repair_notes }}"
+                                                data-item-name="{{ $itemName }}"
+                                                data-issue="{{ $pivot->issue_description }}">
+                                                Update
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -318,7 +335,7 @@
     </div>
 
     {{-- ========================================================= --}}
-    {{-- MODAL: Update Status Perbaikan --}}
+    {{-- MODAL: Update Status Perbaikan (Partial Update) --}}
     {{-- ========================================================= --}}
     <div id="update-status-modal" class="hidden" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[3000]"></div>
@@ -326,7 +343,7 @@
             <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col">
 
                 <div class="flex justify-between items-center p-4 border-b border-gray-200 rounded-t bg-gray-50">
-                    <h3 class="text-lg font-semibold text-gray-900">Update Status Perbaikan</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">Update Status Item</h3>
                     <button id="close-modal-btn" type="button" class="text-gray-400 hover:text-gray-600">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -335,21 +352,23 @@
                     </button>
                 </div>
 
-                <div class="p-6 space-y-4">
+                <div class="p-6 space-y-4 overflow-y-auto max-h-[80vh]">
                     <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                        <p class="text-sm text-blue-800 font-semibold mb-1">Item:</p>
-                        <p id="modal-item-name" class="text-sm text-gray-700 font-bold">Nama Item Disini</p>
-                        <p class="text-sm text-blue-800 font-semibold mt-2 mb-1">Masalah:</p>
-                        <p id="modal-issue" class="text-sm text-gray-600 italic">Deskripsi masalah...</p>
+                        <p class="text-xs text-blue-800 font-semibold mb-1">Barang:</p>
+                        <p id="modal-item-name" class="text-sm text-gray-700 font-bold">Nama Item</p>
+                        <p class="text-xs text-blue-800 font-semibold mt-2 mb-1">Masalah:</p>
+                        <p id="modal-issue" class="text-xs text-gray-600 italic">...</p>
                     </div>
 
                     <form id="update-status-form">
                         @csrf
                         @method('PATCH')
                         <input type="hidden" id="modal-repair-id" name="repair_id">
+                        <input type="hidden" id="modal-itemable-id" name="itemable_id">
 
+                        {{-- Select Status --}}
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Pilih Status Baru</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Status Baru</label>
                             <select id="modal-status-select" name="status" class="w-full">
                                 <option value="0">Pending (Menunggu)</option>
                                 <option value="1">In Progress (Sedang Dikerjakan)</option>
@@ -357,12 +376,38 @@
                             </select>
                         </div>
 
+                        {{-- Field Khusus Completed --}}
+                        <div id="completed-fields" class="hidden space-y-4 pt-2 border-t border-gray-100 mt-2">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Hasil Perbaikan</label>
+                                <div class="flex gap-4">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="is_successful" value="1"
+                                            class="text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-gray-700">Berhasil (Bagus)</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="is_successful" value="0"
+                                            class="text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-gray-700">Gagal (Rusak)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Catatan (Selalu muncul) --}}
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan Teknisi</label>
+                            <textarea name="repair_notes" id="modal-repair-notes" rows="3"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+                                placeholder="Contoh: Kabel diganti baru..."></textarea>
+                        </div>
+
                         <div class="mt-6 flex justify-end gap-3">
                             <button type="button" id="cancel-modal-btn"
                                 class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Batal</button>
                             <button type="submit" id="submit-status-btn"
-                                class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">Simpan
-                                Perubahan</button>
+                                class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -386,26 +431,34 @@
     </style>
 
     <script>
-        // Set sidebar active link
         try {
             document.getElementById('repairs').classList.add('bg-slate-100');
         } catch (e) {}
 
-        // Global Variables for Filters
         let tomSelects = {};
         let tomSelectStatusModal;
         let dataTableInstance;
 
         document.addEventListener('DOMContentLoaded', function() {
 
-            // --- 1. INISIALISASI FILTER TOMSELECT ---
-            tomSelects.status = new TomSelect('#filter_repair_status', { plugins: ['clear_button'] });
-            tomSelects.lab = new TomSelect('#filter_lab_select', { plugins: ['clear_button'] });
-            tomSelects.type = new TomSelect('#filter_type_select', { plugins: ['clear_button'] });
-            tomSelects.reporter = new TomSelect('#filter_reporter', { plugins: ['clear_button'] }); // ⬅️ Filter Reporter
+            document.getElementById('repairs').classList.add('bg-slate-100');
 
-            // Logic Filter Spesifikasi Bertingkat
-            tomSelects.specVal = new TomSelect('#filter_spec_val', { plugins: ['clear_button'] });
+            // --- 1. INIT FILTER ---
+            tomSelects.status = new TomSelect('#filter_repair_status', {
+                plugins: ['clear_button']
+            });
+            tomSelects.lab = new TomSelect('#filter_lab_select', {
+                plugins: ['clear_button']
+            });
+            tomSelects.type = new TomSelect('#filter_type_select', {
+                plugins: ['clear_button']
+            });
+            tomSelects.reporter = new TomSelect('#filter_reporter', {
+                plugins: ['clear_button']
+            });
+            tomSelects.specVal = new TomSelect('#filter_spec_val', {
+                plugins: ['clear_button']
+            });
             tomSelects.specVal.disable();
 
             tomSelects.specAttr = new TomSelect('#filter_spec_attr', {
@@ -414,33 +467,30 @@
                     if (!tomSelects.specVal) return;
                     tomSelects.specVal.clear();
                     tomSelects.specVal.clearOptions();
-
                     if (!value) {
                         tomSelects.specVal.disable();
                     } else {
                         const selectedOption = tomSelects.specAttr.getOption(value);
-                        if (!selectedOption || !selectedOption.dataset.values) {
-                            tomSelects.specVal.disable();
-                            return;
-                        }
-                        try {
-                            const values = JSON.parse(selectedOption.dataset.values);
-                            tomSelects.specVal.addOptions(values.map(v => ({
-                                value: v.id,
-                                text: v.value
-                            })));
-                            tomSelects.specVal.enable();
-                        } catch (e) {
-                            console.error("Error parsing spec values", e);
+                        if (selectedOption && selectedOption.dataset.values) {
+                            try {
+                                const values = JSON.parse(selectedOption.dataset.values);
+                                tomSelects.specVal.addOptions(values.map(v => ({
+                                    value: v.id,
+                                    text: v.value
+                                })));
+                                tomSelects.specVal.enable();
+                            } catch (e) {
+                                console.error(e);
+                            }
                         }
                     }
                     applyClientSideFilter();
                 }
             });
 
-            // --- 2. INITIALIZE DATATABLES ---
-             try {
-                const tableEl = document.getElementById('repairs-datatable');
+            // --- 2. INIT DATATABLE ---
+            try {
+                const tableEl = document.getElementById('repairs-table');
                 dataTableInstance = new te.Datatable(tableEl, {
                     hover: true,
                     fixedHeader: true,
@@ -451,76 +501,45 @@
                 });
 
                 document.getElementById('datatable-search-input').addEventListener('input', (e) => {
-                    // Gunakan fitur search global DataTables untuk pencarian teks
                     dataTableInstance.search(e.target.value);
-                    // Panggil filter custom juga agar tetap sinkron (jika diperlukan kombinasi)
-                    applyClientSideFilter(); 
+                    applyClientSideFilter();
                 });
-
             } catch (e) {
                 console.warn("DataTable init failed", e);
             }
 
-
-            // --- 3. LOGIKA FILTER CLIENT-SIDE ---
-            // Fungsi ini akan menyembunyikan/menampilkan baris tabel berdasarkan kriteria filter
+            // --- 3. CLIENT SIDE FILTER LOGIC ---
             function applyClientSideFilter() {
                 const statusVal = tomSelects.status.getValue();
                 const labVal = tomSelects.lab.getValue();
                 const typeVal = tomSelects.type.getValue();
-                const reporterVal = tomSelects.reporter.getValue(); // ⬅️ Value Reporter
-                
-                // Filter Spesifikasi
-                const specAttrVal = tomSelects.specAttr.getValue();
+                const reporterVal = tomSelects.reporter.getValue();
                 const specValVal = tomSelects.specVal.getValue();
-                
-                // Search Text (optional jika ingin double check, tapi Datatable sudah handle search text global)
-                // const searchVal = document.getElementById('datatable-search-input').value.toLowerCase();
 
                 const rows = document.querySelectorAll('.repair-row');
                 let visibleCount = 0;
 
                 rows.forEach(row => {
-                    // Ambil data attributes
                     const rowStatus = row.dataset.repairStatus;
                     const rowLab = row.dataset.labId;
                     const rowType = row.dataset.typeId;
-                    const rowReporter = row.dataset.reporter; // ⬅️ Data Reporter
+                    const rowReporter = row.dataset.reporter;
                     const rowSpecs = JSON.parse(row.dataset.specs || '[]');
 
-                    // Cek Status
                     let matchStatus = (statusVal === "" || rowStatus === statusVal);
-                    // Cek Lab
                     let matchLab = (labVal === "" || rowLab === labVal);
-                    // Cek Tipe
                     let matchType = (typeVal === "" || rowType === typeVal);
-                    // Cek Reporter
-                    let matchReporter = (reporterVal === "" || rowReporter === reporterVal); // ⬅️ Logic Reporter
+                    let matchReporter = (reporterVal === "" || rowReporter === reporterVal);
+                    let matchSpec = (specValVal === "" || rowSpecs.includes(parseInt(specValVal)));
 
-                    // Cek Spesifikasi Value
-                    let matchSpec = true;
-                    if (specValVal !== "") {
-                        // SpecVal ID harus ada di dalam array rowSpecs
-                        // rowSpecs adalah array integer [1, 5, 9], specValVal adalah string "5"
-                        matchSpec = rowSpecs.includes(parseInt(specValVal));
-                    }
-
-                    // Final Decision (Gabungkan semua kondisi)
-                    // Note: Search text dihandle otomatis oleh te.Datatable.search(), 
-                    // tapi custom filter row hiding perlu manual class toggling.
-                    // Masalahnya: Datatable mungkin me-render ulang row. 
-                    // Untuk te.Datatable versi free, manipulasi DOM row manual kadang bentrok dengan pagination.
-                    // Namun untuk filter sederhana ini biasanya aman jika pagination di-refresh atau dataset kecil.
-                    
                     if (matchStatus && matchLab && matchType && matchReporter && matchSpec) {
-                        row.style.display = ''; // Tampilkan
+                        row.style.display = '';
                         visibleCount++;
                     } else {
-                        row.style.display = 'none'; // Sembunyikan
+                        row.style.display = 'none';
                     }
                 });
 
-                // Tampilkan pesan "Tidak ada data" jika hasil filter kosong
                 const noResultRow = document.getElementById('filter-no-result');
                 if (visibleCount === 0 && rows.length > 0) {
                     noResultRow.classList.remove('hidden');
@@ -529,32 +548,36 @@
                 }
             }
 
-            // Event Listeners untuk Filter Change
-            tomSelects.status.on('change', applyClientSideFilter);
-            tomSelects.lab.on('change', applyClientSideFilter);
-            tomSelects.type.on('change', applyClientSideFilter);
-            tomSelects.reporter.on('change', applyClientSideFilter); // ⬅️ Listener Reporter
-            tomSelects.specVal.on('change', applyClientSideFilter);
+            // Filter Event Listeners
+            [tomSelects.status, tomSelects.lab, tomSelects.type, tomSelects.reporter, tomSelects.specVal].forEach(
+                ts => {
+                    ts.on('change', applyClientSideFilter);
+                });
 
-            // Reset Button
             document.getElementById('reset-filter-btn').addEventListener('click', () => {
-                tomSelects.status.clear();
-                tomSelects.lab.clear();
-                tomSelects.type.clear();
-                tomSelects.reporter.clear(); // ⬅️ Clear Reporter
-                tomSelects.specAttr.clear();
+                Object.values(tomSelects).forEach(ts => ts.clear());
                 document.getElementById('datatable-search-input').value = '';
-                
-                // Reset search DataTable
-                if(dataTableInstance) dataTableInstance.search('');
-                
+                if (dataTableInstance) dataTableInstance.search('');
                 applyClientSideFilter();
             });
 
-            // --- 4. MODAL UPDATE STATUS LOGIC ---
+            // --- 4. MODAL UPDATE STATUS ---
             tomSelectStatusModal = new TomSelect('#modal-status-select', {
                 create: false,
                 plugins: ['dropdown_input'],
+                onChange: (val) => {
+                    const completedFields = document.getElementById('completed-fields');
+                    if (val === '2') { // Completed
+                        completedFields.classList.remove('hidden');
+                        // Tambahkan required attribute saat completed
+                        document.querySelectorAll('input[name="is_successful"]').forEach(el => el
+                            .required = true);
+                    } else {
+                        completedFields.classList.add('hidden');
+                        document.querySelectorAll('input[name="is_successful"]').forEach(el => el
+                            .required = false);
+                    }
+                }
             });
 
             const modal = document.getElementById('update-status-modal');
@@ -564,43 +587,79 @@
                 document.getElementById('update-status-overlay')
             ];
 
-            document.querySelectorAll('.btn-open-update-status').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const repairId = this.dataset.repairId;
-                    const currentStatus = this.dataset.currentStatus;
-                    const itemName = this.dataset.itemName;
-                    const issue = this.dataset.issue;
+            // Listener Tombol Update (Set Data ke Modal)
+            // Delegasi event karena Datatable mungkin merender ulang baris
+            document.body.addEventListener('click', function(e) {
+                if (e.target.closest('.btn-open-update-status')) {
+                    const btn = e.target.closest('.btn-open-update-status');
+
+                    const repairId = btn.dataset.repairId;
+                    const itemableId = btn.dataset.itemableId;
+                    const currentStatus = btn.dataset.currentStatus;
+                    const itemName = btn.dataset.itemName;
+                    const issue = btn.dataset.issue;
+                    const notes = btn.dataset.currentNotes;
+                    const success = btn.dataset.currentSuccess; // "1", "0", or ""
 
                     document.getElementById('modal-repair-id').value = repairId;
+                    document.getElementById('modal-itemable-id').value = itemableId;
                     document.getElementById('modal-item-name').textContent = itemName;
                     document.getElementById('modal-issue').textContent = issue;
+                    document.getElementById('modal-repair-notes').value = notes;
+
                     tomSelectStatusModal.setValue(currentStatus);
+
+                    // Reset Radio
+                    document.querySelectorAll('input[name="is_successful"]').forEach(el => el.checked =
+                        false);
+                    if (success === "1") {
+                        document.querySelector('input[name="is_successful"][value="1"]').checked = true;
+                    } else if (success === "0") {
+                        document.querySelector('input[name="is_successful"][value="0"]').checked = true;
+                    }
+
                     modal.classList.remove('hidden');
-                });
+                }
             });
 
-            const closeModal = () => {
-                modal.classList.add('hidden');
-            };
+            const closeModal = () => modal.classList.add('hidden');
             closeModalBtns.forEach(el => {
                 if (el) el.addEventListener('click', (e) => {
                     if (e.target === el) closeModal();
-                });
+                })
             });
 
+            // Submit Form (Kirim Array items untuk Partial Update)
             const form = document.getElementById('update-status-form');
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const btn = document.getElementById('submit-status-btn');
                 const originalText = btn.textContent;
-
                 btn.disabled = true;
                 btn.textContent = 'Menyimpan...';
 
                 const repairId = document.getElementById('modal-repair-id').value;
+                const itemableId = document.getElementById('modal-itemable-id').value;
                 const status = tomSelectStatusModal.getValue();
+                const notes = document.getElementById('modal-repair-notes').value;
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute(
                     'content');
+
+                let isSuccessful = null;
+                if (status === '2') {
+                    const successRadio = document.querySelector('input[name="is_successful"]:checked');
+                    if (successRadio) isSuccessful = (successRadio.value === '1');
+                }
+
+                // Construct JSON Payload (Partial Update Structure)
+                const payload = {
+                    items: [{
+                        itemable_id: itemableId,
+                        status: status,
+                        repair_notes: notes,
+                        is_successful: isSuccessful
+                    }]
+                };
 
                 try {
                     const response = await fetch(`/admin/repairs/${repairId}/status`, {
@@ -610,9 +669,7 @@
                             'Accept': 'application/json',
                             'X-CSRF-TOKEN': csrfToken
                         },
-                        body: JSON.stringify({
-                            status: status
-                        })
+                        body: JSON.stringify(payload)
                     });
 
                     const data = await response.json();
@@ -622,7 +679,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil',
-                        text: 'Status perbaikan berhasil diperbarui',
+                        text: 'Status item berhasil diperbarui',
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {

@@ -28,6 +28,14 @@ class Labs extends Model
 
     public function bookings()
     {
-        return $this->morphMany(Booking::class, 'bookable');
+        return $this->morphToMany(
+            Booking::class,
+            'bookable',
+            'bookings_items',
+            'bookable_id',
+            'booking_id'
+        )
+            ->withPivot(['id', 'type', 'returner_id', 'returned_at', 'returned_status', 'returned_detail'])
+            ->using(Bookings_item::class);
     }
 }

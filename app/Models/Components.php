@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Type;
+use App\Models\Booking;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
@@ -53,8 +54,30 @@ class Components extends Model
             ->withTimestamps()
             ->using(Tool_spec::class);
     }
+
     public function repairs()
     {
-        return $this->morphMany(Repair::class, 'itemable');
+        return $this->morphToMany(
+            Repair::class,
+            'itemable',
+            'repairs_items',
+            'itemable_id',
+            'repair_id'
+        )
+            ->withPivot('id')
+            ->using(Repairs_item::class);
+    }
+
+    public function bookings()
+    {
+        return $this->morphToMany(
+            Booking::class,
+            'bookable',
+            'bookings_items',
+            'bookable_id',
+            'booking_id'
+        )
+            ->withPivot(['id', 'type', 'returner_id', 'returned_at', 'returned_status', 'returned_detail'])
+            ->using(Bookings_item::class);
     }
 }

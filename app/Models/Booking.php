@@ -12,51 +12,40 @@ class Booking extends Model
     use HasUuids;
 
     protected $fillable = [
-        'bookable_id',
-        'bookable_type',
-        'period_id',
-        'type',
-        'book_detail',
+        'id',
+        'attendee_count',
+        'event_name',
+        'event_started_at',
+        'event_ended_at',
 
-        'borrower_id',
+        'thesis_title',
+        'supervisor_id',
+
         'borrowed_at',
-
-        'returner_id',
         'return_deadline_at',
-        'returned_at',
-        'returned_status',
-        
+
         'approved',
         'approved_at',
         'approved_by',
-    ];
 
-    protected $casts = [
-        'book_detail' => 'array', // Otomatis konversi JSON ke array PHP
-    ];
+        'borrower_id',
+        'phone_number',
 
-    public function bookable(): MorphTo
-    {
-        return $this->morphTo();
-    }
+        'period_id',
+        'booking_detail',
+    ];
 
     public function borrower(): BelongsTo
     {
         return $this->belongsTo(User::class, 'borrower_id');
     }
 
-    public function returner(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'returner_id');
-    }
-
-    public function approver(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'approved_by');
-    }
-
     public function period(): BelongsTo
     {
         return $this->belongsTo(Period::class);
+    }
+    public function bookings_items()
+    {
+        return $this->hasMany(Bookings_item::class);
     }
 }

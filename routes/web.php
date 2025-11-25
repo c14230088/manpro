@@ -14,6 +14,10 @@ Route::get('/processLogin/auth/google', [UnitController::class, 'processLogin'])
 Route::get('/auth/google/callback', [UnitController::class, 'routeAdmin'])->name('user.processRouting');
 Route::get('/logout', [UnitController::class, 'logout'])->name('user.logout');
 
+Route::get('/landing', function () {
+    return view('user.landing', ['title' => 'User | Landing Page']);
+})->name('user.landing');
+
 Route::get('/booking', [UnitController::class, 'formBooking'])->name('user.booking.form');
 Route::post('/booking', [UnitController::class, 'storeBooking'])->name('user.booking.request');
 

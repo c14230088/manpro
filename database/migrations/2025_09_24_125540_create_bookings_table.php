@@ -13,38 +13,45 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->json('book_detail');
-            // keys json akan berubah (logic di frontend) : 
-            // pinjam ruang = attendee_count 
-            // pinjam item = events_name
-            // pinjam item && untuk skripsi = thesis_title dan supervisor_name/supervisor_id (dropdown list dosen, tapi harus update kalau ada dosen pembimbing baru)  
 
-            $table->timestamp('borrowed_at');
-            $table->timestamp('return_deadline_at')->nullable(); // nullable kah?
-            $table->timestamp('returned_at')->nullable();
+            // Khusus Pinjam Lab
+            $table->unsignedInteger('attendee_count')->nullable()->comment('Jumlah peserta (jika pinjam ruang)');
+
+            // Untuk Pinjam Item maupun Lab
+            $table->string('event_name')->comment('Nama kegiatan/keperluan');
+            $table->timestamp('event_started_at');
+            $table->timestamp('event_ended_at');
+            
+            // Khusus Skripsi
+            $table->string('thesis_title')->nullable();
+            // beserta Relasi Dosen Pembimbing
+            $table->uuid('supervisor_id')->nullable();
+            $table->foreign('supervisor_id')->references('id')->on('users')->onDelete('set null');
+
+            $table->timestamp('borrowed_at'); // ini start pinjam barang, untuk lihat kapan apply pinjam maka lihat created_at
+            $table->timestamp('return_deadline_at'); // bisa di edit oleh approver
             // jika belum ada returned_at, maka masih dipinjam
             // jika ada returned_at, tapi lebih lambat dari return_deadline_at maka Telat dikembalikan
-
-            $table->tinyInteger('type')->comment('0: Onsite | 1: Remote');
 
             $table->boolean('approved')->nullable(); // true di acc untuk pinjam, false ditolak
             $table->timestamp('approved_at')->nullable();
             $table->uuid('approved_by')->nullable();
             $table->foreign('approved_by')->references('id')->on('users')->onDelete('cascade');
 
-            $table->uuidMorphs('bookable'); // antara item_id atau component_id atau lab_id
-
             $table->uuid('borrower_id');
             $table->foreign('borrower_id')->references('id')->on('users')->onDelete('cascade');
-            
-            $table->uuid('returner_id')->nullable();
-            $table->boolean('returned_status')->nullable()->comment('0: Rusak | 1: Normal');            
-            $table->foreign('returner_id')->references('id')->on('users')->onDelete('cascade');
+
+            $table->string('phone_number'); // nomor wa aktif penanggung jawab
+
+            // $table->uuid('returner_id')->nullable();
+            // $table->foreign('returner_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->uuid('period_id');
             $table->foreign('period_id')->references('id')->on('periods')->onDelete('cascade');
 
-            $table->text('returned_detail')->nullable();
+            $table->text('booking_detail')->nullable();
+
+            $table->timestamps();
         });
     }
 

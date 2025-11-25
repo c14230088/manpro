@@ -47,4 +47,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(Repair::class, 'reported_by');
     }
+
+    public function permissions()
+    {
+        return $this->morphToMany(
+            Permission::class,
+            'model',
+            'model_permissions',
+            'model_id',
+            'permission_id'
+        )
+            ->withPivot(['id', 'permission.action', 'permission.name', 'permission.description'])
+            ->using(Model_permission::class);
+    }
 }

@@ -60,7 +60,13 @@
                             <option value="">Semua Kondisi</option>
                             <option value="1" @selected(data_get($filters, 'condition') == '1')>Bagus</option>
                             <option value="0" @selected(data_get($filters, 'condition') == '0')>Rusak</option>
+
+                            {{-- ⬇️ OPSI BARU ⬇️ --}}
+                            <option value="under_repair" @selected(data_get($filters, 'condition') == 'under_repair')>Sedang Diperbaiki</option>
+                            <option value="parent_under_repair" @selected(data_get($filters, 'condition') == 'parent_under_repair')>Induk Sedang Diperbaiki
+                            </option>
                         </select>
+                        <p class="text-xs text-gray-500 mt-1">"Induk Sedang Diperbaiki" hanya untuk Components.</p>
                     </div>
 
                     {{-- Spesifikasi --}}
@@ -225,12 +231,25 @@
                                                 @endforeach
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                @if ($item->condition)
+                                                @php
+                                                    $isUnderRepair = $item->repairs->isNotEmpty();
+                                                @endphp
+
+                                                @if ($isUnderRepair)
                                                     <span
-                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Bagus</span>
+                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                        Sedang Diperbaiki
+                                                    </span>
+                                                @elseif ($item->condition)
+                                                    <span
+                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                        Bagus
+                                                    </span>
                                                 @else
                                                     <span
-                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rusak</span>
+                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                        Rusak
+                                                    </span>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -351,12 +370,37 @@
                                                     @endforeach
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
-                                                    @if ($comp->condition)
+                                                    @php
+                                                        // Cek Component Repairs
+                                                        $isCompUnderRepair = $comp->repairs->isNotEmpty();
+
+                                                        // Cek Parent Repairs (Jika punya parent)
+                                                        $isParentUnderRepair = false;
+                                                        if ($comp->item && $comp->item->repairs->isNotEmpty()) {
+                                                            $isParentUnderRepair = true;
+                                                        }
+                                                    @endphp
+
+                                                    @if ($isCompUnderRepair)
                                                         <span
-                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Bagus</span>
+                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                            Sedang Diperbaiki
+                                                        </span>
+                                                    @elseif ($isParentUnderRepair)
+                                                        <span
+                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
+                                                            Induk Sedang Diperbaiki
+                                                        </span>
+                                                    @elseif ($comp->condition)
+                                                        <span
+                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                            Bagus
+                                                        </span>
                                                     @else
                                                         <span
-                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rusak</span>
+                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                            Rusak
+                                                        </span>
                                                     @endif
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -387,7 +431,7 @@
             </div>
 
             {{-- ========================================================= --}}
-            {{-- MODAL 1: Buat Item (Dengan Perubahan) --}}
+            {{-- MODAL 1: Buat Item --}}
             {{-- ========================================================= --}}
             <div id="create-item-modal" class="hidden" role="dialog" aria-modal="true"
                 aria-labelledby="create-item-modal-title">
@@ -451,14 +495,12 @@
                                                 class="block w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                                 placeholder="cth: PC-LSC-A-01">
                                         </div>
-                                        {{-- ⬇️ TAMBAHAN: Produced At (Sesuai backend) ⬇️ --}}
                                         <div>
                                             <label for="produced_at"
                                                 class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Produksi</label>
                                             <input type="date" id="produced_at" name="produced_at"
                                                 class="block w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                                         </div>
-                                        {{-- ⬆️ --------------------- ⬆️ --}}
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-2">Kondisi</label>
                                             <div class="flex items-center space-x-6 pt-3"> {{-- (Tambah padding) --}}
@@ -533,7 +575,7 @@
             </div>
 
             {{-- ========================================================= --}}
-            {{-- MODAL 2: Aksi (⬇️ TAMBAHAN TOMBOL REPAIR ⬇️) --}}
+            {{-- MODAL 2: Aksi (Updated with Repair) --}}
             {{-- ========================================================= --}}
             <div id="action-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="action-modal-title">
                 <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[2000]"></div>
@@ -577,7 +619,7 @@
                                 <span class="font-semibold">Ubah Kondisi</span>
                             </button>
 
-                            {{-- ⬇️ TOMBOL BARU ⬇️ --}}
+                            {{-- ⬇️ TOMBOL REPAIR ⬇️ --}}
                             <button id="action-btn-repair"
                                 class="p-6 bg-red-500 hover:bg-red-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg">
                                 <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -588,7 +630,7 @@
                                 </svg>
                                 <span class="font-semibold">Perbaikan</span>
                             </button>
-                            {{-- ⬆️ ------------------- ⬆️ --}}
+                            {{-- ⬆️ ------------- ⬆️ --}}
 
                             <button id="action-btn-attach"
                                 class="p-6 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg">
@@ -694,7 +736,9 @@
                 </div>
             </div>
 
-            {{-- ⬇️ BARU: MODAL 5: Buat Set Item ⬇️ --}}
+            {{-- ========================================================= --}}
+            {{-- MODAL 5: Buat Set Item --}}
+            {{-- ========================================================= --}}
             <div id="create-set-modal" class="hidden" role="dialog" aria-modal="true"
                 aria-labelledby="create-set-modal-title">
                 <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[2000]"></div>
@@ -764,9 +808,8 @@
                     </div>
                 </div>
             </div>
-            {{-- ⬆️ MODAL 5 SELESAI ⬆️ --}}
 
-            {{-- ⬇️ BARU: MODAL 6: Lapor Perbaikan ⬇️ --}}
+            {{-- ⬇️ BARU: MODAL 6: Lapor Perbaikan (Updated) ⬇️ --}}
             <div id="repair-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="repair-modal-title">
                 <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[3000]"></div>
                 <div id="repair-modal-overlay" class="fixed inset-0 flex items-center justify-center p-4 z-[3001]">
@@ -793,7 +836,7 @@
 
                             {{-- Modal Body (Scrollable) --}}
                             <div class="p-6 space-y-6 overflow-y-auto">
-                                {{-- Hidden Inputs --}}
+                                {{-- Hidden Inputs untuk Menyimpan ID --}}
                                 <input type="hidden" id="repair-itemable-id" name="itemable_id">
                                 <input type="hidden" id="repair-is-component" name="is_component">
 
@@ -806,16 +849,21 @@
                                         placeholder="Jelaskan kerusakan yang terjadi..."></textarea>
                                 </div>
 
-                                {{-- Komponen Bawaan (Hanya untuk Item) --}}
+                                {{-- Info Komponen Anak (Read Only) --}}
                                 <div id="repair-components-section" class="hidden">
-                                    <h3 class="text-sm font-semibold text-gray-700 mb-2">Pilih Komponen yang Terbawa</h3>
-                                    <div id="repair-components-list"
-                                        class="space-y-3 max-h-60 overflow-y-auto p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                                        {{-- JS akan mengisi ini --}}
-                                        <div class="text-center py-4 text-gray-500">Memuat komponen...</div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="text-sm font-semibold text-gray-700">Komponen Anak yang Terbawa:</h3>
+                                        <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">Info Only</span>
                                     </div>
+                                    <div id="repair-components-list"
+                                        class="space-y-2 max-h-60 overflow-y-auto p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                                        {{-- JS akan mengisi ini dengan list READ ONLY --}}
+                                        <div class="text-center py-4 text-gray-500">Memuat informasi komponen...</div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-2 italic">
+                                        *Komponen di atas adalah bagian dari Item ini dan otomatis dianggap terbawa/terkait.
+                                    </p>
                                 </div>
-
                             </div>
 
                             {{-- Modal Footer --}}
@@ -1034,7 +1082,7 @@
         </style>
 
         {{-- ========================================================= --}}
-        {{-- JAVASCRIPT (⬇️ DENGAN PENAMBAHAN FUNGSI REPAIR ⬇️) --}}
+        {{-- JAVASCRIPT (FULL UPDATED) --}}
         {{-- ========================================================= --}}
         <script>
             // Set sidebar link aktif
@@ -1044,7 +1092,7 @@
                 console.warn("Sidebar link 'items' not found or ID mismatch.");
             }
 
-            // Data dari Blade (untuk modal Buat Item)
+            // Data dari Blade
             const allTypes = @json($types);
             const allSpecAttributes = @json($specification);
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -1056,30 +1104,28 @@
             let currentItemName = null;
             let currentItemCondition = null;
             let currentItemType = 'item'; // 'item' or 'component'
-            let currentIsComponent = 0; // 0 for item, 1 for component (⬇️ BARU ⬇️)
+            let currentIsComponent = 0; // 0 for item, 1 for component
 
             // Variabel untuk Modal Create Item
             let tomSelectInstances = {
                 mainSpecs: [],
-                newComponents: [] // Akan berisi { id: compIndex, row: el, typeSelect: tom, specInstances: [] }
+                newComponents: []
             };
-            let newComponentIndex = 0; // Index unik untuk setiap komponen baru
-            let tomSelectType; // Untuk item utama
+            let newComponentIndex = 0;
+            let tomSelectType;
 
-            // ⬇️ BARU: Variabel untuk Modal Create Set ⬇️
-            let
-                setItemTomInstances = []; // Akan berisi array dari 4 item, [ { itemIndex: 0, typeSelect: ..., mainSpecs: [...], newComponents: [...] }, ... ]
-            let setItemComponentIndex = 0; // Index unik untuk komponen *di dalam* set
+            // Variabel untuk Modal Create Set
+            let setItemTomInstances = [];
+            let setItemComponentIndex = 0;
 
             let tomSelectLabModal;
             let modalLabDesks = [];
 
-            // ⬇️ PERBAIKAN: Objek untuk filter ⬇️
+            // Objek untuk filter
             let filterTomSelects = {
                 attr: null,
                 val: null
             };
-
 
             // =================================================================
             // Fungsi Utility (Loading & Toast)
@@ -1134,7 +1180,6 @@
                 return result.isConfirmed;
             }
 
-            // ⬇️ BARU: Helper untuk mencari ID Tipe berdasarkan Nama ⬇️
             function findTypeIdByName(name) {
                 if (!name) return null;
                 const normalizedName = name.trim().toLowerCase();
@@ -1142,14 +1187,14 @@
                 return type ? type.id : null;
             }
 
-            // ⬇️ BARU: Helper Cek Status Modal ⬇️
+            // Helper Cek Status Modal
             function checkModalStateAndToggleBodyOverflow() {
                 const isAnyModalOpen = !document.getElementById('create-item-modal').classList.contains('hidden') ||
                     !document.getElementById('action-modal').classList.contains('hidden') ||
                     !document.getElementById('attach-desk-modal').classList.contains('hidden') ||
                     !document.getElementById('detail-modal').classList.contains('hidden') ||
                     !document.getElementById('create-set-modal').classList.contains('hidden') ||
-                    !document.getElementById('repair-modal').classList.contains('hidden'); // <-- Tambah modal baru
+                    !document.getElementById('repair-modal').classList.contains('hidden');
 
                 if (!isAnyModalOpen) {
                     document.body.style.overflow = '';
@@ -1158,6 +1203,9 @@
                 }
             }
 
+            // =================================================================
+            // FUNGSI INISIALISASI MODAL
+            // =================================================================
 
             function initializeCreateItemModal() {
                 const modal = document.getElementById('create-item-modal');
@@ -1176,11 +1224,7 @@
                 const addNewComponentBtn = document.getElementById('add-new-component-btn');
                 const specOwnerLabel = document.getElementById('spec-owner-label');
 
-                if (!modal || !form || !submitBtn || !addSpecBtn || !closeBtn || !cancelBtn || !overlay || !radioIsItem ||
-                    !componentsSection || !newComponentsContainer || !addNewComponentBtn || !specOwnerLabel) {
-                    Swal.fire('Error Kritis', 'Gagal memuat komponen modal Buat Item. Silakan refresh halaman.', 'error');
-                    return;
-                }
+                if (!modal) return;
 
                 function toggleComponentSection() {
                     if (radioIsItem.checked) {
@@ -1190,7 +1234,6 @@
                         componentsSection.style.display = 'none';
                         specOwnerLabel.textContent = '(Component)';
                         newComponentsContainer.innerHTML = '';
-                        // ⬇️ PERBAIKAN: Cek dulu sebelum destroy ⬇️
                         if (tomSelectInstances.newComponents) {
                             tomSelectInstances.newComponents.forEach(comp => {
                                 comp.typeSelect.destroy();
@@ -1216,7 +1259,6 @@
                     specificationsContainer.innerHTML = '';
                     newComponentsContainer.innerHTML = '';
 
-                    // ⬇️ PERBAIKAN: Cek dulu sebelum destroy ⬇️
                     if (tomSelectInstances.mainSpecs) {
                         tomSelectInstances.mainSpecs.forEach(spec => {
                             spec.attr.destroy();
@@ -1243,10 +1285,10 @@
                 }
                 window.closeCreateItemModal = () => {
                     modal.classList.add('hidden');
-                    checkModalStateAndToggleBodyOverflow(); // ⬅️ BARU
+                    checkModalStateAndToggleBodyOverflow();
                 }
 
-                closeBtn.addEventListener('click', window.closeCreateItemModal); // ⬅️ PERBAIKAN BUG
+                closeBtn.addEventListener('click', window.closeCreateItemModal);
                 cancelBtn.addEventListener('click', window.closeCreateItemModal);
                 overlay.addEventListener('click', (e) => {
                     if (e.target === overlay) window.closeCreateItemModal();
@@ -1300,7 +1342,6 @@
                     });
                 });
 
-                // ⬇️ PERBAIKAN: Menambahkan kembali logika nested component ⬇️
                 addNewComponentBtn.addEventListener('click', () => {
                     const newCompRow = document.getElementById('new-component-form-template').content.cloneNode(true)
                         .firstElementChild;
@@ -1384,7 +1425,6 @@
 
                     newComponentsContainer.appendChild(newCompRow);
                 });
-                // ⬆️ PERBAIKAN: Selesai ⬆️
 
                 submitBtn.addEventListener('click', async function() {
                     await submitCreateItemForm(this, form);
@@ -1396,7 +1436,7 @@
                 const valSelectEl = rowElement.querySelector('.spec-value');
                 if (!attrSelectEl || !valSelectEl) return null;
 
-                let valueTomSelect; // Deklarasikan di sini
+                let valueTomSelect;
 
                 const attrTomSelect = new TomSelect(attrSelectEl, {
                     options: allSpecAttributes.map(attr => ({
@@ -1475,9 +1515,6 @@
                 };
             }
 
-            /**
-             * Fungsi Submit Form (Item Tunggal)
-             */
             async function submitCreateItemForm(submitBtn, form) {
                 showLoading('Menyimpan Item...');
                 submitBtn.disabled = true;
@@ -1488,7 +1525,7 @@
                     serial_code: document.getElementById('serial_code').value,
                     condition: form.querySelector('input[name="condition"]:checked').value,
                     type: tomSelectType.getValue(),
-                    produced_at: document.getElementById('produced_at').value, // ⬅️ DITAMBAHKAN
+                    produced_at: document.getElementById('produced_at').value,
                     _token: form.querySelector('input[name="_token"]').value,
                     specifications: [],
                     new_components: []
@@ -1505,7 +1542,6 @@
                     }
                 });
 
-                // ⬇️ PERBAIKAN: Menambahkan kembali logika nested component ⬇️
                 if (formData.is_component === '0') {
                     tomSelectInstances.newComponents.forEach(compInstance => {
                         const compRow = compInstance.row;
@@ -1514,8 +1550,7 @@
                             serial_code: compRow.querySelector('.new-component-serial').value,
                             condition: compRow.querySelector('.new-component-condition:checked').value,
                             type: compInstance.typeSelect.getValue(),
-                            produced_at: compRow.querySelector('.new-component-produced-at')
-                                .value, // ⬅️ DITAMBAHKAN
+                            produced_at: compRow.querySelector('.new-component-produced-at').value,
                             specifications: []
                         };
                         compInstance.specInstances.forEach(spec => {
@@ -1531,9 +1566,8 @@
                         formData.new_components.push(componentData);
                     });
                 }
-                // ⬆️ PERBAIKAN: Selesai ⬆️
 
-                try {                    
+                try {
                     const response = await fetch(form.dataset.action, {
                         method: 'POST',
                         headers: {
@@ -1570,8 +1604,6 @@
                 }
             }
 
-            // ⬇️ BARU: MODAL 5: Logika "Buat Set Item" ⬇️
-            // =================================================================
             function initializeCreateSetModal() {
                 const modal = document.getElementById('create-set-modal');
                 const form = document.getElementById('create-set-form');
@@ -1581,21 +1613,16 @@
                 const overlay = document.getElementById('create-set-modal-overlay');
                 const itemsContainer = document.getElementById('set-items-container');
 
-                if (!modal || !form || !submitBtn || !closeBtn || !cancelBtn || !overlay || !itemsContainer) {
-                    console.warn('Satu atau lebih elemen modal Buat Set tidak ditemukan.');
-                    return;
-                }
+                if (!modal) return;
 
-                // Daftar Tipe yang sudah ditentukan
                 const prefilledTypes = ['Monitor', 'Mouse', 'CPU', 'Keyboard'];
 
                 window.openCreateSetModal = () => {
                     modal.classList.remove('hidden');
                     document.body.style.overflow = 'hidden';
                     form.reset();
-                    itemsContainer.innerHTML = ''; // Kosongkan container item
+                    itemsContainer.innerHTML = '';
 
-                    // Hancurkan semua instance TomSelect lama
                     setItemTomInstances.forEach(item => {
                         item.typeSelect.destroy();
                         item.mainSpecs.forEach(spec => {
@@ -1611,18 +1638,17 @@
                         });
                     });
 
-                    setItemTomInstances = []; // Reset array instance
-                    setItemComponentIndex = 0; // Reset index komponen
+                    setItemTomInstances = [];
+                    setItemComponentIndex = 0;
 
-                    // Buat 4 form item
                     for (let i = 0; i < 4; i++) {
-                        addSetItemCard(i, prefilledTypes[i] || `Item ${i+1}`); // Fallback jika nama tipe tidak ada
+                        addSetItemCard(i, prefilledTypes[i] || `Item ${i+1}`);
                     }
                 }
 
                 window.closeCreateSetModal = () => {
                     modal.classList.add('hidden');
-                    checkModalStateAndToggleBodyOverflow(); // ⬅️ BARU
+                    checkModalStateAndToggleBodyOverflow();
                 }
 
                 closeBtn.addEventListener('click', window.closeCreateSetModal);
@@ -1636,9 +1662,6 @@
                 });
             }
 
-            /**
-             * Helper untuk menambahkan 1 Kartu Item ke Modal Set
-             */
             function addSetItemCard(index, prefilledTypeName) {
                 const itemsContainer = document.getElementById('set-items-container');
                 const itemTemplate = document.getElementById('set-item-template');
@@ -1646,20 +1669,17 @@
                 const newItemCard = itemTemplate.content.cloneNode(true).firstElementChild;
                 newItemCard.dataset.itemIndex = index;
 
-                // Set judul & radio name unik
                 newItemCard.querySelector('.set-item-title').textContent = `Item ${index + 1}: ${prefilledTypeName}`;
                 newItemCard.querySelectorAll('.set-item-condition').forEach(radio => {
                     radio.name = `set_item_condition_${index}`;
                 });
 
-                // Ambil elemen-elemen di dalam kartu baru
                 const typeSelectEl = newItemCard.querySelector('.set-item-type-select');
                 const addSpecBtn = newItemCard.querySelector('.btn-add-set-item-spec');
                 const specContainer = newItemCard.querySelector('.set-item-specs-container');
                 const addCompBtn = newItemCard.querySelector('.btn-add-set-item-comp');
                 const compContainer = newItemCard.querySelector('.set-item-components-container');
 
-                // Inisialisasi TomSelect Tipe
                 const typeId = findTypeIdByName(prefilledTypeName);
                 const typeTomSelect = new TomSelect(typeSelectEl, {
                     options: allTypes.map(type => ({
@@ -1685,10 +1705,9 @@
                     }
                 });
                 if (typeId) {
-                    typeTomSelect.setValue(typeId); // Set Tipe default
+                    typeTomSelect.setValue(typeId);
                 }
 
-                // Siapkan object untuk menyimpan semua instance TomSelect item ini
                 const itemInstanceData = {
                     itemIndex: index,
                     row: newItemCard,
@@ -1697,7 +1716,6 @@
                     newComponents: []
                 };
 
-                // Listener untuk tambah Spek Item
                 addSpecBtn.addEventListener('click', () => {
                     const newSpecRow = document.getElementById('spec-row-template').content.cloneNode(true)
                         .firstElementChild;
@@ -1721,11 +1739,10 @@
                     });
                 });
 
-                // Listener untuk tambah Komponen
                 addCompBtn.addEventListener('click', () => {
                     const newCompRow = document.getElementById('new-component-form-template').content.cloneNode(true)
                         .firstElementChild;
-                    const compIndex = setItemComponentIndex++; // Index unik global
+                    const compIndex = setItemComponentIndex++;
 
                     newCompRow.dataset.compIndex = compIndex;
                     newCompRow.querySelectorAll('.new-component-condition').forEach(radio => {
@@ -1806,15 +1823,10 @@
                     compContainer.appendChild(newCompRow);
                 });
 
-                // Simpan semua instance item ini ke array global
                 setItemTomInstances.push(itemInstanceData);
-                // Tambahkan kartu ke DOM
                 itemsContainer.appendChild(newItemCard);
             }
 
-            /**
-             * Fungsi Submit Form (Buat Set)
-             */
             async function submitCreateSetForm(submitBtn, form) {
                 showLoading('Membuat Set Item...', 'Ini mungkin memakan waktu beberapa saat...');
                 submitBtn.disabled = true;
@@ -1823,14 +1835,13 @@
                     set_name: document.getElementById('set_name').value,
                     set_note: document.getElementById('set_note').value,
                     _token: form.querySelector('input[name="_token"]').value,
-                    items: [] // Ini akan diisi 4 item
+                    items: []
                 };
 
-                // Loop 4 kali, kumpulkan data dari setiap kartu item
                 setItemTomInstances.forEach(itemInstance => {
                     const itemRow = itemInstance.row;
                     const itemData = {
-                        is_component: '0', // Selalu item
+                        is_component: '0',
                         name: itemRow.querySelector('.set-item-name').value,
                         serial_code: itemRow.querySelector('.set-item-serial').value,
                         condition: itemRow.querySelector('.set-item-condition:checked').value,
@@ -1840,7 +1851,6 @@
                         new_components: []
                     };
 
-                    // Kumpulkan spesifikasi item ini
                     itemInstance.mainSpecs.forEach(spec => {
                         const attrVal = spec.attr.getValue();
                         const valVal = spec.val.getValue();
@@ -1852,7 +1862,6 @@
                         }
                     });
 
-                    // Kumpulkan komponen baru item ini
                     itemInstance.newComponents.forEach(compInstance => {
                         const compRow = compInstance.row;
                         const componentData = {
@@ -1880,10 +1889,8 @@
                     formData.items.push(itemData);
                 });
 
-                // Atur set_count (meskipun backend sudah memvalidasi size, ini untuk data $request->only() di controller)
                 formData.set_count = formData.items.length;
 
-                // Kirim data Set
                 try {
                     const response = await fetch(form.dataset.action, {
                         method: 'POST',
@@ -1920,30 +1927,213 @@
                     submitBtn.disabled = false;
                 }
             }
-            // ⬆️ MODAL 5 SELESAI ⬆️
 
             // =================================================================
-            // MODAL 2: Logika "Aksi Item" (⬇️ DENGAN UPDATE ⬇️)
+            // LOGIKA REPAIR (Updated sesuai Request)
             // =================================================================
+            function initializeRepairModal() {
+                const modal = document.getElementById('repair-modal');
+                const overlay = document.getElementById('repair-modal-overlay');
+                const closeBtn = document.getElementById('repair-modal-close-btn');
+                const cancelBtn = document.getElementById('repair-modal-cancel-btn');
+                const form = document.getElementById('repair-form');
+                const submitBtn = document.getElementById('submit-repair-btn');
+
+                if (!modal) return;
+
+                const closeRepairModal = () => {
+                    modal.classList.add('hidden');
+                    checkModalStateAndToggleBodyOverflow();
+                }
+
+                closeBtn.addEventListener('click', closeRepairModal);
+                cancelBtn.addEventListener('click', closeRepairModal);
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) closeRepairModal();
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeRepairModal();
+                });
+
+                submitBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    submitRepairForm(form, submitBtn);
+                });
+            }
+
+            async function openRepairModal() {
+                const modal = document.getElementById('repair-modal');
+                const titleEl = document.getElementById('repair-modal-title');
+                const form = document.getElementById('repair-form');
+                const componentsSection = document.getElementById('repair-components-section');
+                const componentsList = document.getElementById('repair-components-list');
+                const hiddenItemId = document.getElementById('repair-itemable-id');
+                const hiddenIsComponent = document.getElementById('repair-is-component');
+
+                if (!modal) return;
+
+                form.reset();
+                componentsList.innerHTML = '<div class="text-center py-4 text-gray-500">Memuat informasi komponen...</div>';
+
+                hiddenItemId.value = currentItemId;
+                hiddenIsComponent.value = currentIsComponent;
+
+                titleEl.innerHTML = `Lapor Perbaikan: <span class="font-bold text-red-600">${currentItemName}</span>`;
+
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                if (currentIsComponent == 0) {
+                    // Jika ITEM -> Tampilkan list anak (Read Only)
+                    componentsSection.classList.remove('hidden');
+                    await fetchItemComponentsForRepairReadOnly(currentItemId);
+                } else {
+                    // Jika COMPONENT -> Sembunyikan section anak
+                    componentsSection.classList.add('hidden');
+                }
+            }
+
+            async function fetchItemComponentsForRepairReadOnly(itemId) {
+                const componentsList = document.getElementById('repair-components-list');
+                if (!componentsList) return;
+
+                try {
+                    const url = `/admin/items/${itemId}/details`;
+                    const response = await fetch(url, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
+
+                    if (!response.ok) throw new Error(`Gagal mengambil info komponen.`);
+                    const data = await response.json();
+
+                    if (data.components && data.components.length > 0) {
+                        let html = '';
+                        data.components.forEach(comp => {
+                            const specHtml = (comp.spec_set_values && comp.spec_set_values.length > 0) ?
+                                comp.spec_set_values.map(s =>
+                                    `${s.spec_attributes ? s.spec_attributes.name : 'Spec'}: ${s.value}`).join(
+                                    ', ') :
+                                '-';
+
+                            html += `
+                            <div class="border border-gray-200 rounded p-2 bg-white flex flex-col text-sm">
+                                <div class="flex justify-between items-start">
+                                    <span class="font-semibold text-gray-800">${comp.name}</span>
+                                    <span class="text-xs font-mono text-gray-500 bg-gray-100 px-1 rounded">${comp.serial_code}</span>
+                                </div>
+                                <div class="flex justify-between items-end mt-1">
+                                    <span class="text-xs text-purple-600">${comp.type ? comp.type.name : 'N/A'}</span>
+                                    <span class="text-[10px] text-gray-400 max-w-[60%] truncate" title="${specHtml}">${specHtml}</span>
+                                </div>
+                            </div>
+                        `;
+                        });
+                        componentsList.innerHTML = html;
+                    } else {
+                        componentsList.innerHTML =
+                            '<p class="text-gray-400 italic text-center text-sm py-2">Item ini tidak memiliki komponen anak.</p>';
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                    componentsList.innerHTML =
+                        `<p class="text-red-400 text-center text-sm py-2">Gagal memuat info komponen.</p>`;
+                }
+            }
+
+            async function submitRepairForm(form, submitBtn) {
+                showLoading('Mengirim Laporan...');
+                submitBtn.disabled = true;
+
+                const formData = new FormData(form);
+                const description = formData.get('issue_description');
+                const id = formData.get('itemable_id');
+                const isComponent = parseInt(formData.get('is_component'), 10);
+
+                let payload = {
+                    _token: csrfToken
+                };
+
+                if (isComponent === 1) {
+                    payload.components = [{
+                        id: id,
+                        issue_description: description
+                    }];
+                } else {
+                    payload.items = [{
+                        id: id,
+                        issue_description: description
+                    }];
+                }
+
+                try {
+                    const actionUrl = form.dataset.action;
+                    const response = await fetch(actionUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        if (response.status === 422) {
+                            let msg = data.message;
+                            if (data.errors) {
+                                const keys = Object.keys(data.errors);
+                                if (keys.length > 0) msg = data.errors[keys[0]][0];
+                            }
+                            throw new Error(msg || 'Data tidak valid.');
+                        }
+                        throw new Error(data.message || 'Terjadi kesalahan server.');
+                    }
+
+                    hideLoading();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message
+                    });
+
+                    document.getElementById('repair-modal').classList.add('hidden');
+                    document.getElementById('action-modal').classList.add('hidden');
+                    checkModalStateAndToggleBodyOverflow();
+
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Gagal Mengirim', error.message, 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            }
+
+            // =================================================================
+            // Inisialisasi Halaman
+            // =================================================================
+
             function initializeActionModal() {
                 const modal = document.getElementById('action-modal');
                 const overlay = document.getElementById('action-modal-overlay');
                 const closeBtn = document.getElementById('action-modal-close-btn');
 
-                if (!modal || !overlay || !closeBtn) {
-                    Swal.fire('Error Kritis', 'Gagal memuat content modal Aksi. Silakan refresh halaman.', 'error');
-                    return;
-                }
+                if (!modal) return;
 
                 const closeActionModal = () => {
                     modal.classList.add('hidden');
-                    checkModalStateAndToggleBodyOverflow(); // ⬅️ BARU
+                    checkModalStateAndToggleBodyOverflow();
 
                     currentItemId = null;
                     currentItemName = null;
                     currentItemCondition = null;
-                    currentItemType = 'item'; // Reset
-                    currentIsComponent = 0; // Reset
+                    currentItemType = 'item';
+                    currentIsComponent = 0;
                 }
 
                 closeBtn.addEventListener('click', closeActionModal);
@@ -1957,7 +2147,7 @@
                 document.getElementById('action-btn-details').addEventListener('click', openDetailModal);
                 document.getElementById('action-btn-attach').addEventListener('click', openAttachDeskModal);
                 document.getElementById('action-btn-condition').addEventListener('click', submitChangeCondition);
-                document.getElementById('action-btn-repair').addEventListener('click', openRepairModal); // ⬅️ BARU
+                document.getElementById('action-btn-repair').addEventListener('click', openRepairModal);
 
                 document.getElementById('action-btn-manage-comp').addEventListener('click', () => {
                     Swal.fire('Fitur Dalam Pengembangan',
@@ -1975,15 +2165,12 @@
                 const editCompBtn = document.getElementById('action-btn-edit-comp');
                 const condBtn = document.getElementById('action-btn-condition');
                 const detailBtn = document.getElementById('action-btn-details');
-                const repairBtn = document.getElementById('action-btn-repair'); // ⬅️ BARU
+                const repairBtn = document.getElementById('action-btn-repair');
 
-                if (!attachBtn || !manageCompBtn || !editCompBtn || !condBtn || !detailBtn || !repairBtn) { // ⬅️ BARU
-                    showToast('Peringatan', 'Gagal memuat semua tombol aksi di modal.', 'warning');
-                    return;
-                }
+                if (!attachBtn) return;
 
                 detailBtn.style.display = 'flex';
-                repairBtn.style.display = 'flex'; // ⬅️ BARU
+                repairBtn.style.display = 'flex';
 
                 if (currentItemCondition) {
                     condBtn.innerHTML =
@@ -2001,12 +2188,12 @@
                     attachBtn.style.display = 'flex';
                     manageCompBtn.style.display = 'flex';
                     editCompBtn.style.display = 'none';
-                    currentIsComponent = 0; // ⬅️ BARU
-                } else { // component
+                    currentIsComponent = 0;
+                } else {
                     attachBtn.style.display = 'none';
                     manageCompBtn.style.display = 'none';
                     editCompBtn.style.display = 'flex';
-                    currentIsComponent = 1; // ⬅️ BARU
+                    currentIsComponent = 1;
                 }
             }
 
@@ -2067,7 +2254,7 @@
                     }
 
                     document.getElementById('action-modal').classList.add('hidden');
-                    checkModalStateAndToggleBodyOverflow(); // ⬅️ BARU
+                    checkModalStateAndToggleBodyOverflow();
 
                 } catch (error) {
                     hideLoading();
@@ -2075,19 +2262,13 @@
                 }
             }
 
-            // =================================================================
-            // MODAL 3: Logika "Pasang ke Meja"
-            // =================================================================
             function initializeDeskMapperModal() {
                 const modal = document.getElementById('attach-desk-modal');
                 const overlay = document.getElementById('attach-desk-modal-overlay');
                 const closeBtn = document.getElementById('attach-desk-modal-close-btn');
                 const labSelectorEl = document.getElementById('lab-selector-modal');
 
-                if (!modal || !overlay || !closeBtn || !labSelectorEl) {
-                    Swal.fire('Error Kritis', 'Gagal memuat komponen modal Pasang Meja. Silakan refresh halaman.', 'error');
-                    return;
-                }
+                if (!modal) return;
 
                 tomSelectLabModal = new TomSelect(labSelectorEl, {
                     create: false,
@@ -2107,8 +2288,7 @@
                         gridContainer.innerHTML =
                             '<div class="text-center py-12 text-gray-500">Pilih lab untuk melihat denah.</div>';
                     }
-
-                    checkModalStateAndToggleBodyOverflow(); // ⬅️ BARU
+                    checkModalStateAndToggleBodyOverflow();
                 }
 
                 closeBtn.addEventListener('click', closeAttachModal);
@@ -2126,7 +2306,7 @@
 
                 if (itemNameEl) itemNameEl.textContent = currentItemName || '';
                 if (modal) modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden'; // Pastikan overflow di-set
+                document.body.style.overflow = 'hidden';
 
                 showLoading('Memuat Daftar Lab...');
                 try {
@@ -2148,7 +2328,7 @@
                     hideLoading();
                     Swal.fire('Error', error.message, 'error');
                     if (modal) modal.classList.add('hidden');
-                    checkModalStateAndToggleBodyOverflow(); // ⬅️ BARU
+                    checkModalStateAndToggleBodyOverflow();
                 }
             }
 
@@ -2283,13 +2463,12 @@
                     hideLoading();
                     showToast('Berhasil!', data.message, 'success');
 
-                    // Tutup semua modal
                     document.getElementById('attach-desk-modal').classList.add('hidden');
                     document.getElementById('action-modal').classList.add('hidden');
-                    checkModalStateAndToggleBodyOverflow(); // ⬅️ BARU
+                    checkModalStateAndToggleBodyOverflow();
 
-                    // Hapus item dari tabel utama
-                    const actionButton = document.querySelector(`.btn-open-action-item[data-item-id="${currentItemId}"]`);
+                    const actionButton = document.querySelector(
+                        `.btn-open-action-item[data-item-id="${currentItemId}"]`);
                     if (actionButton) {
                         const rowToRemove = actionButton.closest('tr');
                         if (rowToRemove) {
@@ -2297,7 +2476,6 @@
                             rowToRemove.style.opacity = '0';
                             setTimeout(() => {
                                 rowToRemove.remove();
-                                // Refresh data di DataTables setelah hapus
                                 try {
                                     const datatable = te.Datatable.getInstance(document.getElementById(
                                         'items-datatable'));
@@ -2318,22 +2496,16 @@
                 }
             }
 
-            // =================================================================
-            // MODAL 4: Fungsi "Lihat Detail"
-            // =================================================================
             function initializeDetailModal() {
                 const modal = document.getElementById('detail-modal');
                 const overlay = document.getElementById('detail-modal-overlay');
                 const closeBtn = document.getElementById('detail-modal-close-btn');
 
-                if (!modal || !overlay || !closeBtn) {
-                    console.warn('Elemen Modal Detail tidak ditemukan');
-                    return;
-                }
+                if (!modal) return;
 
                 const closeDetailModal = () => {
                     modal.classList.add('hidden');
-                    checkModalStateAndToggleBodyOverflow(); // ⬅️ BARU
+                    checkModalStateAndToggleBodyOverflow();
                 }
 
                 closeBtn.addEventListener('click', closeDetailModal);
@@ -2349,15 +2521,15 @@
                 const modal = document.getElementById('detail-modal');
                 const titleEl = document.getElementById('detail-item-name');
                 const contentEl = document.getElementById('detail-modal-content');
-                if (!modal || !titleEl || !contentEl) return;
+                if (!modal) return;
 
                 titleEl.textContent = currentItemName;
                 modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden'; // Pastikan overflow di-set
+                document.body.style.overflow = 'hidden';
 
                 contentEl.innerHTML = `<div class="flex items-center justify-center py-12">
-                                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-                                      </div>`;
+                                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                                  </div>`;
 
                 const url = (currentItemType === 'item') ?
                     `/admin/items/${currentItemId}/details` :
@@ -2380,11 +2552,10 @@
                     populateDetailModal(data);
 
                 } catch (error) {
-                    console.error("Gagal fetch detail:", error);
                     contentEl.innerHTML = `<div class="text-center py-12 text-red-500">
-                                            <h3 class="font-semibold text-lg">Gagal Memuat Data</h3>
-                                            <p class="text-sm">${error.message}</p>
-                                          </div>`;
+                                        <h3 class="font-semibold text-lg">Gagal Memuat Data</h3>
+                                        <p class="text-sm">${error.message}</p>
+                                      </div>`;
                 }
             }
 
@@ -2398,7 +2569,6 @@
 
                 let locationHtml = '';
                 let componentsHtml = '';
-                // ⬇️ BARU: Tgl Produksi ⬇️
                 const producedAt = data.produced_at ? new Date(data.produced_at).toLocaleDateString('id-ID', {
                     day: '2-digit',
                     month: 'long',
@@ -2408,306 +2578,113 @@
                 if (currentItemType === 'item') {
                     if (data.desk) {
                         locationHtml = `
-                    <dt class="col-span-1 font-semibold text-gray-800">Lokasi</dt>
-                    <dd class="col-span-2 text-gray-600">${data.desk.lab.name} - Meja ${data.desk.location}</dd>
-                `;
+                <dt class="col-span-1 font-semibold text-gray-800">Lokasi</dt>
+                <dd class="col-span-2 text-gray-600">${data.desk.lab.name} - Meja ${data.desk.location}</dd>
+            `;
                     } else {
                         locationHtml = `
-                    <dt class="col-span-1 font-semibold text-gray-800">Lokasi</dt>
-                    <dd class="col-span-2 text-gray-500 italic">Belum terpasang</dd>
-                `;
+                <dt class="col-span-1 font-semibold text-gray-800">Lokasi</dt>
+                <dd class="col-span-2 text-gray-500 italic">Belum terpasang</dd>
+            `;
                     }
                     if (data.components && data.components.length > 0) {
                         componentsHtml = `
-                    <div class="mt-4 pt-4 border-t border-gray-200">
-                        <h4 class="text-md font-semibold text-gray-800 mb-2">Komponen Terpasang (${data.components.length}):</h4>
-                        <ul class="list-disc pl-5 space-y-1">
-                            ${data.components.map(comp => `
-                                            <li class="text-sm text-gray-600">
-                                                <strong>${comp.name}</strong> (${comp.serial_code})
-                                                <span class="ml-2 px-1.5 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">${comp.type ? comp.type.name : 'N/A'}</span>
-                                            </li>
-                                            `).join('')}
-                        </ul>
-                    </div>
-                `;
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <h4 class="text-md font-semibold text-gray-800 mb-2">Komponen Terpasang (${data.components.length}):</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        ${data.components.map(comp => `
+                                                                                                    <li class="text-sm text-gray-600">
+                                                                                                        <strong>${comp.name}</strong> (${comp.serial_code})
+                                                                                                        <span class="ml-2 px-1.5 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">${comp.type ? comp.type.name : 'N/A'}</span>
+                                                                                                    </li>
+                                                                                                    `).join('')}
+                    </ul>
+                </div>
+            `;
                     } else {
                         componentsHtml = `
-                    <div class="mt-4 pt-4 border-t border-gray-200">
-                        <h4 class="text-md font-semibold text-gray-800 mb-2">Komponen Terpasang:</h4>
-                        <p class="text-sm text-gray-500 italic">Tidak ada komponen terpasang.</p>
-                    </div>
-                `;
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <h4 class="text-md font-semibold text-gray-800 mb-2">Komponen Terpasang:</h4>
+                    <p class="text-sm text-gray-500 italic">Tidak ada komponen terpasang.</p>
+                </div>
+            `;
                     }
 
                 } else {
-                    // Ini adalah COMPONENT
                     if (data.item) {
                         let itemLocation = data.item.desk ?
                             `${data.item.desk.lab.name} - Meja ${data.item.desk.location}` :
                             'Item induk belum terpasang';
                         locationHtml = `
-                    <dt class="col-span-1 font-semibold text-gray-800">Terpasang di Item</dt>
-                    <dd class="col-span-2 text-gray-600">${data.item.name} (${data.item.serial_code})</dd>
-                    <dt class="col-span-1 font-semibold text-gray-800">Lokasi Item</dt>
-                    <dd class="col-span-2 text-gray-600">${itemLocation}</dd>
-                `;
+                <dt class="col-span-1 font-semibold text-gray-800">Terpasang di Item</dt>
+                <dd class="col-span-2 text-gray-600">${data.item.name} (${data.item.serial_code})</dd>
+                <dt class="col-span-1 font-semibold text-gray-800">Lokasi Item</dt>
+                <dd class="col-span-2 text-gray-600">${itemLocation}</dd>
+            `;
                     } else {
                         locationHtml = `
-                    <dt class="col-span-1 font-semibold text-gray-800">Lokasi</dt>
-                    <dd class="col-span-2 text-gray-500 italic">Komponen bebas (belum terpasang ke item)</dd>
-                `;
+                <dt class="col-span-1 font-semibold text-gray-800">Lokasi</dt>
+                <dd class="col-span-2 text-gray-500 italic">Komponen bebas (belum terpasang ke item)</dd>
+            `;
                     }
                 }
 
                 let specsHtml = '';
                 if (data.spec_set_values && data.spec_set_values.length > 0) {
                     specsHtml = `
-                <div class="mt-4 pt-4 border-t border-gray-200">
-                    <h4 class="text-md font-semibold text-gray-800 mb-2">Spesifikasi:</h4>
-                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
-                        ${data.spec_set_values.map(spec => `
-                                        <div class="col-span-1">
-                                            <dt class="font-semibold text-gray-800 text-sm">${spec.spec_attributes ? spec.spec_attributes.name : 'N/A'}</dt>
-                                            <dd class="text-gray-600 text-sm pl-2">${spec.value}</dd>
-                                        </div>
-                                        `).join('')}
-                    </dl>
-                </div>
-            `;
+            <div class="mt-4 pt-4 border-t border-gray-200">
+                <h4 class="text-md font-semibold text-gray-800 mb-2">Spesifikasi:</h4>
+                <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
+                    ${data.spec_set_values.map(spec => `
+                                                                                        <div class="col-span-1">
+                                                                                            <dt class="font-semibold text-gray-800 text-sm">${spec.spec_attributes ? spec.spec_attributes.name : 'N/A'}</dt>
+                                                                                            <dd class="text-gray-600 text-sm pl-2">${spec.value}</dd>
+                                                                                        </div>
+                                                                                        `).join('')}
+                </dl>
+            </div>
+        `;
                 } else {
                     specsHtml = `
-                <div class="mt-4 pt-4 border-t border-gray-200">
-                    <h4 class="text-md font-semibold text-gray-800 mb-2">Spesifikasi:</h4>
-                    <p class="text-sm text-gray-500 italic">Tidak ada data spesifikasi.</p>
-                </div>
-            `;
+            <div class="mt-4 pt-4 border-t border-gray-200">
+                <h4 class="text-md font-semibold text-gray-800 mb-2">Spesifikasi:</h4>
+                <p class="text-sm text-gray-500 italic">Tidak ada data spesifikasi.</p>
+            </div>
+        `;
                 }
 
                 contentEl.innerHTML = `
-            <div class="space-y-2">
-                <dl class="grid grid-cols-3 gap-x-4 gap-y-2">
-                    <dt class="col-span-1 font-semibold text-gray-800">Nama</dt>
-                    <dd class="col-span-2 text-gray-600">${data.name}</dd>
-                    
-                    <dt class="col-span-1 font-semibold text-gray-800">Serial Code</dt>
-                    <dd class="col-span-2 text-gray-600 font-mono">${data.serial_code}</dd>
-                    
-                    <dt class="col-span-1 font-semibold text-gray-800">Tipe</dt>
-                    <dd class="col-span-2 text-gray-600">${data.type ? data.type.name : 'N/A'}</dd>
-                    
-                    <dt class="col-span-1 font-semibold text-gray-800">Kondisi</dt>
-                    <dd class="col-span-2">${conditionText}</dd>
-
-                    <dt class="col-span-1 font-semibold text-gray-800">Tgl. Produksi</dt>
-                    <dd class="col-span-2 text-gray-600">${producedAt}</dd>
-                    
-                    ${locationHtml}
-                </dl>
+        <div class="space-y-2">
+            <dl class="grid grid-cols-3 gap-x-4 gap-y-2">
+                <dt class="col-span-1 font-semibold text-gray-800">Nama</dt>
+                <dd class="col-span-2 text-gray-600">${data.name}</dd>
                 
-                ${specsHtml}
+                <dt class="col-span-1 font-semibold text-gray-800">Serial Code</dt>
+                <dd class="col-span-2 text-gray-600 font-mono">${data.serial_code}</dd>
                 
-                ${componentsHtml}
-            </div>
-        `;
+                <dt class="col-span-1 font-semibold text-gray-800">Tipe</dt>
+                <dd class="col-span-2 text-gray-600">${data.type ? data.type.name : 'N/A'}</dd>
+                
+                <dt class="col-span-1 font-semibold text-gray-800">Kondisi</dt>
+                <dd class="col-span-2">${conditionText}</dd>
+
+                <dt class="col-span-1 font-semibold text-gray-800">Tgl. Produksi</dt>
+                <dd class="col-span-2 text-gray-600">${producedAt}</dd>
+                
+                ${locationHtml}
+            </dl>
+            
+            ${specsHtml}
+            
+            ${componentsHtml}
+        </div>
+    `;
             }
 
-            // ⬇️ BARU: MODAL 6: Logika "Lapor Perbaikan" ⬇️
-            // =================================================================
-            function initializeRepairModal() {
-                const modal = document.getElementById('repair-modal');
-                const overlay = document.getElementById('repair-modal-overlay');
-                const closeBtn = document.getElementById('repair-modal-close-btn');
-                const cancelBtn = document.getElementById('repair-modal-cancel-btn');
-                const form = document.getElementById('repair-form');
-                const submitBtn = document.getElementById('submit-repair-btn');
-
-                if (!modal || !overlay || !closeBtn || !cancelBtn || !form || !submitBtn) {
-                    console.warn('Elemen Modal Perbaikan tidak ditemukan');
-                    return;
-                }
-
-                const closeRepairModal = () => {
-                    modal.classList.add('hidden');
-                    checkModalStateAndToggleBodyOverflow();
-                }
-
-                closeBtn.addEventListener('click', closeRepairModal);
-                cancelBtn.addEventListener('click', closeRepairModal);
-                overlay.addEventListener('click', (e) => {
-                    if (e.target === overlay) closeRepairModal();
-                });
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeRepairModal();
-                });
-
-                submitBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    submitRepairForm(form, submitBtn);
-                });
-            }
-
-            async function openRepairModal() {
-                const modal = document.getElementById('repair-modal');
-                const titleEl = document.getElementById('repair-modal-title');
-                const form = document.getElementById('repair-form');
-                const componentsSection = document.getElementById('repair-components-section');
-                const componentsList = document.getElementById('repair-components-list');
-                const hiddenItemId = document.getElementById('repair-itemable-id');
-                const hiddenIsComponent = document.getElementById('repair-is-component');
-
-                if (!modal || !titleEl || !form || !componentsSection || !componentsList || !hiddenItemId || !
-                    hiddenIsComponent) {
-                    showToast('Error', 'Gagal memuat elemen modal perbaikan.', 'error');
-                    return;
-                }
-
-                // Reset form
-                form.reset();
-                componentsList.innerHTML =
-                    '<div class="text-center py-4 text-gray-500">Memuat komponen...</div>'; // Loading state
-
-                // Set data
-                hiddenItemId.value = currentItemId;
-                hiddenIsComponent.value = currentIsComponent;
-                titleEl.innerHTML =
-                    `Lapor Perbaikan: <span class="font-bold text-red-600">${currentItemName}</span>`;
-
-                // Tampilkan modal
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-
-                // Cek jika ini adalah Item (bukan component)
-                if (currentIsComponent == 0) {
-                    componentsSection.classList.remove('hidden');
-                    // Ambil data komponen anaknya
-                    await fetchItemComponentsForRepair(currentItemId);
-                } else {
-                    componentsSection.classList.add('hidden');
-                }
-            }
-
-            async function fetchItemComponentsForRepair(itemId) {
-                const componentsList = document.getElementById('repair-components-list');
-                if (!componentsList) return;
-
-                try {
-                    const url = `/admin/items/${itemId}/details`;
-                    const response = await fetch(url, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
-                        }
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || `Gagal mengambil data komponen.`);
-                    }
-
-                    const data = await response.json();
-
-                    if (data.components && data.components.length > 0) {
-                        let html = '';
-                        data.components.forEach(comp => {
-                            // Gabungkan spesifikasi menjadi satu string
-                            const specHtml = (comp.spec_set_values && comp.spec_set_values.length > 0) ?
-                                comp.spec_set_values.map(s =>
-                                    `<strong>${s.spec_attributes ? s.spec_attributes.name : 'N/A'}:</strong> ${s.value}`
-                                ).join(', ') :
-                                'Tanpa spesifikasi';
-
-                            html += `
-                        <div class="border border-gray-300 rounded-lg p-3 bg-white flex items-start space-x-4 shadow-sm">
-                            <input type="checkbox" name="item_component_ids[]" value="${comp.id}" class="h-5 w-5 mt-1 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <div class="flex-1">
-                                <p class="font-semibold text-gray-900">${comp.name} 
-                                    <span class="text-xs font-mono text-gray-500">(${comp.serial_code})</span>
-                                </p>
-                                <p class="text-sm text-purple-700 font-medium">${comp.type ? comp.type.name : 'N/A'}</p>
-                                <p class="text-xs text-gray-600 mt-1">${specHtml}</p>
-                            </div>
-                        </div>
-                    `;
-                        });
-                        componentsList.innerHTML = html;
-                    } else {
-                        componentsList.innerHTML =
-                            '<p class="text-gray-500 italic text-center py-4">Item ini tidak memiliki komponen anak.</p>';
-                    }
-
-                } catch (error) {
-                    console.error("Gagal fetch komponen untuk perbaikan:", error);
-                    componentsList.innerHTML =
-                        `<p class="text-red-500 text-center py-4">Gagal memuat komponen: ${error.message}</p>`;
-                }
-            }
-
-            async function submitRepairForm(form, submitBtn) {
-                showLoading('Mengirim Laporan...');
-                submitBtn.disabled = true;
-
-                const formData = new FormData(form);
-                const payload = {
-                    issue_description: formData.get('issue_description'),
-                    itemable_id: formData.get('itemable_id'),
-                    is_component: parseInt(formData.get('is_component'), 10),
-                    item_component_ids: formData.getAll('item_component_ids[]'), // Ini akan jadi array
-                    _token: csrfToken
-                };
-
-                try {
-                    const actionUrl = form.dataset.action; // Ambil dari data-action di form
-                    const response = await fetch(actionUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        if (response.status === 422) { // Validation error
-                            // Ambil error pertama
-                            const firstError = data.errors ? Object.values(data.errors)[0][0] : data.message;
-                            throw new Error(firstError || 'Data yang dikirim tidak valid.');
-                        }
-                        throw new Error(data.message || 'Terjadi kesalahan pada server.');
-                    }
-
-                    hideLoading();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: data.message,
-                    });
-
-                    // Tutup semua modal terkait
-                    document.getElementById('repair-modal').classList.add('hidden');
-                    document.getElementById('action-modal').classList.add('hidden');
-                    checkModalStateAndToggleBodyOverflow();
-
-                } catch (error) {
-                    hideLoading();
-                    Swal.fire('Gagal Mengirim', error.message, 'error');
-                } finally {
-                    submitBtn.disabled = false;
-                }
-            }
-            // ⬆️ MODAL 6 SELESAI ⬆️
-
-            // =================================================================
-            // ⬇️ PERBAIKAN PADA LOGIKA FILTER (SESUAI KOMPLAIN ANDA) ⬇️
-            // =================================================================
             function initializePageFilters() {
                 const filterForm = document.getElementById('filter-form');
                 if (!filterForm) return;
 
-                // Inisialisasi semua TomSelect untuk filter
                 new TomSelect('#filter_lab_select', {
                     plugins: ['clear_button']
                 });
@@ -2721,7 +2698,6 @@
                     plugins: ['clear_button']
                 });
 
-                // ⬇️ Simpan instance ke object global 'filterTomSelects' ⬇️
                 filterTomSelects.val = new TomSelect('#filter_spec_val', {
                     plugins: ['clear_button']
                 });
@@ -2737,7 +2713,6 @@
                         if (!value) {
                             filterTomSelects.val.disable();
                         } else {
-                            // ⬇️ PERBAIKAN: Menggunakan .options[value]['values'] sesuai kode asli Anda ⬇️
                             const selectedOptionData = filterTomSelects.attr.options[value];
 
                             if (!selectedOptionData || !selectedOptionData['values']) {
@@ -2770,9 +2745,7 @@
                 const initialValId = '{{ data_get($filters, 'spec_value_id') }}';
 
                 if (initialAttrId && filterTomSelects.attr) {
-                    filterTomSelects.attr.setValue(initialAttrId, true); // silent
-
-                    // ⬇️ PERBAIKAN: Menggunakan .options[value]['values'] ⬇️
+                    filterTomSelects.attr.setValue(initialAttrId, true);
                     const selectedOption = filterTomSelects.attr.options[initialAttrId];
                     if (selectedOption && selectedOption['values'] && filterTomSelects.val) {
                         try {
@@ -2783,40 +2756,24 @@
                             })));
                             filterTomSelects.val.enable();
                             if (initialValId) {
-                                filterTomSelects.val.setValue(initialValId, true); // silent
+                                filterTomSelects.val.setValue(initialValId, true);
                             }
                         } catch (e) {
                             console.error("Gagal parse data-values saat init:", e);
                         }
-                    } else if (!selectedOption || !selectedOption['values']) {
-                        showToast('Gagal Memuat Filter',
-                            'Data spesifikasi (values) tidak ditemukan. Mohon reset Filter.',
-                            'error');
-                        filterTomSelects.val.disable();
-                        return;
                     }
                 }
             }
-            // ⬆️ --------------------------------------------------- ⬆️
 
-
-            // =================================================================
-            // DOMContentLoaded (Hanya memanggil fungsi)
-            // =================================================================
             document.addEventListener('DOMContentLoaded', function() {
-
-                // --- Inisialisasi Semua Modal ---
                 initializeCreateItemModal();
+                initializeCreateSetModal();
                 initializeActionModal();
                 initializeDeskMapperModal();
                 initializeDetailModal();
-                initializeCreateSetModal(); // ⬅️ BARU
-                initializeRepairModal(); // ⬅️ BARU
-
-                // --- Inisialisasi Filter Halaman ---
+                initializeRepairModal();
                 initializePageFilters();
 
-                // --- Inisialisasi Tombol Filter ---
                 const resetFilterBtn = document.getElementById('reset-filter-btn');
                 const filterForm = document.getElementById('filter-form');
 
@@ -2842,7 +2799,6 @@
                     });
                 }
 
-                // --- Inisialisasi DataTables ---
                 try {
                     let itemDataTable = new te.Datatable(document.getElementById('items-datatable'), {
                         search: true,
@@ -2878,32 +2834,21 @@
                         'warning');
                 }
 
-                // --- Inisialisasi Tombol Utama ---
                 const openCreateBtn = document.getElementById('open-create-modal-btn');
                 if (openCreateBtn) {
                     openCreateBtn.addEventListener('click', window.openCreateItemModal);
-                } else {
-                    Swal.fire('Error Kritis', 'Tombol "Tambah Item" tidak ditemukan. Silakan refresh halaman.',
-                        'error');
                 }
 
-                // ⬇️ BARU: Listener untuk Tombol Set ⬇️
                 const openCreateSetBtn = document.getElementById('open-create-set-modal-btn');
                 if (openCreateSetBtn) {
                     openCreateSetBtn.addEventListener('click', window.openCreateSetModal);
-                } else {
-                    Swal.fire('Error Kritis', 'Tombol "Tambah Set Item" tidak ditemukan. Silakan refresh halaman.',
-                        'error');
                 }
-                // ⬆️ --------------------------- ⬆️
 
-                // --- Inisialisasi Listener Tabel (Aksi) ---
                 const itemsDatatableEl = document.getElementById('items-datatable');
                 const componentsDatatableEl = document.getElementById('components-datatable');
                 const actionModal = document.getElementById('action-modal');
                 const actionModalTitle = document.getElementById('action-modal-title');
 
-                // Listener untuk Tombol Aksi ITEMS
                 if (itemsDatatableEl && actionModal && actionModalTitle) {
                     itemsDatatableEl.addEventListener('click', function(e) {
                         const actionButton = e.target.closest('.btn-open-action-item');
@@ -2923,7 +2868,6 @@
                     });
                 }
 
-                // Listener untuk Tombol Aksi COMPONENTS
                 if (componentsDatatableEl && actionModal && actionModalTitle) {
                     componentsDatatableEl.addEventListener('click', function(e) {
                         const actionButton = e.target.closest('.btn-open-action-component');

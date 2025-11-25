@@ -91,7 +91,7 @@ class UnitController extends Controller
     {
         // ambil labs (kayak yang di admin... 
         // liat petak" desks di setiap lab lalu cek apakah item lengkap | apa aja yang avail dipinjem)
-        return view('booking');
+        return view('user.booking');
     }
 
     public function storeBooking() {}
