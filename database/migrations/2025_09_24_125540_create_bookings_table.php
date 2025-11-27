@@ -19,8 +19,8 @@ return new class extends Migration
 
             // Untuk Pinjam Item maupun Lab
             $table->string('event_name')->comment('Nama kegiatan/keperluan');
-            $table->timestamp('event_started_at');
-            $table->timestamp('event_ended_at');
+            $table->dateTime('event_started_at');
+            $table->dateTime('event_ended_at');
             
             // Khusus Skripsi
             $table->string('thesis_title')->nullable();
@@ -28,8 +28,8 @@ return new class extends Migration
             $table->uuid('supervisor_id')->nullable();
             $table->foreign('supervisor_id')->references('id')->on('users')->onDelete('set null');
 
-            $table->timestamp('borrowed_at'); // ini start pinjam barang, untuk lihat kapan apply pinjam maka lihat created_at
-            $table->timestamp('return_deadline_at'); // bisa di edit oleh approver
+            $table->dateTime('borrowed_at'); // ini start pinjam barang, untuk lihat kapan apply pinjam maka lihat created_at
+            $table->dateTime('return_deadline_at'); // bisa di edit oleh approver
             // jika belum ada returned_at, maka masih dipinjam
             // jika ada returned_at, tapi lebih lambat dari return_deadline_at maka Telat dikembalikan
 
