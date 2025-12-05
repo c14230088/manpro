@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             LabsSeeder::class,
             DesksSeeder::class,
+            UnitSeeder::class,
             // specification::class,
             // ItemsSeeder::class,
             // ComponentsSeeder::class

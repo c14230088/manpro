@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
@@ -14,6 +13,7 @@ class Labs extends Model
         'id',
         'name',
         'location',
+        'capacity',
     ];
 
     protected $hidden = [
@@ -24,6 +24,22 @@ class Labs extends Model
     public function desks()
     {
         return $this->hasMany(Desks::class, 'lab_id');
+    }
+
+    public function items()
+    {
+        return $this->hasMany(Items::class, 'lab_id');
+    }
+
+    public function softwares()
+    {
+        return $this->belongsToMany(
+            Software::class,
+            'lab_softwares',
+            'lab_id',
+            'software_id'
+        )
+            ->withTimestamps();
     }
 
     public function bookings()

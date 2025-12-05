@@ -60,19 +60,20 @@ class UnitController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'unit_id' => $mahasiswaUnit->id,
-                'id' => Str::uuid(30),
             ]
         );
+
+        if (!$user && ! $user->unit_id) {
+            return redirect()->route('user.login')->with('error', 'Gagal membuat atau mendapatkan user, silakan coba lagi.');
+        }
 
         Auth::login($user);
         $request->session()->regenerate();
 
-        // route ke user.* jangan ke ADMIN (kalau bukan admin, cek apakah sudah ada unit_id, kalo belum berarti new mahasiswa.)
-        // ganti pake middleware
         if ($user->unit_id === $mahasiswaUnit->id) {
-            return redirect()->route('user.booking.form');
+            return redirect()->route('user.landing');
         } else {
-            return redirect()->route('admin.labs');
+            return redirect()->route('admin.dashboard');
         }
     }
 
@@ -84,7 +85,7 @@ class UnitController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->to('/')->with('success', 'Logout Sukses');
+        return redirect()->to('/login')->with('success', 'Logout Sukses');
     }
 
     public function formBooking()

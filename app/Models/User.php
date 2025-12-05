@@ -57,7 +57,7 @@ class User extends Authenticatable
             'model_id',
             'permission_id'
         )
-            ->withPivot(['id', 'permission.action', 'permission.name', 'permission.description'])
+            ->withPivot(['id', 'permissions.action', 'permissions.name', 'permissions.description'])
             ->using(Model_permission::class);
     }
 }

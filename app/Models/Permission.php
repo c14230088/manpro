@@ -13,7 +13,7 @@ class Permission extends Model
         'id',
         'name',
         'description',
-        'url',
+        'route',
         'action',
         'permission_group_id',
     ];

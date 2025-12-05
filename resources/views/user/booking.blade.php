@@ -1,4 +1,4 @@
-@extends('layouts.form')
+@extends('layouts.user')
 
 @section('title', 'Formulir Peminjaman')
 

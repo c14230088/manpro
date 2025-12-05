@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('log_items', function (Blueprint $table) {
-            $table->id();
+            // perpindahan ITEMS dan COMPONENTS antar desk, saat repair (KE PTIK or other), saat dibooking
+            $table->uuid('id')->primary();
             $table->timestamps();
         });
     }

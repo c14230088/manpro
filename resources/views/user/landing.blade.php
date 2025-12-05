@@ -1,4 +1,4 @@
-@extends('layouts.form')
+@extends('layouts.user')
 
 @section('title', 'Selamat Datang di Laboratorium Gedung P')
 

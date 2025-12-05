@@ -25,4 +25,9 @@ class Period extends Model
     {
         return $this->hasMany(Booking::class, 'period_id');
     }
+
+    public function repairs()
+    {
+        return $this->hasMany(Repair::class, 'period_id');
+    }
 }

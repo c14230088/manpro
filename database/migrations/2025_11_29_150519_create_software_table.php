@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('units', function (Blueprint $table) {
+        Schema::create('softwares', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name')->unique();
-            $table->string('description')->nullable();
+            $table->string('version')->nullable();
+            // $table->string('license_key')->nullable();
+            // $table->string('vendor')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('units');
+        Schema::dropIfExists('software');
     }
 };

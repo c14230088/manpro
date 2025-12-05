@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
 
-            $table->string('url'); // pakai url atau route name?
-            $table->enum('action', ['VIEW','GET', 'POST', 'PATCH', "DELETE", "PUT"])->default('VIEW');
+            $table->string('route');
+            $table->enum('action', ['VIEW', 'GET', 'POST', 'PATCH', "DELETE", "PUT"])->default('VIEW');
 
             $table->uuid('permission_group_id')->nullable();
             $table->foreign('permission_group_id')->references('id')->on('permission_groups')->onDelete('set null'); // instead of hapus, jadikan gapunya group parent saja

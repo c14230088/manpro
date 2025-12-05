@@ -21,6 +21,8 @@ class Items extends Model
         'type_id',
         'unit_id',
         'desk_id',
+
+        'lab_id',
     ];
 
     protected $hidden = [
@@ -31,6 +33,11 @@ class Items extends Model
     public function desk()
     {
         return $this->belongsTo(Desks::class);
+    }
+
+    public function lab()
+    {
+        return $this->belongsTo(Labs::class);
     }
 
     public function components()

@@ -17,6 +17,8 @@ return new class extends Migration
             $table->uuid('reported_by');
             $table->foreign('reported_by')->references('id')->on('users')->onDelete('cascade');
             
+            $table->uuid('period_id');
+            $table->foreign('period_id')->references('id')->on('periods')->onDelete('cascade');
             $table->timestamps();
         });
     }

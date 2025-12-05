@@ -12,6 +12,7 @@ class Repair extends Model
     protected $fillable = [
         'name',
         'reported_by',
+        'period_id',
     ];
 
     protected $hidden = [
@@ -41,5 +42,9 @@ class Repair extends Model
         return $this->morphedByMany(Components::class, 'itemable', 'repairs_items')
             ->using(repairs_item::class)
             ->withPivot(['issue_description', 'status', 'is_successful']);
+    }
+    public function period()
+    {
+        return $this->belongsTo(Period::class);
     }
 }

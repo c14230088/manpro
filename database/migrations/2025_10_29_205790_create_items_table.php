@@ -29,6 +29,9 @@ return new class extends Migration
 
             $table->uuid('desk_id')->nullable(); // bisa bound ke suatu meja, bisa free
             $table->foreign('desk_id')->references('id')->on('desks')->onDelete('cascade');
+            
+            $table->uuid('lab_id')->nullable(); // bisa bound ke suatu meja, bisa free ATAU KE BOUND DI LAB
+            $table->foreign('lab_id')->references('id')->on('labs')->onDelete('cascade');
 
             $table->timestamps();
         });
