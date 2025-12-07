@@ -55,12 +55,19 @@ class ItemsController extends Controller
             'set_name' => 'required|string|max:255',
             'set_note' => 'nullable|string',
             'items' => 'required|array|size:4',
-            'items.*' => 'required|array'
+            'items.*' => 'required|array',
+            'attach_to_desk' => 'nullable|boolean',
+            'lab_id' => 'required_if:attach_to_desk,true|uuid|exists:labs,id',
+            'desk_locations' => 'required_if:attach_to_desk,true|array|size:4',
+            'desk_locations.*' => 'required_if:attach_to_desk,true|string'
         ], [
             'set_name.required' => 'Nama Set wajib diisi.',
             'items.required' => 'Data item wajib diisi.',
             'items.array' => 'Data item harus berupa array.',
             'items.size' => 'Set harus terdiri dari 4 item.',
+            'lab_id.required_if' => 'Lab harus dipilih jika ingin memasang set ke meja.',
+            'desk_locations.required_if' => 'Lokasi meja harus dipilih.',
+            'desk_locations.size' => 'Harus memilih 4 lokasi meja untuk 4 item.',
         ]);
 
         $itemTemplates = $request->input('items'); // Ambil array 4 item
@@ -97,12 +104,37 @@ class ItemsController extends Controller
                 $createdItems[] = $responseContent['data'];
             }
 
+            if ($request->filled('attach_to_desk') && $request->attach_to_desk) {
+                $deskLocations = $request->desk_locations;
+                $labId = $request->lab_id;
+
+                foreach ($createdItems as $index => $itemData) {
+                    $deskLocation = $deskLocations[$index];
+                    
+                    $desk = DB::table('desks')
+                        ->where('lab_id', $labId)
+                        ->where('location', $deskLocation)
+                        ->first();
+
+                    if (!$desk) {
+                        throw new \Exception("Meja {$deskLocation} tidak ditemukan di lab ini.");
+                    }
+
+                    $item = Items::find($itemData['id']);
+                    if ($item) {
+                        $item->desk_id = $desk->id;
+                        $item->save();
+                    }
+                }
+            }
+
             DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => "Set '{$set->name}' dengan 4 item berhasil dibuat!",
                 'set_id' => $set->id,
+                'set_name' => $set->name,
                 'created_items' => $createdItems
             ]);
         } catch (\Exception $e) {

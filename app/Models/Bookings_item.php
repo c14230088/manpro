@@ -39,4 +39,8 @@ class Bookings_item extends MorphPivot
     {
         return $this->morphTo();
     }
+    public function returner()
+    {
+        return $this->belongsTo(User::class, 'returner_id');
+    }
 }

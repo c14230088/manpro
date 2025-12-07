@@ -2,111 +2,95 @@
 
 namespace Database\Seeders;
 
-use App\Models\Desks;
 use App\Models\Items;
 use App\Models\Labs;
+use App\Models\Type;
+use App\Models\Set;
 use App\Models\Unit;
-use App\Models\SpecSet;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Desks;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class ItemsSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-         $units = Unit::all();
-        if ($units->isEmpty()) {
-            $this->command->warn('⚠️ Units table kosong. Jalankan UnitsSeeder dulu!');
+        $labs = Labs::all();
+        $types = Type::all()->keyBy('name');
+        $sets = Set::all();
+        $units = Unit::all();
+        
+        if ($labs->isEmpty() || $types->isEmpty() || $units->isEmpty()) {
             return;
         }
 
-        $presetMonitor_id = SpecSet::where('display_name', '1920x1080 75Hz')->value('id');
-        $presetMouse_id = SpecSet::where('display_name', 'Dpi 800-8000 Black')->value('id');
-        $presetKeyboard_id = SpecSet::where('display_name', 'TKL Blue')->value('id');
+        $ptikUnit = $units->where('name', 'PTIK')->first() ?? $units->first();
+        $counter = 1;
 
-
-        // Konfigurasi per lab
-        $config = [
-            'Lab Pemrograman Dasar' => [
-                'desks' => 5, // jumlah desks yg mau di isi
-                'items' => [0, 1, 2, 3],
-            ],
-            'Lab Studio' => [
-                'desks' => 5,
-                'items' => [0, 1, 2, 3],
-            ],
-            'Lab Sistem Informasi' => [
-                'desks' => 5,
-                'items' => [0, 1, 2, 3],
-            ],
-
-            'Lab Multimedia' => [
-                'desks' => 5,
-                'items' => [0, 1, 2, 3],
-            ],
-
-            'Lab Jaringan Komputer' => [
-                'desks' => 5,
-                'items' => [0, 1, 2, 3],
-            ],
-
-            'Lab Sistem Cerdas' => [
-                'desks' => 5,
-                'items' => [0, 1, 2, 3],
-            ],
-
-            'Lab Virtual Reality' => [
-                'desks' => 5,
-                'items' => [0, 1, 2, 3],
-            ],
-        ];
-
-        $itemTemplates = [
-            0 => [
-                'name' => 'Monitor LG 24 inch',
-                'spec_set_id' => $presetMonitor_id,
-            ],
-            1 => [
-                'name' => 'CPU Lenovo ThinkCentre',
-                'spec_set_id' => null,
-            ],
-            2 => [
-                'name' => 'Mouse Logitech G102',
-                'spec_set_id' => $presetMouse_id,
-            ],
-            3 => [
-                'name' => 'Keyboard Redragon Mechanical',
-                'spec_set_id' => $presetKeyboard_id,
-            ],
-        ];
-
-        foreach ($config as $labName => $rules) {
-            $lab = Labs::where('name', $labName)->first();
-            if (!$lab) {
-                $this->command->warn("⚠️ Lab {$labName} tidak ditemukan, skip...");
-                continue;
-            }
-
-            // Ambil desk sesuai aturan
-            $desks = Desks::where('lab_id', $lab->id)->take($rules['desks'])->get();
+        foreach ($labs as $lab) {
+            $desks = Desks::where('lab_id', $lab->id)->get();
 
             foreach ($desks as $desk) {
-                foreach ($rules['items'] as $type) {
-                    $template = $itemTemplates[$type];
+                // Monitor
+                Items::create([
+                    'name' => "MONITOR {$lab->name} {$desk->location}",
+                    'serial_code' => "MON-" . str_pad($counter++, 4, '0', STR_PAD_LEFT),
+                    'condition' => rand(0, 10) > 1,
+                    'produced_at' => now()->subMonths(rand(6, 36)),
+                    'type_id' => $types['MONITOR']->id ?? $types->first()->id,
+                    'unit_id' => $ptikUnit->id,
+                    'lab_id' => $lab->id,
+                    'desk_id' => $desk->id,
+                ]);
 
+                // CPU
+                Items::create([
+                    'name' => "CPU {$lab->name} {$desk->location}",
+                    'serial_code' => "CPU-" . str_pad($counter++, 4, '0', STR_PAD_LEFT),
+                    'condition' => rand(0, 10) > 1,
+                    'produced_at' => now()->subMonths(rand(6, 36)),
+                    'type_id' => $types['CPU']->id ?? $types->first()->id,
+                    'unit_id' => $ptikUnit->id,
+                    'lab_id' => $lab->id,
+                    'desk_id' => $desk->id,
+                ]);
+
+                // Keyboard
+                Items::create([
+                    'name' => "KEYBOARD {$lab->name} {$desk->location}",
+                    'serial_code' => "KB-" . str_pad($counter++, 4, '0', STR_PAD_LEFT),
+                    'condition' => rand(0, 10) > 1,
+                    'produced_at' => now()->subMonths(rand(6, 36)),
+                    'type_id' => $types['KEYBOARD']->id ?? $types->first()->id,
+                    'unit_id' => $ptikUnit->id,
+                    'lab_id' => $lab->id,
+                    'desk_id' => $desk->id,
+                ]);
+
+                // Mouse
+                Items::create([
+                    'name' => "MOUSE {$lab->name} {$desk->location}",
+                    'serial_code' => "MS-" . str_pad($counter++, 4, '0', STR_PAD_LEFT),
+                    'condition' => rand(0, 10) > 1,
+                    'produced_at' => now()->subMonths(rand(6, 36)),
+                    'type_id' => $types['MOUSE']->id ?? $types->first()->id,
+                    'unit_id' => $ptikUnit->id,
+                    'lab_id' => $lab->id,
+                    'desk_id' => $desk->id,
+                ]);
+            }
+
+            // VR headsets for VR lab
+            if (stripos($lab->name, 'VR') !== false || stripos($lab->name, 'Virtual') !== false) {
+                for ($i = 1; $i <= 3; $i++) {
                     Items::create([
-                        'id' => Str::uuid(30),
-                        'name' => $template['name'],
-                        'serial_code' => strtoupper(substr($template['name'], 0, 3)) . '-' . strtoupper(Str::random(6)),
-                        'type' => $type,
-                        'condition' => 1,
-                        'spec_set_id' => $template['spec_set_id'],
-                        'unit_id' => $units->random()->id,
-                        'desk_id' => $desk->id,
+                        'name' => "VR HEADSET {$lab->name} #{$i}",
+                        'serial_code' => "VR-" . str_pad($counter++, 4, '0', STR_PAD_LEFT),
+                        'condition' => rand(0, 10) > 2,
+                        'produced_at' => now()->subMonths(rand(3, 18)),
+                        'type_id' => $types['VR HEADSET']->id ?? $types->first()->id,
+                        'unit_id' => $ptikUnit->id,
+                        'lab_id' => $lab->id,
+                        'desk_id' => null,
                     ]);
                 }
             }

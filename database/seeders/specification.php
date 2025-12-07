@@ -2,113 +2,57 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\SpecAttributes;
-use App\Models\SpecSet;
 use App\Models\SpecSetValue;
-use App\Models\SpecType;
-
 
 class specification extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
+        // Create attributes
+        $brand = SpecAttributes::firstOrCreate(['name' => 'BRAND']);
+        $model = SpecAttributes::firstOrCreate(['name' => 'MODEL']);
+        $capacity = SpecAttributes::firstOrCreate(['name' => 'CAPACITY']);
+        $resolution = SpecAttributes::firstOrCreate(['name' => 'RESOLUTION']);
+        $refreshRate = SpecAttributes::firstOrCreate(['name' => 'REFRESH_RATE']);
+        $type = SpecAttributes::firstOrCreate(['name' => 'TYPE']);
+        $speed = SpecAttributes::firstOrCreate(['name' => 'SPEED']);
 
-        $typeProcessor = SpecType::firstOrCreate(['name' => 'Processor']);
-        $typeRAM = SpecType::firstOrCreate(['name' => 'RAM']);
-        $typeStorage = SpecType::firstOrCreate(['name' => 'Storage']);
-        $typeCPU = SpecType::firstOrCreate(['name' => 'CPU']);
-        $typeMonitor = SpecType::firstOrCreate(['name' => 'Monitor']);
-        $typeMouse = SpecType::firstOrCreate(['name' => 'Mouse']);
-        $typeKeyboard = SpecType::firstOrCreate(['name' => 'Keyboard']);
+        // Create values for each attribute
+        $brands = ['INTEL', 'AMD', 'NVIDIA', 'CORSAIR', 'SAMSUNG', 'ASUS', 'LOGITECH'];
+        foreach ($brands as $brandName) {
+            SpecSetValue::firstOrCreate(['spec_attributes_id' => $brand->id, 'value' => $brandName]);
+        }
 
-        // Atribut untuk Processor
-        $attrCpuBrand = SpecAttributes::firstOrCreate(['spec_type_id' => $typeProcessor->id, 'name' => 'Brand']);
-        $attrCpuModel = SpecAttributes::firstOrCreate(['spec_type_id' => $typeProcessor->id, 'name' => 'Model']);
-        $attrCpuGen = SpecAttributes::firstOrCreate(['spec_type_id' => $typeProcessor->id, 'name' => 'Generation']);
+        $models = ['CORE I5', 'CORE I7', 'RYZEN 5', 'RYZEN 7', 'RTX 3060', 'GTX 1660'];
+        foreach ($models as $modelName) {
+            SpecSetValue::firstOrCreate(['spec_attributes_id' => $model->id, 'value' => $modelName]);
+        }
 
-        // Atribut untuk RAM
-        $attrRamType = SpecAttributes::firstOrCreate(['spec_type_id' => $typeRAM->id, 'name' => 'Type']);
-        $attrRamCapacity = SpecAttributes::firstOrCreate(['spec_type_id' => $typeRAM->id, 'name' => 'Capacity']);
-        $attrRamBrand = SpecAttributes::firstOrCreate(['spec_type_id' => $typeRAM->id, 'name' => 'Brand']);
+        $capacities = ['8GB', '16GB', '32GB', '512GB', '1TB'];
+        foreach ($capacities as $cap) {
+            SpecSetValue::firstOrCreate(['spec_attributes_id' => $capacity->id, 'value' => $cap]);
+        }
 
-        // Atribut untuk Storage
-        $attrStorageType = SpecAttributes::firstOrCreate(['spec_type_id' => $typeStorage->id, 'name' => 'Type']);
-        $attrStorageCapacity = SpecAttributes::firstOrCreate(['spec_type_id' => $typeStorage->id, 'name' => 'Capacity']);
-        $attrStorageInterface = SpecAttributes::firstOrCreate(['spec_type_id' => $typeStorage->id, 'name' => 'Interface']);
-        $attrStorageBrand = SpecAttributes::firstOrCreate(['spec_type_id' => $typeStorage->id, 'name' => 'Brand']);
+        $resolutions = ['1920X1080', '2560X1440', '3840X2160'];
+        foreach ($resolutions as $res) {
+            SpecSetValue::firstOrCreate(['spec_attributes_id' => $resolution->id, 'value' => $res]);
+        }
 
-        //atribut untuk monitor
-        $attrMonitorRes = SpecAttributes::firstOrCreate(['spec_type_id' => $typeMonitor->id, 'name' => 'Resolution']);
-        $attrMonitorRefresh = SpecAttributes::firstOrCreate(['spec_type_id' => $typeMonitor->id, 'name' => 'Refresh_rate']);
+        $refreshRates = ['60HZ', '75HZ', '144HZ'];
+        foreach ($refreshRates as $rate) {
+            SpecSetValue::firstOrCreate(['spec_attributes_id' => $refreshRate->id, 'value' => $rate]);
+        }
 
-        //atribut untuk mouse
-        $attrMouseDpi = SpecAttributes::firstOrCreate(['spec_type_id' => $typeMouse->id, 'name' => 'Dpi']);
-        $attrMouseColor = SpecAttributes::firstOrCreate(['spec_type_id' => $typeMouse->id, 'name' => 'Color']);
+        $types = ['DDR4', 'DDR5', 'NVME', 'SATA', 'MECHANICAL', 'OPTICAL'];
+        foreach ($types as $typeName) {
+            SpecSetValue::firstOrCreate(['spec_attributes_id' => $type->id, 'value' => $typeName]);
+        }
 
-
-        //atribut untuk keyboard
-        $attrKeyboardLayout = SpecAttributes::firstOrCreate(['spec_type_id' => $typeKeyboard->id, 'name' => 'Layout']);
-        $attrKeyboardSwitch = SpecAttributes::firstOrCreate(['spec_type_id' => $typeKeyboard->id, 'name' => 'Switch']);
-
-
-        //atribut untuk CPU
-
-
-        $presetCPU = SpecSet::firstOrCreate(
-            ['display_name' => 'Intel Core i5 10th Gen'],
-            ['spec_type_id' => $typeProcessor->id]
-        );
-
-        $presetRAM = SpecSet::firstOrCreate(
-            ['display_name' => 'Corsair 8GB DDR4'],
-            ['spec_type_id' => $typeRAM->id]
-        );
-
-        $presetSSD = SpecSet::firstOrCreate(
-            ['display_name' => 'Samsung 512GB NVMe PCIe 3.0'],
-            ['spec_type_id' => $typeStorage->id]
-        );
-
-        $presetMonitor = SpecSet::firstOrCreate(
-            ['display_name' => '1920x1080 75Hz'],
-            ['spec_type_id' => $typeMonitor->id]
-        );
-        $presetMouse = SpecSet::firstOrCreate(
-            ['display_name' => 'Dpi 800-8000 Black'],
-            ['spec_type_id' => $typeMouse->id]
-        );
-        $presetKeyboard = SpecSet::firstOrCreate(
-            ['display_name' => 'TKL Blue'],
-            ['spec_type_id' => $typeKeyboard->id]
-        );
-
-
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetCPU->id, 'spec_attributes_id' => $attrCpuBrand->id, 'value' => 'Intel']);
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetCPU->id, 'spec_attributes_id' => $attrCpuModel->id, 'value' => 'Core i5']);
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetCPU->id, 'spec_attributes_id' => $attrCpuGen->id, 'value' => '10th Gen']);
-
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetRAM->id, 'spec_attributes_id' => $attrRamType->id, 'value' => 'DDR4']);
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetRAM->id, 'spec_attributes_id' => $attrRamCapacity->id, 'value' => '8GB']);
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetRAM->id, 'spec_attributes_id' => $attrRamBrand->id, 'value' => 'Corsair']);
-
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetSSD->id, 'spec_attributes_id' => $attrStorageType->id, 'value' => 'NVMe SSD']);
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetSSD->id, 'spec_attributes_id' => $attrStorageCapacity->id, 'value' => '512GB']);
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetSSD->id, 'spec_attributes_id' => $attrStorageInterface->id, 'value' => 'PCIe 3.0']);
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetSSD->id, 'spec_attributes_id' => $attrStorageBrand->id, 'value' => 'Samsung']);
-
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetMonitor->id, 'spec_attributes_id' => $attrMonitorRes->id, 'value' => '1920x1080']);
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetMonitor->id, 'spec_attributes_id' => $attrMonitorRefresh->id, 'value' => '75Hz']);
-        
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetMouse->id, 'spec_attributes_id' => $attrMouseDpi->id, 'value' => '800-8000']);
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetMouse->id, 'spec_attributes_id' => $attrMouseColor->id, 'value' => 'Black']);
-        
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetKeyboard->id, 'spec_attributes_id' => $attrKeyboardLayout->id, 'value' => 'TKL']);
-        SpecSetValue::firstOrCreate(['spec_set_id' => $presetKeyboard->id, 'spec_attributes_id' => $attrKeyboardSwitch->id, 'value' => 'Blue']);
-
+        $speeds = ['2400MHZ', '3200MHZ', '3600MHZ'];
+        foreach ($speeds as $speedName) {
+            SpecSetValue::firstOrCreate(['spec_attributes_id' => $speed->id, 'value' => $speedName]);
+        }
     }
 }

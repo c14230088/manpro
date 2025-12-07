@@ -21,7 +21,7 @@ class Tool_spec extends MorphPivot
         'created_at',
         'updated_at',
     ];
-
+    protected $table = 'tool_specs';
     public function tool(): MorphTo
     {
         return $this->morphTo();

@@ -217,7 +217,7 @@
     </div>
 
     {{-- Create Modal --}}
-    <div id="create-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div id="create-modal" class="fixed inset-0 z-[2000] hidden" role="dialog" aria-modal="true">
         {{-- Backdrop --}}
         <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop"
             onclick="closeCreateModal()"></div>
@@ -428,7 +428,7 @@
             let value = input.value.replace(/[^0-9]/g, ''); // Hapus semua kecuali angka
 
             // Logic: Otomatis tambah '/' setelah digit ke-4
-            if (value.length > 4) {
+            if (value.length > 3) {
                 value = value.substring(0, 4) + '/' + value.substring(4, 8);
             }
 

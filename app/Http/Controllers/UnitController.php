@@ -87,13 +87,4 @@ class UnitController extends Controller
 
         return redirect()->to('/login')->with('success', 'Logout Sukses');
     }
-
-    public function formBooking()
-    {
-        // ambil labs (kayak yang di admin... 
-        // liat petak" desks di setiap lab lalu cek apakah item lengkap | apa aja yang avail dipinjem)
-        return view('user.booking');
-    }
-
-    public function storeBooking() {}
 }

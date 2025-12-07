@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LabsController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DesksController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\RepairController;
@@ -22,8 +23,9 @@ Route::get('/auth/google/callback', [UnitController::class, 'routeAdmin'])->name
 Route::get('/logout', [UnitController::class, 'logout'])->name('user.logout');
 
 Route::middleware(['auth.permission'])->group(function () {
-    Route::get('/booking', [UnitController::class, 'formBooking'])->name('user.booking.form');
-    Route::post('/booking', [UnitController::class, 'storeBooking'])->name('user.booking.request');
+    Route::get('/booking', [BookingController::class, 'formBooking'])->name('user.booking.form');
+    Route::post('/booking', [BookingController::class, 'storeBooking'])->name('user.booking.request');
+    Route::get('/booking/history', [BookingController::class, 'getMyBookings'])->name('user.booking.history');
 
     Route::get('/get/labs', [LabsController::class, 'labsList'])->name('user.get.labs');
     Route::get('/get/items', [ItemsController::class, 'getItems'])->name('user.get.items');
@@ -38,8 +40,6 @@ Route::middleware(['auth.permission'])->group(function () {
         Route::post('/labs/{lab}/desks/update/location/{desk}', [DesksController::class, 'updateLocation'])->name('admin.labs.desks.update.location');
         Route::post('/labs/{lab}/desks/batch-create', [DesksController::class, 'batchCreate'])->name('admin.labs.desks.batch.create');
         Route::post('/labs/{lab}/desks/batch-delete', [DesksController::class, 'batchDelete'])->name('admin.labs.desks.batch.delete');
-
-        // Route::get('/booking', [AdminController::class, 'listBooking'])->name('admin.booking.list');
 
         Route::get('/items', [AdminController::class, 'items'])->name('admin.items');
         Route::post('/items', [ItemsController::class, 'createItems'])->name('admin.items.create');
@@ -61,6 +61,13 @@ Route::middleware(['auth.permission'])->group(function () {
         Route::patch('/repairs/{repair}/status', [RepairController::class, 'updateRepairStatus'])->name('admin.repairs.updateStatus');
         Route::post('/item/items/repair', [RepairController::class, 'applyRepair'])->name('admin.items.repair');
         
+        // booking
+        Route::get('/bookings', [BookingController::class, 'bookings'])->name('admin.bookings');
+        Route::get('/bookings/{booking}/details', [BookingController::class, 'getBookingDetails'])->name('admin.bookings.details');
+        Route::post('/bookings/{booking}/approve', [BookingController::class, 'approveBooking'])->name('admin.bookings.approve');
+        Route::post('/bookings/{booking}/updateReturnDeadline', [BookingController::class, 'updateReturnDeadline'])->name('admin.bookings.updateReturnDeadline');
+        Route::post('/bookings/{booking}/return', [BookingController::class, 'returnBooking'])->name('admin.bookings.return');
+
         // period
         Route::get('/periods', [PeriodController::class, 'periods'])->name('admin.periods');
         Route::post('/periods/create', [PeriodController::class, 'createPeriod'])->name('admin.periods.create');
@@ -71,6 +78,11 @@ Route::middleware(['auth.permission'])->group(function () {
         Route::post('/softwares/create', [SoftwareController::class, 'createSoftware'])->name('admin.softwares.create');
         Route::post('/softwares/{id}/update', [SoftwareController::class, 'editSoftware'])->name('admin.softwares.update');
         Route::post('/softwares/{id}/delete', [SoftwareController::class, 'deleteSoftware'])->name('admin.softwares.delete');
+
+        // Sets
+        Route::get('/sets', [\App\Http\Controllers\SetController::class, 'index'])->name('admin.sets');
+        Route::get('/sets/{set}/details', [\App\Http\Controllers\SetController::class, 'getSetDetails'])->name('admin.sets.details');
+        Route::post('/sets/{set}/attach-desks', [\App\Http\Controllers\SetController::class, 'attachSetToDesk'])->name('admin.sets.attachDesks');
 
         // RBAC
         // Permissions

@@ -30,4 +30,9 @@ class Period extends Model
     {
         return $this->hasMany(Repair::class, 'period_id');
     }
+    
+    public static function getCurrentPeriod()
+    {
+        return self::where('active', true)->first();
+    }
 }

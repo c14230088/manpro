@@ -21,7 +21,7 @@ class AuthMiddleware
     {
         $loggedUser = Auth::user();
         if (!$loggedUser) {
-            if ($request->expectsJson()) {
+            if ($request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Mohon login terlebih dahulu.'
@@ -56,7 +56,7 @@ class AuthMiddleware
                 if ($request->expectsJson()) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Anda tidak memiliki izin untuk mengakses halaman ini.'
+                        'message' => 'Anda tidak memiliki izin akses untuk melakukan ini.'
                     ], 403);
                 }
                 Log::info($user?->permissions);

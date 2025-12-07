@@ -15,12 +15,19 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UnitSeeder::class,
+            PeriodSeeder::class,
+            UserSeeder::class,
             LabsSeeder::class,
             DesksSeeder::class,
-            UnitSeeder::class,
-            // specification::class,
-            // ItemsSeeder::class,
-            // ComponentsSeeder::class
+            TypeSeeder::class,
+            SetSeeder::class,
+            specification::class,
+            ItemsSeeder::class,
+            ComponentsSeeder::class,
+            ToolSpecSeeder::class,
+            SoftwareSeeder::class,
+            BookingSeeder::class,
+            RepairSeeder::class,
         ]);
     }
 }

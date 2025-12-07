@@ -39,11 +39,22 @@ class Booking extends Model
     {
         return $this->belongsTo(User::class, 'borrower_id');
     }
+    
+    public function supervisor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'supervisor_id');
+    }
+    
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
 
     public function period(): BelongsTo
     {
         return $this->belongsTo(Period::class);
     }
+    
     public function bookings_items()
     {
         return $this->hasMany(Bookings_item::class);

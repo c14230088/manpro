@@ -3,7 +3,6 @@
 @section('title', 'Software Management')
 
 @section('style')
-
     <style>
         /* --- ANIMATIONS --- */
         .fade-in-up {
@@ -19,12 +18,14 @@
             }
         }
 
-        /* --- TOMSELECT CUSTOMIZATION --- */
+        /* --- TOMSELECT CUSTOMIZATION (UPDATED) --- */
         .ts-control {
             border-radius: 0.5rem;
             padding: 10px 12px;
             border-color: #d1d5db;
             box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            z-index: 10;
+            position: relative;
         }
 
         .ts-control.focus {
@@ -44,12 +45,16 @@
             align-items: center;
         }
 
+        /* FIX: Dropdown Styling agar tidak terpotong & ada scroll */
         .ts-dropdown {
             border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            background-color: white;
             border: 1px solid #e5e7eb;
             padding: 6px;
-            z-index: 60;
+            z-index: 9999 !important; /* Force paling atas */
+            max-height: 250px; /* Batasi tinggi dropdown */
+            overflow-y: auto; /* Scroll jika item banyak */
         }
 
         .ts-dropdown .option {
@@ -63,13 +68,15 @@
             font-weight: 600;
         }
 
+        .ts-dropdown .ts-dropdown-content {
+            max-height: none !important;
+        }
+
         /* --- DATATABLES CUSTOM STYLING --- */
-        /* Sembunyikan filter default karena sudah ada custom search */
         .dataTables_wrapper .dataTables_filter {
             display: none;
         }
 
-        /* Styling Length Menu (Select) */
         .dataTables_wrapper .dataTables_length select {
             padding-right: 2rem;
             padding-left: 0.75rem;
@@ -80,21 +87,19 @@
             border-color: #d1d5db;
             cursor: pointer;
         }
-        
+
         .dataTables_wrapper .dataTables_length select:focus {
             outline: none;
             border-color: #6366f1;
             box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
         }
 
-        /* Styling Info Text */
         .dataTables_wrapper .dataTables_info {
             font-size: 0.875rem;
             color: #6b7280;
             padding-top: 0.5rem;
         }
 
-        /* Styling Pagination Container */
         .dataTables_wrapper .dataTables_paginate {
             display: flex;
             align-items: center;
@@ -102,7 +107,6 @@
             padding-top: 0.5rem;
         }
 
-        /* Styling Tombol Pagination (Normal) */
         .dataTables_wrapper .dataTables_paginate .paginate_button {
             display: inline-flex;
             align-items: center;
@@ -119,23 +123,20 @@
             transition: all 0.2s;
         }
 
-        /* Hover State */
         .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled) {
             background-color: #f9fafb;
             color: #4f46e5;
             border-color: #c7d2fe;
         }
 
-        /* Active State */
         .dataTables_wrapper .dataTables_paginate .paginate_button.current,
         .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
             z-index: 10;
-            background-color: #4f46e5 !important; /* Force Indigo */
+            background-color: #4f46e5 !important;
             color: white !important;
             border-color: #4f46e5 !important;
         }
 
-        /* Disabled State */
         .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -149,7 +150,7 @@
 @endsection
 
 @section('body')
-    <div class="min-h-screen flex flex-col pb-10">
+    <div class="min-h-screen flex flex-col pb-10" id="softwares">
 
         {{-- Header Section --}}
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 fade-in-up">
@@ -185,6 +186,7 @@
                             </path>
                         </svg>
                     </div>
+                    {{-- Note: Value menggunakan name agar compatible dengan search Datatable --}}
                     <select id="labFilter"
                         class="block w-full pl-10 pr-4 py-2.5 text-sm border-gray-300 rounded-lg bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm cursor-pointer transition-shadow">
                         <option value="">All Laboratories</option>
@@ -261,7 +263,7 @@
                                         @endforelse
 
                                         @if ($software->labs->count() > 2)
-                                            {{-- Hidden Container for the rest (contents class keeps flex gap working) --}}
+                                            {{-- Hidden Container for the rest --}}
                                             <span id="more-labs-{{ $software->id }}" class="hidden contents">
                                                 @foreach ($software->labs->skip(2) as $lab)
                                                     <span
@@ -330,19 +332,24 @@
         </div>
     </div>
 
-    {{-- MODAL (Standardized Layout) --}}
+    {{-- MODAL (Fix for Dropdown Overflow) --}}
     <div id="software-modal" class="fixed inset-0 z-[2000] hidden" role="dialog" aria-modal="true">
+        {{-- Backdrop --}}
         <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop"
             onclick="closeModal()"></div>
+        
+        {{-- Wrapper with Scroll --}}
         <div class="fixed inset-0 overflow-y-auto pointer-events-none">
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                <div class="pointer-events-auto relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95 border border-gray-100"
+                
+                {{-- Panel: overflow-visible penting agar dropdown bisa keluar --}}
+                <div class="pointer-events-auto relative transform rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95 border border-gray-100 overflow-visible"
                     id="modal-panel">
 
                     <form id="software-form" onsubmit="submitSoftware(event)">
-                        <div class="bg-white p-6">
-
-                            {{-- Header --}}
+                        
+                        {{-- Header (Rounded Top) --}}
+                        <div class="bg-white p-6 rounded-t-2xl">
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center gap-3">
                                     <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">
@@ -370,19 +377,17 @@
 
                             {{-- Form Fields --}}
                             <div class="space-y-5">
-                                {{-- Name & Version Row --}}
+                                {{-- Name & Version --}}
                                 <div class="grid grid-cols-3 gap-4">
                                     <div class="col-span-2">
-                                        <label
-                                            class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Name
+                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Name
                                             <span class="text-rose-500">*</span></label>
                                         <input type="text" name="name" id="name" required
                                             class="block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm py-2.5 transition-shadow"
                                             placeholder="e.g. Adobe Photoshop">
                                     </div>
                                     <div class="col-span-1">
-                                        <label
-                                            class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Version</label>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Version</label>
                                         <input type="text" name="version" id="version"
                                             class="block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm py-2.5 transition-shadow"
                                             placeholder="v2024">
@@ -391,31 +396,29 @@
 
                                 {{-- Description --}}
                                 <div>
-                                    <label
-                                        class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Description</label>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Description</label>
                                     <textarea name="description" id="description" rows="2"
                                         class="block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm transition-shadow resize-none"
                                         placeholder="Brief description..."></textarea>
                                 </div>
 
-                                {{-- Labs Input --}}
-                                <div>
-                                    <label
-                                        class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Assigned
-                                        Labs</label>
-                                    <select id="lab_ids" name="lab_ids[]" multiple placeholder="Select labs..."
-                                        autocomplete="off">
-                                        @foreach ($labs as $lab)
-                                            <option value="{{ $lab->id }}">{{ $lab->name }}</option>
-                                        @endforeach
-                                    </select>
+                                {{-- Labs Input (TomSelect) --}}
+                                <div class="relative">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Assigned Labs</label>
+                                    {{-- Wrapper Z-Index agar Select muncul di atas elemen lain --}}
+                                    <div class="relative z-20"> 
+                                        <select id="lab_ids" name="lab_ids[]" multiple placeholder="Select labs..." autocomplete="off">
+                                            @foreach ($labs as $lab)
+                                                <option value="{{ $lab->id }}">{{ $lab->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Footer --}}
-                        <div
-                            class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-2 border-t border-gray-100 rounded-b-2xl">
+                        {{-- Footer (Rounded Bottom) --}}
+                        <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-2 border-t border-gray-100 rounded-b-2xl">
                             <button type="submit" id="submit-btn"
                                 class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-indigo-700 sm:w-auto transition-all">
                                 <span>Save Changes</span>
@@ -448,7 +451,6 @@
             table = $('#softwareTable').DataTable({
                 responsive: true,
                 autoWidth: false,
-                // DOM Layout: t (table), lalu di bawahnya wrapper baru untuk (l: length, i: info, p: pagination)
                 dom: 't<"flex flex-col md:flex-row justify-between items-center gap-4 px-6 py-6 border-t border-gray-100"<"flex items-center gap-4"li>p>',
                 pageLength: 10,
                 lengthMenu: [
@@ -456,9 +458,7 @@
                     [5, 10, 25, 50, "All"]
                 ],
                 language: {
-                    // Custom wording untuk Length Menu
                     lengthMenu: "Show _MENU_",
-                    // Custom icons untuk Pagination
                     paginate: {
                         previous: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>',
                         next: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>'
@@ -468,9 +468,6 @@
                     orderable: false,
                     targets: 3
                 }],
-                drawCallback: function() {
-                    // Opsional: Re-init tooltips jika ada
-                }
             });
 
             // 2. Custom Search Binding
@@ -478,7 +475,7 @@
                 table.search(this.value).draw();
             });
 
-            // 3. Custom Filter Binding
+            // 3. Custom Filter Binding (Column 2 = Assigned Labs)
             $('#labFilter').on('change', function() {
                 table.column(2).search(this.value).draw();
             });
@@ -509,23 +506,19 @@
             const isHidden = container.classList.contains('hidden');
 
             if (isHidden) {
-                // Show items
                 container.classList.remove('hidden');
-                // Change button style
                 btn.innerText = 'Show Less';
                 btn.classList.add('bg-gray-200', 'text-gray-800');
                 btn.classList.remove('bg-gray-100', 'text-gray-600');
             } else {
-                // Hide items
                 container.classList.add('hidden');
-                // Revert button
                 btn.innerText = `+${count} more`;
                 btn.classList.remove('bg-gray-200', 'text-gray-800');
                 btn.classList.add('bg-gray-100', 'text-gray-600');
             }
         }
 
-        // --- UX ANIMATIONS & MODAL LOGIC ---
+        // --- MODAL LOGIC ---
         function openModal(mode, data = null) {
             currentMode = mode;
             form.reset();
@@ -609,9 +602,6 @@
                         text: result.message,
                         timer: 1500,
                         showConfirmButton: false,
-                        customClass: {
-                            popup: 'swal2-popup-custom'
-                        }
                     }).then(() => window.location.reload());
                 } else {
                     throw new Error(result.message);
@@ -620,10 +610,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: error.message,
-                    customClass: {
-                        popup: 'swal2-popup-custom'
-                    }
+                    text: error.message
                 });
                 btn.disabled = false;
                 btn.innerHTML = originalText;
@@ -636,7 +623,7 @@
                 html: `Are you sure you want to remove <b>${name}</b>?<br><span class="text-sm text-gray-500">Assignments will also be removed.</span>`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#e11d48', // Rose-600
+                confirmButtonColor: '#e11d48',
                 cancelButtonColor: '#9ca3af',
                 confirmButtonText: 'Yes, Delete',
                 reverseButtons: true,
