@@ -5,6 +5,7 @@ use App\Http\Controllers\LabsController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
+use App\Models\Items;
 use App\Http\Controllers\DesksController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\RepairController;
@@ -23,13 +24,15 @@ Route::get('/auth/google/callback', [UnitController::class, 'routeAdmin'])->name
 Route::get('/logout', [UnitController::class, 'logout'])->name('user.logout');
 
 Route::middleware(['auth.permission'])->group(function () {
-    Route::get('/booking', [BookingController::class, 'formBooking'])->name('user.booking.form');
+    Route::get('/booking', function() { return view('user.booking-new'); })->name('user.booking.form');
     Route::post('/booking', [BookingController::class, 'storeBooking'])->name('user.booking.request');
     Route::get('/booking/history', [BookingController::class, 'getMyBookings'])->name('user.booking.history');
 
     Route::get('/get/labs', [LabsController::class, 'labsList'])->name('user.get.labs');
     Route::get('/get/items', [ItemsController::class, 'getItems'])->name('user.get.items');
     Route::get('/get/items/by-lab/{lab}', [ItemsController::class, 'getItemsByLab'])->name('user.get.items.by.lab');
+    Route::get('/labs/{lab}/available-sets', [LabsController::class, 'getAvailableSets'])->name('user.labs.availableSets');
+    Route::get('/labs/{lab}/desk-map', [LabsController::class, 'getDeskMapWithAvailability'])->name('user.labs.deskMap');
 
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');

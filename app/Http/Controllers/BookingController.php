@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Labs;
 use App\Models\Period;
 use App\Models\Booking;
+use App\Models\Items;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -49,6 +50,14 @@ class BookingController extends Controller
 
     public function storeBooking(Request $request)
     {
+        $bookingType = $request->input('booking_type');
+
+        if ($bookingType === 'sets') {
+            return $this->storeSetBooking($request);
+        } elseif ($bookingType === 'items') {
+            return $this->storeItemsBooking($request);
+        }
+
         $data = $request->only([
             'bookable_type',
             'bookable_id',
@@ -71,8 +80,7 @@ class BookingController extends Controller
                 'success' => false,
                 'message' => 'Tidak ada periode yang aktif, Mohon hubungi Admin.',
             ], 404);
-        } 
-
+        }
         $valid = Validator::make($data, [
             'bookable_type' => 'required|in:item,component,lab',
             'bookable_id' => [
@@ -80,7 +88,7 @@ class BookingController extends Controller
                 'uuid',
                 function ($attribute, $value, $fail) use ($data) {
                     $type = $data['bookable_type'] . 's'; // item, component, lab
-                    $table = strtolower($type) . 's';
+                    $table = strtolower($type);
 
                     if (!DB::table($table)->where('id', $value)->exists()) {
                         return $fail(ucfirst($type) . ' yang dipilih tidak ditemukan.');
@@ -200,6 +208,164 @@ class BookingController extends Controller
                 ]);
             }
             return redirect()->back()->with('error', 'Terjadi kesalahan saat mengajukan permintaan peminjaman. Silakan coba lagi.')->withInput();
+        }
+    }
+
+    private function storeSetBooking(Request $request)
+    {
+        $request->validate([
+            'sets' => 'required|array|min:1',
+            'sets.*.lab_id' => 'required|uuid|exists:labs,id',
+            'sets.*.quantity' => 'required|integer|min:1',
+            'event_name' => 'required|string|max:255',
+            'event_started_at' => 'required|date|after:now',
+            'event_ended_at' => 'required|date|after:event_started_at',
+            'phone_number' => 'required|string',
+            'borrowed_at' => 'required|date',
+            'return_deadline_at' => 'required|date|after:borrowed_at',
+            'type' => 'required|in:0,1,2',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $booking = Booking::create([
+                'borrower_id' => Auth::user()->id,
+                'event_name' => $request->event_name,
+                'event_started_at' => $request->event_started_at,
+                'event_ended_at' => $request->event_ended_at,
+                'phone_number' => $request->phone_number,
+                'borrowed_at' => $request->borrowed_at,
+                'return_deadline_at' => $request->return_deadline_at,
+                'booking_detail' => $request->booking_detail,
+                'thesis_title' => $request->thesis_title,
+                'supervisor_id' => $request->supervisor_id,
+                'attendee_count' => $request->attendee_count,
+            ]);
+
+            $requiredTypes = ['Monitor', 'Mouse', 'Keyboard', 'CPU'];
+
+            foreach ($request->sets as $setRequest) {
+                $lab = Labs::find($setRequest['lab_id']);
+                $desks = $lab->desks()->with(['items.type', 'items.repairs'])->get();
+
+                $availableDesks = [];
+                foreach ($desks as $desk) {
+                    $items = $desk->items;
+                    if ($items->count() < 4) continue;
+
+                    $typeNames = $items->pluck('type.name')->toArray();
+                    if (count(array_intersect($requiredTypes, $typeNames)) !== 4) continue;
+
+                    if (!$items->every(fn($i) => $i->condition == 1)) continue;
+                    if ($items->some(fn($i) => $i->repairs->isNotEmpty())) continue;
+
+                    $hasConflict = $items->some(function ($item) use ($request) {
+                        return DB::table('bookings_items')
+                            ->join('bookings', 'bookings_items.booking_id', '=', 'bookings.id')
+                            ->where('bookings_items.bookable_type', 'App\\Models\\Items')
+                            ->where('bookings_items.bookable_id', $item->id)
+                            ->where('bookings.borrowed_at', '<', $request->return_deadline_at)
+                            ->where('bookings.return_deadline_at', '>', $request->borrowed_at)
+                            ->where('bookings.approved', true)
+                            ->exists();
+                    });
+
+                    if (!$hasConflict) {
+                        $availableDesks[] = $desk;
+                    }
+
+                    if (count($availableDesks) >= $setRequest['quantity']) break;
+                }
+
+                if (count($availableDesks) < $setRequest['quantity']) {
+                    throw new \Exception("Lab {$lab->name} tidak memiliki {$setRequest['quantity']} set lengkap yang tersedia.");
+                }
+
+                foreach (array_slice($availableDesks, 0, $setRequest['quantity']) as $desk) {
+                    foreach ($desk->items as $item) {
+                        $booking->bookings_items()->create([
+                            'bookable_type' => 'App\\Models\\Items',
+                            'bookable_id' => $item->id,
+                            'type' => $request->type
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Booking set berhasil diajukan.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    private function storeItemsBooking(Request $request)
+    {
+        $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*' => 'required|uuid|exists:items,id',
+            'event_name' => 'required|string|max:255',
+            'event_started_at' => 'required|date|after:now',
+            'event_ended_at' => 'required|date|after:event_started_at',
+            'phone_number' => 'required|string',
+            'borrowed_at' => 'required|date',
+            'return_deadline_at' => 'required|date|after:borrowed_at',
+            'type' => 'required|in:0,1,2',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $booking = Booking::create([
+                'borrower_id' => Auth::user()->id,
+                'event_name' => $request->event_name,
+                'event_started_at' => $request->event_started_at,
+                'event_ended_at' => $request->event_ended_at,
+                'phone_number' => $request->phone_number,
+                'borrowed_at' => $request->borrowed_at,
+                'return_deadline_at' => $request->return_deadline_at,
+                'booking_detail' => $request->booking_detail,
+                'thesis_title' => $request->thesis_title,
+                'supervisor_id' => $request->supervisor_id,
+                'attendee_count' => $request->attendee_count,
+            ]);
+
+            foreach ($request->items as $itemId) {
+                $item = Items::find($itemId);
+
+                if ($item->condition != 1) {
+                    throw new \Exception("Item {$item->name} tidak dalam kondisi baik.");
+                }
+
+                if ($item->repairs->isNotEmpty()) {
+                    throw new \Exception("Item {$item->name} sedang dalam perbaikan.");
+                }
+
+                $isBooked = DB::table('bookings_items')
+                    ->join('bookings', 'bookings_items.booking_id', '=', 'bookings.id')
+                    ->where('bookings_items.bookable_type', 'App\\Models\\Items')
+                    ->where('bookings_items.bookable_id', $itemId)
+                    ->where('bookings.borrowed_at', '<', $request->return_deadline_at)
+                    ->where('bookings.return_deadline_at', '>', $request->borrowed_at)
+                    ->where('bookings.approved', true)
+                    ->exists();
+
+                if ($isBooked) {
+                    throw new \Exception("Item {$item->name} sudah dibooking pada waktu tersebut.");
+                }
+
+                $booking->bookings_items()->create([
+                    'bookable_type' => 'App\\Models\\Items',
+                    'bookable_id' => $itemId,
+                    'type' => $request->type
+                ]);
+            }
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Booking items berhasil diajukan.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
