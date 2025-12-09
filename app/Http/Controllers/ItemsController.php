@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use App\Models\SpecSetValue;
 use Illuminate\Http\Request;
 use App\Models\SpecAttributes;
+use App\Models\Repairs_item;
 use function Pest\Laravel\json;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -51,24 +52,42 @@ class ItemsController extends Controller
 
     public function createItemSet(Request $request)
     {
-        $data = $request->validate([
+        $data = $request->only(['set_name', 'set_note', 'items', 'attach_to_desk', 'lab_id', 'desk_locations']);
+        $valid = Validator::make($data, [
             'set_name' => 'required|string|max:255',
             'set_note' => 'nullable|string',
+
             'items' => 'required|array|size:4',
             'items.*' => 'required|array',
+
             'attach_to_desk' => 'nullable|boolean',
+
             'lab_id' => 'required_if:attach_to_desk,true|uuid|exists:labs,id',
+
             'desk_locations' => 'required_if:attach_to_desk,true|array|size:4',
-            'desk_locations.*' => 'required_if:attach_to_desk,true|string'
+            'desk_locations.*' => 'required_if:attach_to_desk,true|string',
         ], [
             'set_name.required' => 'Nama Set wajib diisi.',
+
             'items.required' => 'Data item wajib diisi.',
             'items.array' => 'Data item harus berupa array.',
             'items.size' => 'Set harus terdiri dari 4 item.',
+
             'lab_id.required_if' => 'Lab harus dipilih jika ingin memasang set ke meja.',
+
             'desk_locations.required_if' => 'Lokasi meja harus dipilih.',
             'desk_locations.size' => 'Harus memilih 4 lokasi meja untuk 4 item.',
         ]);
+
+        if ($valid->fails()) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $valid->errors()->first(),
+                ], 422);
+            }
+            return redirect()->back()->withErrors($valid)->withInput();
+        }
 
         $itemTemplates = $request->input('items'); // Ambil array 4 item
         $createdItems = [];
@@ -110,7 +129,7 @@ class ItemsController extends Controller
 
                 foreach ($createdItems as $index => $itemData) {
                     $deskLocation = $deskLocations[$index];
-                    
+
                     $desk = DB::table('desks')
                         ->where('lab_id', $labId)
                         ->where('location', $deskLocation)
@@ -385,7 +404,31 @@ class ItemsController extends Controller
     public function updateCondition(Request $request, Items $item)
     {
         try {
-            $item->condition = !$item->condition; // Toggle boolean (1 -> 0, 0 -> 1)
+            // Jika item rusak (0) dan ingin diubah jadi bagus (1)
+            if ($item->condition == 0) {
+                $ongoingRepair = Repairs_item::where('itemable_id', $item->id)
+                    ->where('itemable_type', Items::class)
+                    ->where('status', 1)
+                    ->whereNull('completed_at')
+                    ->with('repair')
+                    ->first();
+
+                if ($ongoingRepair) {
+                    return response()->json([
+                        'success' => false,
+                        'has_ongoing_repair' => true,
+                        'message' => 'Item ini masih dalam proses perbaikan. Selesaikan repair terlebih dahulu.',
+                        'repair_data' => [
+                            'repair_id' => $ongoingRepair->repair_id,
+                            'itemable_id' => $item->id,
+                            'issue_description' => $ongoingRepair->issue_description,
+                            'repair_url' => route('admin.repairs.index')
+                        ]
+                    ], 422);
+                }
+            }
+
+            $item->condition = !$item->condition;
             $item->save();
 
             $newConditionText = $item->condition ? 'Bagus' : 'Rusak';
@@ -398,6 +441,52 @@ class ItemsController extends Controller
         } catch (\Exception $e) {
             Log::error('Error updateCondition: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Gagal mengubah kondisi item.'], 500);
+        }
+    }
+
+    public function completeRepairFromItem(Request $request, Items $item)
+    {
+        $validated = $request->validate([
+            'repair_id' => 'required|uuid|exists:repairs,id',
+            'is_successful' => 'required|boolean',
+            'repair_notes' => 'nullable|string|max:255'
+        ]);
+
+        try {
+            $repairItem = Repairs_item::where('repair_id', $validated['repair_id'])
+                ->where('itemable_id', $item->id)
+                ->where('itemable_type', Items::class)
+                ->where('status', 1)
+                ->first();
+
+            if (!$repairItem) {
+                return response()->json(['success' => false, 'message' => 'Repair tidak ditemukan atau sudah selesai.'], 404);
+            }
+
+            DB::beginTransaction();
+
+            $repairItem->update([
+                'status' => 2,
+                'is_successful' => $validated['is_successful'],
+                'repair_notes' => $validated['repair_notes'] ?? null,
+                'completed_at' => now('Asia/Jakarta')
+            ]);
+
+            if ($validated['is_successful']) {
+                $item->update(['condition' => 1]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Repair berhasil diselesaikan.',
+                'item_condition' => $item->fresh()->condition
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error completeRepairFromItem: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal menyelesaikan repair.'], 500);
         }
     }
 

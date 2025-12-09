@@ -16,10 +16,15 @@ class SetController extends Controller
         $sets = Set::with(['items.type', 'items.desk.lab', 'items.components', 'items.repairs' => function($q) {
             $q->where('repairs_items.status', 1);
         }])->orderBy('name')->get();
+        
+        $types = \App\Models\Type::orderBy('name')->get();
+        $specification = \App\Models\SpecAttributes::with('specValues')->orderBy('name')->get();
 
         return view('admin.sets', [
             'sets' => $sets,
             'labs' => $labs,
+            'types' => $types,
+            'specification' => $specification,
         ]);
     }
 
@@ -51,11 +56,11 @@ class SetController extends Controller
                 throw new \Exception('Set harus memiliki 4 item.');
             }
 
-            foreach ($items as $item) {
-                if ($item->desk_id) {
-                    throw new \Exception("Item '{$item->name}' sudah terpasang di meja lain.");
-                }
-            }
+            // foreach ($items as $item) {
+            //     if ($item->desk_id) {
+            //         throw new \Exception("Item '{$item->name}' sudah terpasang di meja lain.");
+            //     }
+            // }
 
             $desk = DB::table('desks')
                 ->where('lab_id', $request->lab_id)
@@ -66,17 +71,17 @@ class SetController extends Controller
                 throw new \Exception("Meja {$request->desk_location} tidak ditemukan di lab ini.");
             }
 
-            // jika sudah ada MINIMAL 1 saja item dengan TYPE berikut, tidak bisa assign Set ke desk ini
-            $requiredTypes = ['Monitor', 'Mouse', 'Keyboard', 'CPU'];
-            $existingItems = Items::where('desk_id', $desk->id)
-                ->with('type')
-                ->get();
+            // jika sudah ada MINIMAL 1 saja item dengan TYPE berikut, tidak bisa assign Set ke desk ini (UN-COMMAND INI JIKA MAU BISA ADD SET ke Meja yang berisi)
+            // $requiredTypes = ['Monitor', 'Mouse', 'Keyboard', 'CPU'];
+            // $existingItems = Items::where('desk_id', $desk->id)
+            //     ->with('type')
+            //     ->get();
 
-            foreach ($existingItems as $existing) {
-                if ($existing->type && in_array($existing->type->name, $requiredTypes)) {
-                    throw new \Exception("Meja {$request->desk_location} sudah memiliki {$existing->type->name}. Tidak bisa memasang set ke meja ini.");
-                }
-            }
+            // foreach ($existingItems as $existing) {
+            //     if ($existing->type && in_array($existing->type->name, $requiredTypes)) {
+            //         throw new \Exception("Meja {$request->desk_location} sudah memiliki {$existing->type->name}. Tidak bisa memasang set ke meja ini.");
+            //     }
+            // }
 
             foreach ($items as $item) {
                 $item->desk_id = $desk->id;

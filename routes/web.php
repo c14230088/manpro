@@ -58,9 +58,12 @@ Route::middleware(['auth.permission'])->group(function () {
         Route::patch('/items/{item}/condition', [ItemsController::class, 'updateCondition'])->name('admin.items.updateCondition');
         Route::patch('/components/{component}/condition', [ComponentsController::class, 'updateComponentCondition'])->name('admin.items.updateComponentCondition');
         Route::post('/items/{item}/attach-desk/{desk}', [ItemsController::class, 'attachToDesk'])->name('admin.items.attachToDesk');
+        Route::post('/items/{item}/complete-repair', [ItemsController::class, 'completeRepairFromItem'])->name('admin.items.completeRepair');
+        Route::post('/components/{component}/complete-repair', [ComponentsController::class, 'completeRepairFromComponent'])->name('admin.components.completeRepair');
 
         // repair
-        Route::get('/repairs', [RepairController::class, 'viewRepairs'])->name('admin.repairs');
+        Route::get('/repairs', [RepairController::class, 'viewRepairs'])->name('admin.repairs.index');
+        Route::get('/repairs/view', [RepairController::class, 'viewRepairs'])->name('admin.repairs');
         Route::patch('/repairs/{repair}/status', [RepairController::class, 'updateRepairStatus'])->name('admin.repairs.updateStatus');
         Route::post('/item/items/repair', [RepairController::class, 'applyRepair'])->name('admin.items.repair');
         

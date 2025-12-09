@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Labs;
 use App\Models\Type;
 use App\Models\Items;
+use App\Models\Period;
 use App\Models\Repair;
 use App\Models\Booking;
 use App\Models\Components;
 use App\Models\Repairs_item;
-use App\Models\SpecAttributes;
 use Illuminate\Http\Request;
+use App\Models\SpecAttributes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class RepairController extends Controller
@@ -56,7 +58,8 @@ class RepairController extends Controller
             return redirect()->route('user.login')->with('error', $message);
         }
 
-        $validated = $request->validate([
+        $validated = $request->only(['items', 'components',]);
+        $valid = Validator::make($request->all(), [
             'items'                     => 'nullable|array',
             'items.*.id'                => 'required|uuid|exists:items,id',
             'items.*.issue_description' => 'required|string',
@@ -65,13 +68,24 @@ class RepairController extends Controller
             'components.*.id'                => 'required|uuid|exists:components,id',
             'components.*.issue_description' => 'required|string',
         ], [
-            'items.array'                   => 'Format data item tidak valid.',
-            'items.*.id.exists'             => 'Salah satu item tidak ditemukan di database.',
+            'items.array'                        => 'Format data item tidak valid.',
+            'items.*.id.exists'                  => 'Salah satu item tidak ditemukan di database.',
             'items.*.issue_description.required' => 'Deskripsi masalah item wajib diisi.',
-            'components.array'              => 'Format data komponen tidak valid.',
-            'components.*.id.exists'        => 'Salah satu komponen tidak ditemukan di database.',
+
+            'components.array'                        => 'Format data komponen tidak valid.',
+            'components.*.id.exists'                  => 'Salah satu komponen tidak ditemukan di database.',
             'components.*.issue_description.required' => 'Deskripsi masalah komponen wajib diisi.',
         ]);
+
+        if ($valid->fails()) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $valid->errors()->first(),
+                ], 422);
+            }
+            return redirect()->back()->withErrors($valid)->withInput();
+        }
 
         if (empty($validated['items']) && empty($validated['components'])) {
             $msg = 'Mohon pilih minimal satu Item atau Component untuk diperbaiki.';
@@ -83,8 +97,41 @@ class RepairController extends Controller
 
         $reportedTime = now('Asia/Jakarta');
         $reporter = Auth::user();
+        $period = Period::getCurrentPeriod()->id;
 
+        if (!$period) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada periode yang aktif, Mohon hubungi Admin.',
+            ], 404);
+        }
         try {
+            if (!empty($validated['items'])) {
+                $itemIds = collect($validated['items'])->pluck('id');
+
+                $blockedItems = Repairs_item::whereIn('itemable_id', $itemIds)
+                    ->where('status', 1)
+                    ->whereNull('completed_at')
+                    ->exists();
+
+                if ($blockedItems) {
+                    throw new \Exception('Salah satu item masih dalam proses perbaikan dan tidak bisa diajukan lagi.');
+                }
+            }
+
+            if (!empty($validated['components'])) {
+                $compIds = collect($validated['components'])->pluck('id');
+
+                $blockedComponents = Repairs_item::whereIn('itemable_id', $compIds)
+                    ->where('status', 1)
+                    ->whereNull('completed_at')
+                    ->exists();
+
+                if ($blockedComponents) {
+                    throw new \Exception('Salah satu item masih dalam proses perbaikan dan tidak bisa diajukan lagi.');
+                }
+            }
+
             DB::beginTransaction();
 
             $countItems = !empty($validated['items']) ? count($validated['items']) : 0;
@@ -94,6 +141,7 @@ class RepairController extends Controller
             $repair = Repair::create([
                 'name'        => $reporter->name . '-' . $reportedTime->format('YmdHis') . '-BATCH-' . $totalCount,
                 'reported_by' => $reporter->id,
+                'period_id' => $period,
             ]);
 
             if (!empty($validated['items'])) {
@@ -102,8 +150,10 @@ class RepairController extends Controller
                     $itemAttachments[$itemData['id']] = [
                         'issue_description' => $itemData['issue_description'],
                         'reported_at'       => $reportedTime,
-                        'status'            => 0,
+                        'started_at'        => $reportedTime,
+                        'status'            => 1,
                     ];
+                    Items::where('id', $itemData['id'])->update(['condition' => 0]);
                 }
                 $repair->items()->attach($itemAttachments);
             }
@@ -112,10 +162,12 @@ class RepairController extends Controller
                 $compAttachments = [];
                 foreach ($validated['components'] as $compData) {
                     $compAttachments[$compData['id']] = [
-                        'issue_description' => $compData['issue_description'], // Deskripsi spesifik
+                        'issue_description' => $compData['issue_description'],
                         'reported_at'       => $reportedTime,
-                        'status'            => 0,
+                        'started_at'        => $reportedTime,
+                        'status'            => 1,
                     ];
+                    Components::where('id', $compData['id'])->update(['condition' => 0]);
                 }
                 $repair->components()->attach($compAttachments);
             }
@@ -132,12 +184,12 @@ class RepairController extends Controller
             return redirect()->back()->with('success', 'Laporan perbaikan berhasil diajukan.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Gagal menyimpan repair specific: ' . $e->getMessage());
+            Log::error('Gagal menyimpan repair : ' . $e->getMessage());
 
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Terjadi kesalahan pada server: ' . $e->getMessage(),
+                    'message' => $e->getMessage() ?? 'Terjadi kesalahan pada server!',
                 ], 500);
             }
 
@@ -150,32 +202,30 @@ class RepairController extends Controller
         $isPartialUpdate = $request->has('items') && is_array($request->items);
 
         $rules = [
-            'status'        => $isPartialUpdate ? 'nullable' : 'required|integer|in:0,1,2',
+            'status'        => $isPartialUpdate ? 'nullable' : 'required|integer|in:1,2',
             'is_successful' => 'nullable|boolean',
             'repair_notes'  => 'nullable|string|max:255',
 
             'items'                  => 'nullable|array',
             'items.*.itemable_id'    => 'required|uuid',
-            'items.*.status'         => 'nullable|integer|in:0,1,2',
+            'items.*.status'         => 'nullable|integer|in:1,2',
             'items.*.is_successful'  => 'nullable|boolean',
             'items.*.repair_notes'   => 'nullable|string',
         ];
 
         $validated = $request->validate($rules);
         $currentTime = now('Asia/Jakarta');
-        // Log::info($validated);
         DB::beginTransaction();
         try {
             if ($isPartialUpdate) {
                 foreach ($validated['items'] as $itemData) {
                     $pivotQuery = Repairs_item::where('repair_id', $repair->id)
-                        ->where('itemable_id', $itemData['itemable_id']);
-
+                    ->where('itemable_id', $itemData['itemable_id']);
+                    
                     $currentItem = $pivotQuery->first();
-
+                    
                     if (!$currentItem) {
-                        // throw new \Exception("Id barang dan Repair tidak sesuai, tidak ada barang tersebut dalam Reparasi ini.");
-                        continue;
+                        throw new \Exception("Id barang dan Repair tidak sesuai, tidak ada barang tersebut dalam Reparasi ini.");
                     };
 
                     $updateData = [];
@@ -184,7 +234,7 @@ class RepairController extends Controller
                         $newStatus = (int)$itemData['status'];
 
                         if ($newStatus !== $currentItem->status && $newStatus !== ($currentItem->status + 1)) {
-                            $msg = "Status untuk item {$itemData['itemable_id']} tidak urut atau mencoba rollback.";
+                            $msg = "Status Reparasi yang sudah Completed tidak dapat di rollback.";
                             if ($request->wantsJson()) {
                                 return response()->json(['message' => $msg], 400);
                             }
@@ -193,15 +243,8 @@ class RepairController extends Controller
 
                         $updateData['status'] = $newStatus;
 
-                        if ($newStatus === 1) {
-                            if (!$currentItem->started_at) {
-                                $updateData['started_at'] = $currentTime;
-                            }
-                        } elseif ($newStatus === 2) {
+                        if ($newStatus === 2) {
                             $updateData['completed_at'] = $currentTime;
-                            if (!$currentItem->started_at) {
-                                $updateData['started_at'] = $currentTime;
-                            }
                         }
                     }
 
@@ -230,16 +273,8 @@ class RepairController extends Controller
                     $pivotUpdateData['repair_notes'] = $validated['repair_notes'];
                 }
 
-                if ($status === 1) {
-                    Repairs_item::where('repair_id', $repair->id)
-                        ->whereNull('started_at')
-                        ->update(['started_at' => $currentTime]);
-                } elseif ($status === 2) {
+                if ($status === 2) {
                     $pivotUpdateData['completed_at'] = $currentTime;
-
-                    Repairs_item::where('repair_id', $repair->id)
-                        ->whereNull('started_at')
-                        ->update(['started_at' => $currentTime]);
                 }
 
                 Repairs_item::where('repair_id', $repair->id)->update($pivotUpdateData);

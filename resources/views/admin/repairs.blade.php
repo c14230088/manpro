@@ -21,7 +21,6 @@
                         Item</label>
                     <select id="filter_repair_status" class="filter-input" placeholder="Semua Status...">
                         <option value="">Semua Status</option>
-                        <option value="0">Pending</option>
                         <option value="1">In Progress</option>
                         <option value="2">Completed</option>
                     </select>
@@ -213,10 +212,6 @@
                                         $statusLabel = '';
                                         $statusClass = '';
                                         switch ($pivot->status) {
-                                            case 0:
-                                                $statusLabel = 'Pending';
-                                                $statusClass = 'bg-gray-100 text-gray-800';
-                                                break;
                                             case 1:
                                                 $statusLabel = 'In Progress';
                                                 $statusClass = 'bg-blue-100 text-blue-800';
@@ -228,10 +223,6 @@
                                                 $statusClass = $pivot->is_successful
                                                     ? 'bg-green-100 text-green-800'
                                                     : 'bg-red-100 text-red-800';
-                                                break;
-                                            case 3:
-                                                $statusLabel = 'Terbawa';
-                                                $statusClass = 'bg-purple-100 text-purple-800';
                                                 break;
                                         }
                                     @endphp
@@ -259,14 +250,17 @@
 
                                         {{-- Kolom 3: Keluhan & Notes (Dari Pivot) --}}
                                         <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-900 font-medium mb-1">Keluhan:</div>
+                                            <div class="text-sm text-gray-900 font-extrabold mb-1">Keluhan:</div>
                                             <div class="text-xs text-gray-600 max-w-xs whitespace-normal break-words mb-2">
                                                 {{ Str::limit($pivot->issue_description, 60) }}
                                             </div>
                                             @if ($pivot->repair_notes)
                                                 <div class="text-xs text-gray-500">
-                                                    <span class="font-semibold">Catatan:</span>
-                                                    {{ Str::limit($pivot->repair_notes, 50) }}
+                                                    <div class="text-sm text-gray-900 font-extrabold mb-1">Catatan:</div>
+                                                    <div
+                                                        class="text-xs text-gray-600 max-w-xs whitespace-normal break-words mb-2">
+                                                        {{ Str::limit($pivot->repair_notes, 50) }}
+                                                    </div>
                                                 </div>
                                             @endif
                                         </td>
@@ -370,7 +364,6 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Status Baru</label>
                             <select id="modal-status-select" name="status" class="w-full">
-                                <option value="0">Pending (Menunggu)</option>
                                 <option value="1">In Progress (Sedang Dikerjakan)</option>
                                 <option value="2">Completed (Selesai)</option>
                             </select>
@@ -438,6 +431,17 @@
         let tomSelects = {};
         let tomSelectStatusModal;
         let dataTableInstance;
+
+        function showLoading(title = 'Loading...', text = 'silakan tunggu...') {
+            Swal.fire({
+                title: title,
+                text: text,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -637,7 +641,7 @@
                 const originalText = btn.textContent;
                 btn.disabled = true;
                 btn.textContent = 'Menyimpan...';
-
+                showLoading('Loading...', 'Updating Status Reparasi')
                 const repairId = document.getElementById('modal-repair-id').value;
                 const itemableId = document.getElementById('modal-itemable-id').value;
                 const status = tomSelectStatusModal.getValue();

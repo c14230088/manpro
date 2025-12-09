@@ -49,6 +49,14 @@
     <div class="max-w-7xl mx-auto px-6 pb-12">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 
+            {{-- Tombol Tambah Set --}}
+            <div class="flex justify-end mb-4">
+                <button id="open-create-set-modal-btn" type="button"
+                    class="px-6 py-3 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-lg">
+                    + Tambah Set Item
+                </button>
+            </div>
+
             {{-- Container Wrapper untuk Scroll & Sticky Header --}}
             <div id="datatable-container">
                 <table class="min-w-full divide-y divide-gray-200" id="sets-datatable">
@@ -235,11 +243,211 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Create Set --}}
+    <div id="create-set-modal" class="hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[5000]"></div>
+        <div id="create-set-modal-overlay" class="fixed inset-0 flex items-center justify-center p-4 z-[5001]">
+            <div class="relative bg-white rounded-lg shadow-xl w-full max-w-5xl flex flex-col max-h-[90vh]">
+
+                {{-- PERBAIKAN: Gunakan data-action agar terbaca oleh form.dataset.action di JS --}}
+                <form id="create-set-form" data-action="{{ route('admin.items.set.create') }}"
+                    class="space-y-0 flex flex-col max-h-[90vh]">
+                    @csrf
+                    <div class="flex justify-between items-center p-4 border-b border-gray-200 rounded-t">
+                        <h3 class="text-xl font-semibold text-gray-900">Buat Set Item Baru (4 Item)</h3>
+                        <button id="create-set-modal-close-btn" type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 14 14">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {{-- Isi Modal (Sama seperti sebelumnya) --}}
+                    <div class="p-6 space-y-6 overflow-y-auto bg-gray-50 flex-1">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-6">Detail Set</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="set_name" class="block text-sm font-semibold text-gray-700 mb-2">Nama
+                                        Set</label>
+                                    <input type="text" id="set_name" name="set_name" required
+                                        class="block w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="cth: Set PC Meja A1">
+                                </div>
+                                <div>
+                                    <label for="set_note" class="block text-sm font-semibold text-gray-700 mb-2">Catatan
+                                        <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                                    <input type="text" id="set_note" name="set_note"
+                                        class="block w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="cth: Pembelian 2025">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="set-items-container" class="space-y-6"></div>
+
+                        {{-- Bagian Pasang ke Meja --}}
+                        <div class="bg-blue-50 rounded-xl shadow-sm border border-blue-200 p-6">
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="attach_to_desk_checkbox"
+                                    class="h-4 w-4 cursor-pointer text-indigo-600 border-gray-300 rounded">
+                                <label for="attach_to_desk_checkbox"
+                                    class="ml-2 block cursor-pointer text-sm font-semibold text-gray-700">Pasang Set ke
+                                    Meja Sekarang</label>
+                            </div>
+                            <div id="desk-attachment-section" class="hidden space-y-4">
+                                <div>
+                                    <label for="set-lab-selector"
+                                        class="block text-sm font-semibold text-gray-700 mb-2">Pilih Laboratorium</label>
+                                    <select id="set-lab-selector" placeholder="Pilih Lab..."></select>
+                                </div>
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <p class="text-sm text-yellow-800"><strong>Instruksi:</strong> Pilih 1 meja untuk
+                                        memasang semua item dalam set ini.</p>
+                                    <div id="set-selected-desks-display" class="mt-2 text-sm font-bold text-indigo-600">
+                                        Belum ada meja dipilih.</div>
+                                </div>
+                                <div id="set-desk-grid-container">
+                                    <div class="text-center py-8 text-gray-500">Pilih lab untuk melihat denah.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Footer Modal --}}
+                    <div class="flex items-center justify-end p-4 space-x-3 border-t border-gray-200 rounded-b bg-gray-50">
+                        <button id="create-set-modal-cancel-btn" type="button"
+                            class="text-gray-700 bg-white hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 border border-gray-300">Batal</button>
+                        <button type="button" id="submit-set-btn"
+                            class="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-5 py-2.5 w-48 h-[42px] flex items-center justify-center">
+                            <span class="btn-text">Simpan Set</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Templates --}}
+    <template id="spec-row-template">
+        <div class="grid grid-cols-12 gap-4 spec-row p-4 border border-gray-200 rounded-lg bg-gray-50">
+            <div class="col-span-5"><label class="block text-xs font-medium text-gray-600 mb-1">Attribute</label><select
+                    class="spec-attribute" placeholder="Cari attribute..."></select></div>
+            <div class="col-span-5"><label class="block text-xs font-medium text-gray-600 mb-1">Value</label><select
+                    class="spec-value" placeholder="Pilih attribute dulu..."></select></div>
+            <div class="col-span-2 flex items-end"><button type="button"
+                    class="remove-spec-btn w-full px-4 py-3 bg-rose-50 text-rose-600 text-sm font-semibold rounded-lg hover:bg-rose-100">Hapus</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="new-component-form-template">
+        <div class="new-component-row border-2 border-purple-200 bg-purple-50 rounded-lg p-6 relative">
+            <button type="button"
+                class="remove-new-component-btn absolute -top-3 -right-3 w-8 h-8 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg"><svg
+                    class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg></button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div><label class="block text-sm font-semibold text-gray-700 mb-2">Nama Komponen</label><input
+                        type="text"
+                        class="new-component-name block w-full px-4 py-3 text-base border border-gray-300 rounded-lg"
+                        placeholder="cth: RAM 16GB"></div>
+                <div><label class="block text-sm font-semibold text-gray-700 mb-2">Serial Code</label><input
+                        type="text"
+                        class="new-component-serial block w-full px-4 py-3 text-base border border-gray-300 rounded-lg"
+                        placeholder="cth: SN-RAM-001"></div>
+                <div><label class="block text-sm font-semibold text-gray-700 mb-2">Tgl. Produksi Komponen</label><input
+                        type="date"
+                        class="new-component-produced-at block w-full px-4 py-3 text-base border border-gray-300 rounded-lg">
+                </div>
+                <div><label class="block text-sm font-semibold text-gray-700 mb-2">Kondisi Komponen</label>
+                    <div class="flex items-center space-x-6 pt-3"><label class="flex items-center"><input type="radio"
+                                class="new-component-condition" name="component_condition_NEW-INDEX" value="1"
+                                class="h-4 w-4 text-purple-600" checked><span
+                                class="ml-2 text-gray-700">Bagus</span></label><label class="flex items-center"><input
+                                type="radio" class="new-component-condition" name="component_condition_NEW-INDEX"
+                                value="0" class="h-4 w-4 text-purple-600"><span
+                                class="ml-2 text-gray-700">Rusak</span></label></div>
+                </div>
+                <div class="md:col-span-2"><label class="block text-sm font-semibold text-gray-700 mb-2">Type
+                        Komponen</label><select class="new-component-type-select"
+                        placeholder="Pilih Tipe Komponen..."></select></div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-purple-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Spesifikasi Komponen</h3><button type="button"
+                        class="btn-add-new-comp-spec px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700">+
+                        Tambah Spek</button>
+                </div>
+                <div class="new-component-specs-container space-y-4"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="set-item-template">
+        <div class="set-item-row bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-6 set-item-title">Item 1</h3>
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="hidden" class="set-item-is-component" value="0">
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-2">Nama Item</label><input
+                            type="text"
+                            class="set-item-name block w-full px-4 py-3 text-base border border-gray-300 rounded-lg"
+                            placeholder="cth: Monitor LG" required></div>
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-2">Serial Code</label><input
+                            type="text"
+                            class="set-item-serial block w-full px-4 py-3 text-base border border-gray-300 rounded-lg"
+                            placeholder="cth: MON-01" required></div>
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Produksi</label><input
+                            type="date"
+                            class="set-item-produced-at block w-full px-4 py-3 text-base border border-gray-300 rounded-lg">
+                    </div>
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-2">Kondisi</label>
+                        <div class="flex items-center space-x-6 pt-3"><label class="flex items-center"><input
+                                    type="radio" class="set-item-condition" name="set_item_condition_INDEX"
+                                    value="1" checked><span class="ml-2 text-gray-700">Bagus</span></label><label
+                                class="flex items-center"><input type="radio" class="set-item-condition"
+                                    name="set_item_condition_INDEX" value="0"><span
+                                    class="ml-2 text-gray-700">Rusak</span></label></div>
+                    </div>
+                    <div class="md:col-span-2"><label
+                            class="block text-sm font-semibold text-gray-700 mb-2">Type</label><select
+                            class="set-item-type-select" placeholder="Pilih Tipe..." required></select></div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Spesifikasi Item</h3><button type="button"
+                            class="btn-add-set-item-spec px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700">+
+                            Tambah Spek</button>
+                    </div>
+                    <div class="set-item-specs-container space-y-4"></div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Komponen Bawaan</h3><button type="button"
+                            class="btn-add-set-item-comp px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-lg hover:bg-purple-700">+
+                            Tambah Komponen</button>
+                    </div>
+                    <div class="set-item-components-container space-y-6"></div>
+                </div>
+            </div>
+        </div>
+    </template>
 @endsection
 
 @section('script')
     <style>
         .filter-select .ts-control {
+            @apply block w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white;
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+        }
+
+        #create-set-modal .ts-control {
             @apply block w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white;
             padding-top: 0.6rem;
             padding-bottom: 0.6rem;
@@ -501,22 +709,54 @@
             const container = document.getElementById('desk-grid-container-modal');
             let html =
                 `<div class="overflow-x-auto pb-4"><div id="desk-grid-modal" class="grid gap-4 border-2 min-w-fit border-slate-300 p-8" style="grid-template-columns: repeat(${maxCols}, minmax(140px, 1fr)); grid-template-rows: repeat(${maxRows}, auto);">`;
+
             const occupiedSlots = new Set(desks.map(d => d.location));
             const requiredTypes = ['Monitor', 'Mouse', 'Keyboard', 'CPU'];
+
             desks.forEach(desk => {
                 const row = desk.location.charCodeAt(0) - 64;
                 const col = parseInt(desk.location.substring(1));
+
+                // Cek status seleksi dan isi
                 const isSelected = selectedDeskLocations.includes(desk.location);
                 const hasRequiredType = desk.items && desk.items.some(item => item.type && requiredTypes.includes(
                     item.type.name));
-                let bgColorClass = hasRequiredType ? 'bg-red-50 border-red-300' : (isSelected ?
-                    'bg-indigo-200 border-indigo-500' : 'bg-gray-50 border-gray-300 hover:bg-gray-100');
-                let iconColor = hasRequiredType ? 'text-red-800' : (isSelected ? 'text-indigo-700' :
-                    'text-gray-500');
-                let cursorClass = hasRequiredType ? 'cursor-not-allowed' : 'cursor-pointer';
+
+                // LOGIKA WARNA & STYLE:
+                // 1. Jika dipilih: Indigo (Prioritas visual tertinggi setelah klik)
+                // 2. Jika terisi tapi belum dipilih: Merah
+                // 3. Kosong: Abu-abu
+                let bgColorClass;
+                let iconColor;
+
+                if (isSelected) {
+                    bgColorClass =
+                        'bg-indigo-200 border-indigo-500 ring-2 ring-indigo-500'; // Tambahkan ring agar jelas terpilih
+                    iconColor = 'text-indigo-700';
+                } else if (hasRequiredType) {
+                    bgColorClass = 'bg-red-50 border-red-300';
+                    iconColor = 'text-red-800';
+                } else {
+                    bgColorClass = 'bg-gray-50 border-gray-300 hover:bg-gray-100';
+                    iconColor = 'text-gray-500';
+                }
+
+                // PERBAIKAN 1: Cursor selalu pointer, tidak pernah not-allowed
+                let cursorClass = 'cursor-pointer';
+
                 html +=
-                    `<div data-desk-location="${desk.location}" data-has-required="${hasRequiredType}" style="grid-area: ${row} / ${col};" class="desk-item-modal group transition-all duration-200 flex flex-col items-center justify-center p-5 border-2 rounded-xl min-h-36 ${bgColorClass} ${cursorClass}"><div class="text-center pointer-events-none"><div class="mb-2"><svg class="w-8 h-8 mx-auto ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div><span class="font-bold text-lg text-gray-800 block select-none">${desk.location}</span>${hasRequiredType ? '<span class="text-xs text-red-800 mt-1 inline-block select-none font-semibold">Sudah Terisi</span>' : (isSelected ? '<span class="text-sm text-indigo-600 mt-1 inline-block select-none font-semibold">Dipilih</span>' : '')}</div></div>`;
+                    `<div data-desk-location="${desk.location}" data-has-required="${hasRequiredType}" style="grid-area: ${row} / ${col};" class="desk-item-modal group transition-all duration-200 flex flex-col items-center justify-center p-5 border-2 rounded-xl min-h-36 ${bgColorClass} ${cursorClass}">
+                <div class="text-center pointer-events-none">
+                    <div class="mb-2">
+                        <svg class="w-8 h-8 mx-auto ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <span class="font-bold text-lg text-gray-800 block select-none">${desk.location}</span>
+                    ${(hasRequiredType && !isSelected) ? '<span class="text-xs text-red-800 mt-1 inline-block select-none font-semibold">Sudah Terisi</span>' : ''}
+                    ${isSelected ? '<span class="text-sm text-indigo-700 mt-1 inline-block select-none font-bold uppercase">Terpilih</span>' : ''}
+                </div>
+            </div>`;
             });
+
             for (let r = 1; r <= maxRows; r++) {
                 for (let c = 1; c <= maxCols; c++) {
                     if (!occupiedSlots.has(`${String.fromCharCode(64 + r)}${c}`)) html +=
@@ -525,16 +765,33 @@
             }
             html += '</div></div>';
             container.innerHTML = html;
+
+            // EVENT LISTENER
             document.querySelectorAll('.desk-item-modal').forEach(deskEl => {
-                deskEl.addEventListener('click', () => {
-                    if (deskEl.dataset.hasRequired === 'true') {
-                        Swal.fire('Meja Tidak Tersedia',
-                            'Meja ini sudah memiliki Monitor, Mouse, Keyboard, atau CPU. Pilih meja lain.',
-                            'warning');
-                        return;
+                deskEl.addEventListener('click', async () => {
+                    const hasRequired = deskEl.dataset.hasRequired === 'true';
+
+                    // Logika Konfirmasi
+                    if (hasRequired) {
+                        const result = await Swal.fire({
+                            title: 'Meja Sudah Terisi',
+                            text: 'Meja ini sudah memiliki item. Yakin ingin menimpa/menambah di sini?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Ya, Lanjutkan',
+                            cancelButtonText: 'Batal',
+                            confirmButtonColor: '#f59e0b'
+                        });
+
+                        // Jika user klik Batal, hentikan proses (return)
+                        if (!result.isConfirmed) return;
                     }
+
+                    // PERBAIKAN 2: Jika lolos (tidak ada required OR user klik Ya), jalankan logika select
                     selectedDeskLocations = [deskEl.dataset.deskLocation];
                     updateSelectedDesksDisplay();
+
+                    // Re-render grid untuk memperbarui tampilan visual (Class Indigo)
                     renderDeskGridModal(modalLabDesks, maxRows, maxCols);
                 });
             });
@@ -594,8 +851,524 @@
             }
         }
 
+
+
+        // --- DATA FROM BLADE ---
+        const allTypes = @json($types);
+        const allSpecAttributes = @json($specification);
+        let setItemTomInstances = [];
+        let setItemComponentIndex = 0;
+        let tomSelectSetLab;
+        let setLabDesks = [];
+        let setSelectedDeskLocations = [];
+
+        // --- CREATE SET MODAL ---
+        function initializeCreateSetModal() {
+            const modal = document.getElementById('create-set-modal');
+            const form = document.getElementById('create-set-form');
+            const submitBtn = document.getElementById('submit-set-btn');
+            const closeBtn = document.getElementById('create-set-modal-close-btn');
+            const cancelBtn = document.getElementById('create-set-modal-cancel-btn');
+            const overlay = document.getElementById('create-set-modal-overlay');
+            const openBtn = document.getElementById('open-create-set-modal-btn');
+            const itemsContainer = document.getElementById('set-items-container');
+            const attachCheckbox = document.getElementById('attach_to_desk_checkbox');
+            const deskSection = document.getElementById('desk-attachment-section');
+            const setLabSelectorEl = document.getElementById('set-lab-selector');
+            const prefilledTypes = ['Monitor', 'Mouse', 'CPU', 'Keyboard'];
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                checkModalState();
+            };
+            openBtn.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                form.reset();
+                itemsContainer.innerHTML = '';
+                setItemTomInstances.forEach(item => {
+                    item.typeSelect.destroy();
+                    item.mainSpecs.forEach(spec => {
+                        spec.attr.destroy();
+                        spec.val.destroy();
+                    });
+                    item.newComponents.forEach(comp => {
+                        comp.typeSelect.destroy();
+                        comp.specInstances.forEach(spec => {
+                            spec.attr.destroy();
+                            spec.val.destroy();
+                        });
+                    });
+                });
+                setItemTomInstances = [];
+                setItemComponentIndex = 0;
+                for (let i = 0; i < 4; i++) addSetItemCard(i, prefilledTypes[i] || `Item ${i+1}`);
+            });
+            closeBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeModal();
+            });
+            submitBtn.addEventListener('click', async function() {
+                await submitCreateSetForm(this, form);
+            });
+            attachCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    deskSection.classList.remove('hidden');
+                    loadLabsForSetAttachment();
+                } else {
+                    deskSection.classList.add('hidden');
+                    setSelectedDeskLocations = [];
+                    updateSetSelectedDesksDisplay();
+                }
+            });
+            tomSelectSetLab = new TomSelect(setLabSelectorEl, {
+                create: false,
+                placeholder: 'Pilih Lab...',
+                onChange: (labId) => {
+                    if (labId) {
+                        setSelectedDeskLocations = [];
+                        updateSetSelectedDesksDisplay();
+                        fetchDeskMapForSet(labId);
+                    }
+                }
+            });
+        }
+
+        function addSetItemCard(index, prefilledTypeName) {
+            const itemsContainer = document.getElementById('set-items-container'),
+                itemTemplate = document.getElementById('set-item-template'),
+                newItemCard = itemTemplate.content.cloneNode(true).firstElementChild;
+            newItemCard.dataset.itemIndex = index;
+            newItemCard.querySelector('.set-item-title').textContent = `Item ${index + 1}: ${prefilledTypeName}`;
+            newItemCard.querySelectorAll('.set-item-condition').forEach(radio => {
+                radio.name = `set_item_condition_${index}`;
+            });
+            const typeSelectEl = newItemCard.querySelector('.set-item-type-select'),
+                addSpecBtn = newItemCard.querySelector('.btn-add-set-item-spec'),
+                specContainer = newItemCard.querySelector('.set-item-specs-container'),
+                addCompBtn = newItemCard.querySelector('.btn-add-set-item-comp'),
+                compContainer = newItemCard.querySelector('.set-item-components-container');
+            const typeId = findTypeIdByName(prefilledTypeName);
+            const typeTomSelect = new TomSelect(typeSelectEl, {
+                options: allTypes.map(type => ({
+                    value: type.id,
+                    text: type.name
+                })),
+                plugins: ['dropdown_input', 'clear_button'],
+                create: async function(input, callback) {
+                    const isConfirmed = await confirmCreate(input, 'Type');
+                    if (isConfirmed) callback({
+                        value: `new::${input}`,
+                        text: input
+                    });
+                    else callback();
+                },
+                render: {
+                    option_create: (data, escape) =>
+                        `<div class="create">Tambah type baru: <strong>${escape(data.input)}</strong>&hellip;</div>`
+                }
+            });
+            if (typeId) typeTomSelect.setValue(typeId);
+            const itemInstanceData = {
+                itemIndex: index,
+                row: newItemCard,
+                typeSelect: typeTomSelect,
+                mainSpecs: [],
+                newComponents: []
+            };
+            addSpecBtn.addEventListener('click', () => {
+                const newSpecRow = document.getElementById('spec-row-template').content.cloneNode(true)
+                    .firstElementChild;
+                specContainer.appendChild(newSpecRow);
+                const specTomSelects = initializeSpecRow(newSpecRow);
+                if (!specTomSelects) return;
+                const specInstance = {
+                    row: newSpecRow,
+                    attr: specTomSelects.attr,
+                    val: specTomSelects.val
+                };
+                itemInstanceData.mainSpecs.push(specInstance);
+                newSpecRow.querySelector('.remove-spec-btn').addEventListener('click', () => {
+                    specTomSelects.attr.destroy();
+                    specTomSelects.val.destroy();
+                    newSpecRow.remove();
+                    itemInstanceData.mainSpecs = itemInstanceData.mainSpecs.filter(inst => inst.row !==
+                        newSpecRow);
+                });
+            });
+            addCompBtn.addEventListener('click', () => {
+                const newCompRow = document.getElementById('new-component-form-template').content.cloneNode(true)
+                    .firstElementChild,
+                    compIndex = setItemComponentIndex++;
+                newCompRow.dataset.compIndex = compIndex;
+                newCompRow.querySelectorAll('.new-component-condition').forEach(radio => {
+                    radio.name = `set_item_${index}_component_condition_${compIndex}`;
+                });
+                const compTypeSelectEl = newCompRow.querySelector('.new-component-type-select'),
+                    addCompSpecBtn = newCompRow.querySelector('.btn-add-new-comp-spec'),
+                    newCompSpecContainer = newCompRow.querySelector('.new-component-specs-container'),
+                    removeCompBtn = newCompRow.querySelector('.remove-new-component-btn');
+                const compTypeTomSelect = new TomSelect(compTypeSelectEl, {
+                    options: allTypes.map(type => ({
+                        value: type.id,
+                        text: type.name
+                    })),
+                    plugins: ['dropdown_input', 'clear_button'],
+                    create: async function(input, callback) {
+                        const isConfirmed = await confirmCreate(input, 'Type');
+                        if (isConfirmed) callback({
+                            value: `new::${input}`,
+                            text: input
+                        });
+                        else callback();
+                    },
+                    render: {
+                        option_create: (data, escape) =>
+                            `<div class="create">Tambah type baru: <strong>${escape(data.input)}</strong>&hellip;</div>`
+                    }
+                });
+                const componentInstanceData = {
+                    id: compIndex,
+                    row: newCompRow,
+                    typeSelect: compTypeTomSelect,
+                    specInstances: []
+                };
+                itemInstanceData.newComponents.push(componentInstanceData);
+                addCompSpecBtn.addEventListener('click', () => {
+                    const newSpecRow = document.getElementById('spec-row-template').content.cloneNode(true)
+                        .firstElementChild;
+                    newCompSpecContainer.appendChild(newSpecRow);
+                    const specTomSelects = initializeSpecRow(newSpecRow);
+                    if (!specTomSelects) return;
+                    const specInstance = {
+                        row: newSpecRow,
+                        attr: specTomSelects.attr,
+                        val: specTomSelects.val
+                    };
+                    componentInstanceData.specInstances.push(specInstance);
+                    newSpecRow.querySelector('.remove-spec-btn').addEventListener('click', () => {
+                        specTomSelects.attr.destroy();
+                        specTomSelects.val.destroy();
+                        newSpecRow.remove();
+                        componentInstanceData.specInstances = componentInstanceData.specInstances
+                            .filter(inst => inst.row !== newSpecRow);
+                    });
+                });
+                removeCompBtn.addEventListener('click', () => {
+                    compTypeTomSelect.destroy();
+                    componentInstanceData.specInstances.forEach(spec => {
+                        spec.attr.destroy();
+                        spec.val.destroy();
+                    });
+                    newCompRow.remove();
+                    itemInstanceData.newComponents = itemInstanceData.newComponents.filter(inst => inst
+                        .id !== compIndex);
+                });
+                compContainer.appendChild(newCompRow);
+            });
+            setItemTomInstances.push(itemInstanceData);
+            itemsContainer.appendChild(newItemCard);
+        }
+
+        function initializeSpecRow(rowElement) {
+            const attrSelectEl = rowElement.querySelector('.spec-attribute'),
+                valSelectEl = rowElement.querySelector('.spec-value');
+            if (!attrSelectEl || !valSelectEl) return null;
+            let valueTomSelect;
+            const attrTomSelect = new TomSelect(attrSelectEl, {
+                options: allSpecAttributes.map(attr => ({
+                    value: attr.id,
+                    text: attr.name,
+                    spec_values: attr.spec_values
+                })),
+                plugins: ['dropdown_input', 'clear_button'],
+                create: async function(input, callback) {
+                    const isConfirmed = await confirmCreate(input, 'Attribute');
+                    if (isConfirmed) callback({
+                        value: `new::${input}`,
+                        text: input,
+                        spec_values: []
+                    });
+                    else callback();
+                },
+                render: {
+                    option_create: (data, escape) =>
+                        `<div class="create">Tambah attribute baru: <strong>${escape(data.input)}</strong>&hellip;</div>`
+                },
+                onChange: function(selectedAttrId) {
+                    if (valueTomSelect) {
+                        valueTomSelect.clear();
+                        valueTomSelect.clearOptions();
+                        valueTomSelect.disable();
+                        if (!selectedAttrId) return;
+                        let selectedValues = [];
+                        if (!String(selectedAttrId).startsWith('new::')) {
+                            const attributeData = this.options[selectedAttrId];
+                            if (attributeData && attributeData.spec_values) selectedValues = attributeData
+                                .spec_values.map(val => ({
+                                    value: val.id,
+                                    text: val.value
+                                }));
+                        }
+                        valueTomSelect.addOptions(selectedValues);
+                        valueTomSelect.enable();
+                        valueTomSelect.open();
+                    }
+                }
+            });
+            valueTomSelect = new TomSelect(valSelectEl, {
+                plugins: ['dropdown_input', 'clear_button'],
+                create: async function(input, callback) {
+                    const isConfirmed = await confirmCreate(input, 'Value');
+                    if (isConfirmed) callback({
+                        value: `new::${input}`,
+                        text: input
+                    });
+                    else callback();
+                },
+                render: {
+                    option_create: (data, escape) =>
+                        `<div class="create">Tambah value baru: <strong>${escape(data.input)}</strong>&hellip;</div>`
+                }
+            });
+            valueTomSelect.disable();
+            return {
+                attr: attrTomSelect,
+                val: valueTomSelect
+            };
+        }
+        async function confirmCreate(name, type) {
+            const result = await Swal.fire({
+                title: `Tambah ${type} Baru?`,
+                text: `"${name}" tidak ditemukan. Apakah Anda ingin menambahkannya sebagai ${type} baru?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Tambahkan!',
+                cancelButtonText: 'Batal'
+            });
+            return result.isConfirmed;
+        }
+
+        function findTypeIdByName(name) {
+            if (!name) return null;
+            const normalizedName = name.trim().toLowerCase();
+            const type = allTypes.find(t => t.name.toLowerCase() === normalizedName);
+            return type ? type.id : null;
+        }
+        async function submitCreateSetForm(submitBtn, form) {
+            const attachCheckbox = document.getElementById('attach_to_desk_checkbox');
+            if (attachCheckbox.checked && setSelectedDeskLocations.length !== 1) {
+                Swal.fire('Error', 'Anda harus memilih 1 meja untuk memasang set.', 'error');
+                return;
+            }
+            showLoading('Membuat Set Item...', 'Ini mungkin memakan waktu beberapa saat...');
+            submitBtn.disabled = true;
+            const formData = {
+                set_name: document.getElementById('set_name').value,
+                set_note: document.getElementById('set_note').value,
+                _token: form.querySelector('input[name="_token"]').value,
+                items: []
+            };
+            if (attachCheckbox.checked) {
+                formData.attach_to_desk = true;
+                formData.lab_id = tomSelectSetLab.getValue();
+                formData.desk_location = setSelectedDeskLocations[0];
+            }
+            setItemTomInstances.forEach(itemInstance => {
+                const itemRow = itemInstance.row;
+                const itemData = {
+                    is_component: '0',
+                    name: itemRow.querySelector('.set-item-name').value,
+                    serial_code: itemRow.querySelector('.set-item-serial').value,
+                    condition: itemRow.querySelector('.set-item-condition:checked').value,
+                    produced_at: itemRow.querySelector('.set-item-produced-at').value,
+                    type: itemInstance.typeSelect.getValue(),
+                    specifications: [],
+                    new_components: []
+                };
+                itemInstance.mainSpecs.forEach(spec => {
+                    const attrVal = spec.attr.getValue();
+                    const valVal = spec.val.getValue();
+                    if (attrVal && valVal) itemData.specifications.push({
+                        attribute: attrVal,
+                        value: valVal
+                    });
+                });
+                itemInstance.newComponents.forEach(compInstance => {
+                    const compRow = compInstance.row;
+                    const componentData = {
+                        name: compRow.querySelector('.new-component-name').value,
+                        serial_code: compRow.querySelector('.new-component-serial').value,
+                        condition: compRow.querySelector('.new-component-condition:checked').value,
+                        type: compInstance.typeSelect.getValue(),
+                        produced_at: compRow.querySelector('.new-component-produced-at').value,
+                        specifications: []
+                    };
+                    compInstance.specInstances.forEach(spec => {
+                        const attrVal = spec.attr.getValue();
+                        const valVal = spec.val.getValue();
+                        if (attrVal && valVal) componentData.specifications.push({
+                            attribute: attrVal,
+                            value: valVal
+                        });
+                    });
+                    itemData.new_components.push(componentData);
+                });
+                formData.items.push(itemData);
+            });
+            formData.set_count = formData.items.length;
+            try {
+                const response = await fetch(form.dataset.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': formData._token
+                    },
+                    body: JSON.stringify(formData)
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    if (response.status === 422) throw new Error(data.message || 'Data tidak valid.');
+                    throw new Error(data.message || 'Terjadi kesalahan.');
+                }
+                hideLoading();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: data.message
+                }).then(() => {
+                    location.reload();
+                });
+            } catch (error) {
+                hideLoading();
+                Swal.fire('Gagal Membuat Set', error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+        async function loadLabsForSetAttachment() {
+            try {
+                const response = await fetch("{{ route('admin.labs.list') }}");
+                if (!response.ok) throw new Error('Gagal memuat daftar lab.');
+                const labs = await response.json();
+                if (tomSelectSetLab) {
+                    tomSelectSetLab.clearOptions();
+                    tomSelectSetLab.addOptions(labs.map(lab => ({
+                        value: lab.id,
+                        text: lab.name
+                    })));
+                }
+            } catch (error) {
+                showToast('Error', error.message, 'error');
+            }
+        }
+        async function fetchDeskMapForSet(labId) {
+            const container = document.getElementById('set-desk-grid-container');
+            container.innerHTML =
+                '<div class="flex items-center justify-center py-8"><div class="animate-spin rounded-full h-12 w-8 border-b-2 border-indigo-600"></div></div>';
+            try {
+                const response = await fetch(`/admin/labs/${labId}/desks`);
+                if (!response.ok) throw new Error('Gagal memuat denah meja.');
+                setLabDesks = await response.json();
+                let maxRow = 5,
+                    maxCol = 10;
+                if (setLabDesks.length > 0) {
+                    setLabDesks.forEach(d => {
+                        const row = d.location.charCodeAt(0) - 64;
+                        const col = parseInt(d.location.substring(1));
+                        if (row > maxRow) maxRow = row;
+                        if (col > maxCol) maxCol = col;
+                    });
+                }
+                renderDeskGridForSet(setLabDesks, maxRow, maxCol);
+            } catch (error) {
+                container.innerHTML = `<div class="text-center py-8 text-red-500">${error.message}</div>`;
+            }
+        }
+
+        function renderDeskGridForSet(desks, maxRows, maxCols) {
+            const container = document.getElementById('set-desk-grid-container');
+            let html =
+                `<div class="overflow-x-auto pb-4"><div class="grid gap-3 border-2 min-w-fit border-slate-300 p-6" style="grid-template-columns: repeat(${maxCols}, minmax(100px, 1fr)); grid-template-rows: repeat(${maxRows}, auto);">`;
+
+            const occupiedSlots = new Set(desks.map(d => d.location));
+            const requiredTypes = ['Monitor', 'Mouse', 'Keyboard', 'CPU'];
+
+            desks.forEach(desk => {
+                const row = desk.location.charCodeAt(0) - 64;
+                const col = parseInt(desk.location.substring(1));
+
+                const isSelected = setSelectedDeskLocations.includes(desk.location);
+                const hasRequiredType = desk.items && desk.items.some(item => item.type && requiredTypes.includes(
+                    item.type.name));
+
+                let bgColorClass;
+
+                if (isSelected) {
+                    bgColorClass = 'bg-indigo-200 border-indigo-500 ring-2 ring-indigo-500';
+                } else if (hasRequiredType) {
+                    bgColorClass = 'bg-red-50 border-red-300';
+                } else {
+                    bgColorClass = 'bg-gray-50 border-gray-300 hover:bg-gray-100';
+                }
+
+                // PERBAIKAN: Selalu pointer
+                let cursorClass = 'cursor-pointer';
+
+                html +=
+                    `<div data-desk-location="${desk.location}" data-has-required="${hasRequiredType}" style="grid-area: ${row} / ${col};" class="set-desk-item transition-all duration-200 flex flex-col items-center justify-center p-3 border-2 rounded-lg min-h-24 ${bgColorClass} ${cursorClass}">
+                <span class="font-bold text-lg block select-none">${desk.location}</span>
+                ${(hasRequiredType && !isSelected) ? '<span class="text-xs text-red-800 mt-1 inline-block select-none font-semibold">Sudah Terisi</span>' : ''}
+                ${isSelected ? '<span class="text-xs text-indigo-700 mt-1 inline-block select-none font-bold uppercase">Terpilih</span>' : ''}
+            </div>`;
+            });
+
+            for (let r = 1; r <= maxRows; r++) {
+                for (let c = 1; c <= maxCols; c++) {
+                    if (!occupiedSlots.has(`${String.fromCharCode(64 + r)}${c}`)) html +=
+                        `<div style="grid-area: ${r} / ${c}; visibility: hidden;"></div>`;
+                }
+            }
+            html += '</div></div>';
+            container.innerHTML = html;
+
+            document.querySelectorAll('.set-desk-item').forEach(deskEl => {
+                deskEl.addEventListener('click', async () => {
+                    const hasRequired = deskEl.dataset.hasRequired === 'true';
+
+                    if (hasRequired) {
+                        const result = await Swal.fire({
+                            title: 'Meja Sudah Terisi',
+                            text: 'Meja ini sudah memiliki item. Yakin ingin melanjutkan?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Ya, Lanjutkan',
+                            cancelButtonText: 'Batal',
+                            confirmButtonColor: '#f59e0b'
+                        });
+                        if (!result.isConfirmed) return;
+                    }
+
+                    // Set data terpilih setelah konfirmasi
+                    setSelectedDeskLocations = [deskEl.dataset.deskLocation];
+                    updateSetSelectedDesksDisplay();
+
+                    // Re-render agar visual berubah
+                    renderDeskGridForSet(setLabDesks, maxRows, maxCols);
+                });
+            });
+        }
+
+        function updateSetSelectedDesksDisplay() {
+            const display = document.getElementById('set-selected-desks-display');
+            if (setSelectedDeskLocations.length === 0) display.innerHTML = 'Belum ada meja dipilih.';
+            else display.innerHTML = `Meja dipilih: ${setSelectedDeskLocations[0]}`;
+        }
+
         // --- MAIN INIT ---
         document.addEventListener('DOMContentLoaded', function() {
+            initializeCreateSetModal();
             initializeActionModal();
             initializeDetailModal();
             initializeAttachDeskModal();

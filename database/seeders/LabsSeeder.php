@@ -17,7 +17,7 @@ class LabsSeeder extends Seeder
         $labs = [
             [
                 'id' => Str::uuid(30),
-                'name' => 'Lab Pemrograman Dasar',
+                'name' => 'Lab Pemrograman',
                 'location' => 'P2.06',
                 'capacity' => 50,
                 'created_at' => now(),
@@ -25,8 +25,16 @@ class LabsSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(30),
+                'name' => 'Lab Mobile Development',
+                'location' => 'P2.07A',
+                'capacity' => 50,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => Str::uuid(30),
                 'name' => 'Lab Studio',
-                'location' => 'P2.07',
+                'location' => 'P2.07B',
                 'capacity' => 50,
                 'created_at' => now(),
                 'updated_at' => now(),

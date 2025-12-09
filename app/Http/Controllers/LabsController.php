@@ -58,29 +58,29 @@ class LabsController extends Controller
         $end = $request->query('end');
 
         $requiredTypes = ['Monitor', 'Mouse', 'Keyboard', 'CPU'];
-        
+
         $desks = $lab->desks()->with(['items.type', 'items.repairs'])->get();
-        
+
         $availableDesks = [];
-        
+
         foreach ($desks as $desk) {
             $items = $desk->items;
-            
+
             if ($items->count() < 4) continue;
-            
+
             $typeNames = $items->pluck('type.name')->toArray();
             $hasAllTypes = count(array_intersect($requiredTypes, $typeNames)) === 4;
-            
+
             if (!$hasAllTypes) continue;
-            
+
             $allGoodCondition = $items->every(fn($i) => $i->condition == 1);
             if (!$allGoodCondition) continue;
-            
+
             $anyUnderRepair = $items->some(fn($i) => $i->repairs->isNotEmpty());
             if ($anyUnderRepair) continue;
-            
+
             if ($start && $end) {
-                $hasBookingConflict = $items->some(function($item) use ($start, $end) {
+                $hasBookingConflict = $items->some(function ($item) use ($start, $end) {
                     return DB::table('bookings_items')
                         ->join('bookings', 'bookings_items.booking_id', '=', 'bookings.id')
                         ->where('bookings_items.bookable_type', 'App\\Models\\Items')
@@ -90,10 +90,10 @@ class LabsController extends Controller
                         ->where('bookings.approved', true)
                         ->exists();
                 });
-                
+
                 if ($hasBookingConflict) continue;
             }
-            
+
             $availableDesks[] = [
                 'desk_id' => $desk->id,
                 'location' => $desk->location,
@@ -104,7 +104,7 @@ class LabsController extends Controller
                 ])
             ];
         }
-        
+
         return response()->json([
             'available_count' => count($availableDesks),
             'desks' => $availableDesks
@@ -117,14 +117,14 @@ class LabsController extends Controller
         $end = $request->query('end');
 
         $desks = $lab->desks()
-            ->with(['items.type', 'items.repairs', 'items.components.type'])
+            ->with(['items.type', 'items.specSetValues.specAttributes', 'items.repairs', 'items.components.type', 'items.components.specSetValues.specAttributes'])
             ->orderBy('location')
             ->get();
 
-        $deskMap = $desks->map(function($desk) use ($start, $end) {
-            $items = $desk->items->map(function($item) use ($start, $end) {
+        $deskMap = $desks->map(function ($desk) use ($start, $end) {
+            $items = $desk->items->map(function ($item) use ($start, $end) {
                 $isUnderRepair = $item->repairs->isNotEmpty();
-                
+
                 $isBooked = false;
                 if ($start && $end) {
                     $isBooked = DB::table('bookings_items')
@@ -144,9 +144,11 @@ class LabsController extends Controller
                     'type' => $item->type ? $item->type->name : null,
                     'condition' => $item->condition,
                     'available' => $item->condition == 1 && !$isUnderRepair && !$isBooked,
+                    'specifications' => $item->specifications ?? null,
                     'components' => $item->components->map(fn($c) => [
                         'id' => $c->id,
                         'name' => $c->name,
+                        'serial_code' => $c->serial_code,
                         'type' => $c->type ? $c->type->name : null
                     ])
                 ];

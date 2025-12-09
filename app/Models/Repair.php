@@ -34,14 +34,14 @@ class Repair extends Model
     {
         return $this->morphedByMany(Items::class, 'itemable', 'repairs_items')
             ->using(Repairs_item::class)
-            ->withPivot(['issue_description', 'status', 'is_successful']);
+            ->withPivot(['issue_description', 'status', 'is_successful', 'repair_notes']);
     }
 
     public function components()
     {
         return $this->morphedByMany(Components::class, 'itemable', 'repairs_items')
             ->using(repairs_item::class)
-            ->withPivot(['issue_description', 'status', 'is_successful']);
+            ->withPivot(['issue_description', 'status', 'is_successful', 'repair_notes']);
     }
     public function period()
     {

@@ -6,6 +6,7 @@ use App\Models\Labs;
 use App\Models\Period;
 use App\Models\Booking;
 use App\Models\Items;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +17,7 @@ class BookingController extends Controller
 {
     public function formBooking()
     {
-        return view('user.booking', ['title' => 'User | Form Booking']);
+        return view('user.booking-new', ['title' => 'User | Form Booking']);
     }
 
     public function getMyBookings()
@@ -74,13 +75,14 @@ class BookingController extends Controller
             'type',
         ]);
         $data['borrower_id'] = Auth::user()->id;
-        $period = Period::getCurrentPeriod();
+        $period = Period::getCurrentPeriod()->id;
         if (!$period) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada periode yang aktif, Mohon hubungi Admin.',
             ], 404);
         }
+        $data['period_id'] = $period->id;
         $valid = Validator::make($data, [
             'bookable_type' => 'required|in:item,component,lab',
             'bookable_id' => [
@@ -163,18 +165,15 @@ class BookingController extends Controller
             'type.required' => 'Tipe peminjaman harus diisi.',
             'type.in' => 'Tipe peminjaman yang dipilih tidak valid, harus dipilih antara Onsite, Remote, atau Keluar Lab.',
         ]);
+
         if ($valid->fails()) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $valid->errors()->first(),
-                ]);
-            }
-            return redirect()->back()->withErrors($valid)->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => $valid->errors()->first(),
+            ]);
         }
         try {
             DB::beginTransaction();
-
             $booking = Booking::create($data);
             if ($data['bookable_type'] === 'lab') {
                 $lab = Labs::where('id', $data['bookable_id'])->first();
@@ -190,24 +189,18 @@ class BookingController extends Controller
             ]);
 
             DB::commit();
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Permintaan peminjaman berhasil diajukan.',
-                ]);
-            }
-            return redirect()->route('user.booking.form')->with('success', 'Permintaan peminjaman berhasil diajukan.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Permintaan peminjaman berhasil diajukan.',
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating booking: ' . $e->getMessage());
 
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan saat mengajukan permintaan peminjaman. Silakan coba lagi.',
-                ]);
-            }
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengajukan permintaan peminjaman. Silakan coba lagi.')->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengajukan permintaan peminjaman. Silakan coba lagi.',
+            ]);
         }
     }
 
@@ -465,13 +458,10 @@ class BookingController extends Controller
             'items.*.returned_detail.max' => 'Detail pengembalian maksimal 750 karakter.',
         ]);
         if ($valid->fails()) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $valid->errors()->first(),
-                ], 422);
-            }
-            return redirect()->back()->withErrors($valid)->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => $valid->errors()->first(),
+            ], 422);
         }
 
         DB::beginTransaction();

@@ -155,8 +155,8 @@
         {{-- Header Section --}}
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 fade-in-up">
             <div>
-                <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">Softwares</h1>
-                <p class="text-gray-500 text-sm mt-1">Manage applications and license distribution across labs.</p>
+                <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">Softwares and Operating System</h1>
+                <p class="text-gray-500 text-sm mt-1">Manage Applications and Operating Systems distribution across labs.</p>
             </div>
 
             <button onclick="openModal('create')"

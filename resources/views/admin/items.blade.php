@@ -2368,7 +2368,15 @@
                         },
                     });
                     const data = await response.json();
-                    if (!response.ok) throw new Error(data.message || 'Gagal update.');
+                    
+                    if (!response.ok) {
+                        if (data.has_ongoing_repair) {
+                            hideLoading();
+                            await handleOngoingRepairError(data);
+                            return;
+                        }
+                        throw new Error(data.message || 'Gagal update.');
+                    }
 
                     hideLoading();
                     showToast('Berhasil', data.message, 'success');
@@ -2399,6 +2407,116 @@
                     document.getElementById('action-modal').classList.add('hidden');
                     checkModalStateAndToggleBodyOverflow();
 
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Gagal', error.message, 'error');
+                }
+            }
+
+            async function handleOngoingRepairError(data) {
+                const repairData = data.repair_data;
+                const result = await Swal.fire({
+                    title: 'Repair Sedang Berjalan',
+                    html: `
+                        <div class="text-left space-y-3">
+                            <p class="text-gray-700">${data.message}</p>
+                            <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                <p class="text-sm font-semibold text-blue-800 mb-1">Masalah:</p>
+                                <p class="text-sm text-gray-700">${repairData.issue_description}</p>
+                            </div>
+                            <p class="text-sm text-gray-600">Pilih tindakan:</p>
+                        </div>
+                    `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    showDenyButton: true,
+                    confirmButtonText: 'Selesaikan Repair',
+                    denyButtonText: 'Lihat Halaman Repairs',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#10b981',
+                    denyButtonColor: '#3b82f6',
+                    cancelButtonColor: '#6b7280'
+                });
+
+                if (result.isConfirmed) {
+                    await showCompleteRepairForm(repairData);
+                } else if (result.isDenied) {
+                    window.location.href = repairData.repair_url;
+                }
+            }
+
+            async function showCompleteRepairForm(repairData) {
+                const { value: formValues } = await Swal.fire({
+                    title: 'Selesaikan Repair',
+                    html: `
+                        <div class="text-left space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Hasil Perbaikan</label>
+                                <div class="flex gap-4 justify-center">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" name="swal-is-successful" value="1" class="mr-2" checked>
+                                        <span class="text-sm">Berhasil (Bagus)</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" name="swal-is-successful" value="0" class="mr-2">
+                                        <span class="text-sm">Gagal (Rusak)</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan Teknisi</label>
+                                <textarea id="swal-repair-notes" class="w-full px-3 py-2 border border-gray-300 rounded-lg" rows="3" placeholder="Contoh: Kabel diganti baru..."></textarea>
+                            </div>
+                        </div>
+                    `,
+                    focusConfirm: false,
+                    showCancelButton: true,
+                    confirmButtonText: 'Simpan',
+                    cancelButtonText: 'Batal',
+                    preConfirm: () => {
+                        const isSuccessful = document.querySelector('input[name="swal-is-successful"]:checked').value === '1';
+                        const notes = document.getElementById('swal-repair-notes').value;
+                        return { isSuccessful, notes };
+                    }
+                });
+
+                if (formValues) {
+                    await submitCompleteRepair(repairData, formValues);
+                }
+            }
+
+            async function submitCompleteRepair(repairData, formValues) {
+                showLoading('Menyelesaikan Repair...');
+                try {
+                    const url = (currentItemType === 'item') ?
+                        `/admin/items/${currentItemId}/complete-repair` :
+                        `/admin/components/${currentItemId}/complete-repair`;
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            repair_id: repairData.repair_id,
+                            is_successful: formValues.isSuccessful,
+                            repair_notes: formValues.notes
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Gagal menyelesaikan repair.');
+
+                    hideLoading();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message
+                    }).then(() => {
+                        location.reload();
+                    });
                 } catch (error) {
                     hideLoading();
                     Swal.fire('Gagal', error.message, 'error');

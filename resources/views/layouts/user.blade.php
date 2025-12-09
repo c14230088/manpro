@@ -23,17 +23,17 @@
     {{-- CSS Libraries --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css"> {{-- Gunakan versi terbaru standard CSS --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css"> 
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.13/dist/lenis.css">
 
     {{-- JS Libraries (Core) --}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     
-    {{-- Tailwind CSS (Satu kali panggil dengan Plugin) --}}
+    {{-- Tailwind CSS --}}
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     
-    {{-- Tailwind Configuration (Digabung) --}}
+    {{-- Tailwind Configuration (Tetap menggunakan warna Petra user) --}}
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -42,16 +42,16 @@
                     sans: ["Open Sans", "sans-serif"],
                     body: ["Open Sans", "sans-serif"],
                     mono: ["ui-monospace", "monospace"],
-                    roboto: ["Roboto", "sans-serif"], // Tambahan dari font google
+                    roboto: ["Roboto", "sans-serif"],
                 },
                 extend: {
                     colors: {
                         petra: {
-                            blue: '#003366',    // Biru Tua Profesional
-                            yellow: '#FFC107',  // Kuning Emas/Akademik
-                            gray: '#F8F9FA',    // Abu-abu background terang
-                            darkgray: '#343A40',// Abu-abu teks gelap
-                            wood: '#D2B48C'     // Coklat Kayu Muda
+                            blue: '#003366',    
+                            yellow: '#FFC107',  
+                            gray: '#F8F9FA',    
+                            darkgray: '#343A40',
+                            wood: '#D2B48C'     
                         }
                     }
                 }
@@ -73,9 +73,11 @@
     {{-- Lenis (Smooth Scroll) --}}
     <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 
-    {{-- Custom Styles (Tom Select & SweetAlert) --}}
+    {{-- ========================================================= --}}
+    {{-- STYLE DARI ADMIN (FIXED VERSION UNTUK SWAL & TOM SELECT)  --}}
+    {{-- ========================================================= --}}
     <style>
-        /* --- TOM SELECT STYLES --- */
+        /* --- TOM SELECT STYLES (Diambil dari Admin agar konsisten) --- */
         .ts-control {
             display: block;
             width: 100%;
@@ -101,6 +103,7 @@
         }
 
         .ts-wrapper.dropdown-active .ts-control {
+            display: block;
             border-radius: 0.5rem !important;
             border: 2px solid black !important;
             box-shadow: 0 0 0 2px #6366f1 !important;
@@ -127,6 +130,7 @@
 
         .ts-dropdown {
             border: 1px solid #d1d5db;
+            background-color: white;
             border-radius: 0.5rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             z-index: 9000 !important;
@@ -144,7 +148,7 @@
 
         .ts-dropdown .create { color: #2563eb; }
 
-        /* --- SWEETALERT2 STYLES (Glassmorphism) --- */
+        /* --- SWEETALERT2 STYLES (Diambil dari Admin - Fixed Modern Colorful) --- */
         .swal2-container { z-index: 9997 !important; }
 
         .swal2-popup {
@@ -162,7 +166,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Toast Styles */
+        /* Base Toast Style */
         .swal2-toast-custom.swal2-popup {
             max-width: 400px !important;
             backdrop-filter: blur(12px) saturate(180%);
@@ -173,19 +177,22 @@
             border: 2px solid !important;
         }
 
-        /* Toast Colors */
+        /* SUCCESS TOAST - Hijau */
         .swal2-toast-custom.swal2-popup.swal2-icon-success {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95)) !important;
             border-color: rgba(16, 185, 129, 0.5) !important;
         }
+        /* ERROR TOAST - Merah */
         .swal2-toast-custom.swal2-popup.swal2-icon-error {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95)) !important;
             border-color: rgba(239, 68, 68, 0.5) !important;
         }
+        /* WARNING TOAST - Kuning/Orange */
         .swal2-toast-custom.swal2-popup.swal2-icon-warning {
             background: linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(249, 115, 22, 0.95)) !important;
             border-color: rgba(251, 146, 60, 0.5) !important;
         }
+        /* INFO TOAST - Biru */
         .swal2-toast-custom.swal2-popup.swal2-icon-info {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.95)) !important;
             border-color: rgba(59, 130, 246, 0.5) !important;
@@ -217,11 +224,12 @@
         .swal2-toast-custom .swal2-timer-progress-bar {
             background: rgba(255, 255, 255, 0.5) !important;
         }
-
-        /* General Modal Text & Buttons */
+        
+        /* Modal General Text */
         .swal2-title { color: #1f2937 !important; font-weight: 700 !important; margin-bottom: 1rem !important; }
         .swal2-html-container { color: #4b5563 !important; line-height: 1.6 !important; }
         
+        /* Buttons */
         .swal2-confirm {
             background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
@@ -230,6 +238,12 @@
             background: rgba(229, 231, 235, 0.8) !important;
             color: #374151 !important;
         }
+        .swal2-deny {
+            background: rgba(239, 68, 68, 0.1) !important;
+            color: #dc2626 !important;
+        }
+        
+        /* Inputs */
         .swal2-input, .swal2-textarea {
             border: 2px solid rgba(209, 213, 219, 0.5) !important;
             border-radius: 12px !important;
@@ -313,7 +327,7 @@
             }
         });
 
-        // --- GLOBAL FUNCTIONS ---
+        // --- GLOBAL FUNCTIONS (Updated from Admin) ---
 
         function showLoadingToast(message = 'Loading...') {
             const toast = Swal.mixin({
@@ -322,6 +336,7 @@
                 showConfirmButton: false,
                 timer: 10000
             });
+            
             toast.fire({
                 icon: 'info',
                 title: message,
@@ -330,7 +345,13 @@
         }
 
         function showToast(title, message = '', type = 'success', autoHideTimeout = 3000) {
-            const iconMap = { success: 'success', error: 'error', warning: 'warning', info: 'info' };
+            const iconMap = {
+                success: 'success',
+                error: 'error',
+                warning: 'warning',
+                info: 'info'
+            };
+
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -341,7 +362,9 @@
                     toast.addEventListener('mouseenter', Swal.stopTimer);
                     toast.addEventListener('mouseleave', Swal.resumeTimer);
                 },
-                customClass: { popup: 'swal2-popup swal2-toast-custom' }
+                customClass: {
+                    popup: 'swal2-popup swal2-toast-custom'
+                }
             });
 
             Toast.fire({
