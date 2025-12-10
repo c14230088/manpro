@@ -21,6 +21,7 @@ class Components extends Model
         'type_id',
         'unit_id',
         'item_id',
+        'lab_id'
     ];
 
     protected $hidden = [
@@ -31,6 +32,15 @@ class Components extends Model
     public function item()
     {
         return $this->belongsTo(Items::class);
+    }
+
+    public function lab()
+    {
+        return $this->belongsTo(Labs::class);
+    }
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
     public function type()
     {

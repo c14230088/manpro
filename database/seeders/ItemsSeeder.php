@@ -38,7 +38,6 @@ class ItemsSeeder extends Seeder
                     'produced_at' => now()->subMonths(rand(6, 36)),
                     'type_id' => $types['MONITOR']->id ?? $types->first()->id,
                     'unit_id' => $ptikUnit->id,
-                    'lab_id' => $lab->id,
                     'desk_id' => $desk->id,
                 ]);
 
@@ -50,7 +49,6 @@ class ItemsSeeder extends Seeder
                     'produced_at' => now()->subMonths(rand(6, 36)),
                     'type_id' => $types['CPU']->id ?? $types->first()->id,
                     'unit_id' => $ptikUnit->id,
-                    'lab_id' => $lab->id,
                     'desk_id' => $desk->id,
                 ]);
 
@@ -62,7 +60,6 @@ class ItemsSeeder extends Seeder
                     'produced_at' => now()->subMonths(rand(6, 36)),
                     'type_id' => $types['KEYBOARD']->id ?? $types->first()->id,
                     'unit_id' => $ptikUnit->id,
-                    'lab_id' => $lab->id,
                     'desk_id' => $desk->id,
                 ]);
 
@@ -74,7 +71,6 @@ class ItemsSeeder extends Seeder
                     'produced_at' => now()->subMonths(rand(6, 36)),
                     'type_id' => $types['MOUSE']->id ?? $types->first()->id,
                     'unit_id' => $ptikUnit->id,
-                    'lab_id' => $lab->id,
                     'desk_id' => $desk->id,
                 ]);
             }
@@ -89,7 +85,6 @@ class ItemsSeeder extends Seeder
                         'produced_at' => now()->subMonths(rand(3, 18)),
                         'type_id' => $types['VR HEADSET']->id ?? $types->first()->id,
                         'unit_id' => $ptikUnit->id,
-                        'lab_id' => $lab->id,
                         'desk_id' => null,
                     ]);
                 }

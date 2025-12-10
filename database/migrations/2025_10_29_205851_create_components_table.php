@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('serial_code')->unique();
-            $table->boolean('condition')->comment('0: rusak | 1: bagus');
+            $table->boolean('condition')->comment('0: rusak | 1: baik');
 
             $table->timestamp('produced_at')->nullable(); // kapan dibuatnya item ini.
 
@@ -27,6 +27,9 @@ return new class extends Migration
 
             $table->uuid('item_id')->nullable(); // bisa bound ke suatu item, bisa free (misal: stock RAM) 
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
+
+            $table->uuid('lab_id')->nullable(); // bisa bound ke suatu meja, bisa free ATAU KE BOUND DI LAB
+            $table->foreign('lab_id')->references('id')->on('labs')->onDelete('cascade');
 
             $table->timestamps();
         });

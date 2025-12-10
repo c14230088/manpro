@@ -17,7 +17,7 @@ class DesksSeeder extends Seeder
     public function run(): void
     {
         $labs = Labs::all();
-        $labPemrograman = $labs->where('name', 'Lab Pemrograman Dasar')->first();
+        $labPemrograman = $labs->where('name', 'Lab Pemrograman')->first();
         $labJaringan = $labs->where('name', 'Lab Jaringan Komputer')->first();
         $labStudio = $labs->where('name', 'Lab Studio')->first();
         $labSI = $labs->where('name', 'Lab Sistem Informasi')->first();

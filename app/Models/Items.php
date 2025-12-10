@@ -40,6 +40,11 @@ class Items extends Model
         return $this->belongsTo(Labs::class);
     }
 
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
     public function components()
     {
         return $this->hasMany(Components::class, 'item_id');

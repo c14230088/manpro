@@ -56,12 +56,6 @@ class SetController extends Controller
                 throw new \Exception('Set harus memiliki 4 item.');
             }
 
-            // foreach ($items as $item) {
-            //     if ($item->desk_id) {
-            //         throw new \Exception("Item '{$item->name}' sudah terpasang di meja lain.");
-            //     }
-            // }
-
             $desk = DB::table('desks')
                 ->where('lab_id', $request->lab_id)
                 ->where('location', $request->desk_location)
@@ -71,20 +65,9 @@ class SetController extends Controller
                 throw new \Exception("Meja {$request->desk_location} tidak ditemukan di lab ini.");
             }
 
-            // jika sudah ada MINIMAL 1 saja item dengan TYPE berikut, tidak bisa assign Set ke desk ini (UN-COMMAND INI JIKA MAU BISA ADD SET ke Meja yang berisi)
-            // $requiredTypes = ['Monitor', 'Mouse', 'Keyboard', 'CPU'];
-            // $existingItems = Items::where('desk_id', $desk->id)
-            //     ->with('type')
-            //     ->get();
-
-            // foreach ($existingItems as $existing) {
-            //     if ($existing->type && in_array($existing->type->name, $requiredTypes)) {
-            //         throw new \Exception("Meja {$request->desk_location} sudah memiliki {$existing->type->name}. Tidak bisa memasang set ke meja ini.");
-            //     }
-            // }
-
             foreach ($items as $item) {
                 $item->desk_id = $desk->id;
+                $item->lab_id = null;
                 $item->save();
             }
 
@@ -93,6 +76,104 @@ class SetController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => "Set '{$set->name}' berhasil dipasang ke meja {$request->desk_location}."
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function attachSetToLab(Request $request, Set $set)
+    {
+        $request->validate([
+            'lab_id' => 'required|uuid|exists:labs,id'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $items = $set->items()->get();
+            
+            if ($items->count() !== 4) {
+                throw new \Exception('Set harus memiliki 4 item.');
+            }
+
+            foreach ($items as $item) {
+                $item->lab_id = $request->lab_id;
+                $item->desk_id = null;
+                $item->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Set '{$set->name}' berhasil dipasang ke lemari lab."
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function detachSetFromDesks(Set $set)
+    {
+        DB::beginTransaction();
+        try {
+            $items = $set->items()->whereNotNull('desk_id')->get();
+            
+            if ($items->isEmpty()) {
+                throw new \Exception('Tidak ada item dalam set ini yang terpasang di meja.');
+            }
+
+            foreach ($items as $item) {
+                $item->desk_id = null;
+                $item->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Set '{$set->name}' berhasil dilepas dari meja."
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function detachSetFromLabs(Set $set)
+    {
+        DB::beginTransaction();
+        try {
+            $items = $set->items()->whereNotNull('lab_id')->get();
+            
+            if ($items->isEmpty()) {
+                throw new \Exception('Tidak ada item dalam set ini yang terpasang di lemari lab.');
+            }
+
+            foreach ($items as $item) {
+                $item->lab_id = null;
+                $item->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Set '{$set->name}' berhasil dilepas dari lemari lab."
             ]);
 
         } catch (\Exception $e) {

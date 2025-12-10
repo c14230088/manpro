@@ -68,6 +68,6 @@ class Desks extends Model
             }
         }
 
-        return 'bagus';
+        return 'baik';
     }
 }

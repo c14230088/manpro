@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('location'); //A1, A2 || XY coordinate
             // $table->string('serial_code');
-            // $table->boolean('condition')->comment('0: rusak | 1: bagus'); // kayaknya ini gausah ... bagusan klo cek dari item di desk ini (jika item di desk ini ada yang rusak -> warning merah || component dari item rusak (RAM, dll) -> warning kuning)
+            // $table->boolean('condition')->comment('0: rusak | 1: baik'); // kayaknya ini gausah ... bagusan klo cek dari item di desk ini (jika item di desk ini ada yang rusak -> warning merah || component dari item rusak (RAM, dll) -> warning kuning)
 
             // $table->uuid('unit_id'); // Meja ini milik siapa, UPPK atau mhsw
             // $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');

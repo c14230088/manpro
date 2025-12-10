@@ -173,4 +173,47 @@ class PermissionController extends Controller
         }
         return redirect()->back()->with('success', $message || 'Roles berhasil diperbarui.');
     }
+
+    public function createUnit(Request $request)
+    {
+        $data = $request->only('name', 'description');
+        $valid = Validator::make(
+            $data,
+            [
+                'name' => 'required|string|max:255|unique:units,name',
+                'description' => 'nullable|string|max:500',
+            ],
+            [
+                'name.required' => 'Nama unit wajib diisi.',
+                'name.max' => 'Nama unit maksimal 255 karakter.',
+                'name.unique' => 'Nama unit sudah digunakan.',
+                'description.max' => 'Deskripsi maksimal 500 karakter.',
+            ]
+        );
+
+        if ($valid->fails()) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $valid->errors()->first(),
+                ], 422);
+            }
+            return redirect()->back()->withErrors($valid)->withInput();
+        }
+
+        $unit = Unit::create([
+            'name' => $data['name'],
+            'description' => $data['description'] ?? null,
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Unit "' . $unit->name . '" berhasil dibuat.',
+                'unit' => $unit,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Unit berhasil dibuat.');
+    }
 }

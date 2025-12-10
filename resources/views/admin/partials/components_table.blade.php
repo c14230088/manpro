@@ -51,7 +51,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if ($comp->condition)
-                                <span class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Bagus</span>
+                                <span class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Baik</span>
                             @else
                                 <span class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rusak</span>
                             @endif

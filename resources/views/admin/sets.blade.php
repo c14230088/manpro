@@ -129,7 +129,7 @@
                                 </td>
                             </tr>
                         @empty
-                            {{-- Baris kosong ini opsional karena TE punya noFoundMessage, tapi bagus untuk server-side render awal --}}
+                            {{-- Baris kosong ini opsional karena TE punya noFoundMessage, tapi Baik untuk server-side render awal --}}
                             <tr>
                                 <td colspan="4" class="px-6 py-12 text-center text-gray-500">Tidak ada data set.</td>
                             </tr>
@@ -175,6 +175,30 @@
                             </path>
                         </svg>
                         <span class="font-semibold">Pasang ke Meja</span>
+                    </button>
+                    <button id="action-btn-attach-lab"
+                        class="p-6 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg">
+                        <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        <span class="font-semibold">Pasang ke Lab</span>
+                    </button>
+                    <button id="action-btn-detach-desk"
+                        class="p-6 bg-red-500 hover:bg-red-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg">
+                        <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span class="font-semibold">Lepas dari Meja</span>
+                    </button>
+                    <button id="action-btn-detach-lab"
+                        class="p-6 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg">
+                        <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span class="font-semibold">Lepas dari Lab</span>
                     </button>
                 </div>
             </div>
@@ -368,7 +392,7 @@
                     <div class="flex items-center space-x-6 pt-3"><label class="flex items-center"><input type="radio"
                                 class="new-component-condition" name="component_condition_NEW-INDEX" value="1"
                                 class="h-4 w-4 text-purple-600" checked><span
-                                class="ml-2 text-gray-700">Bagus</span></label><label class="flex items-center"><input
+                                class="ml-2 text-gray-700">Baik</span></label><label class="flex items-center"><input
                                 type="radio" class="new-component-condition" name="component_condition_NEW-INDEX"
                                 value="0" class="h-4 w-4 text-purple-600"><span
                                 class="ml-2 text-gray-700">Rusak</span></label></div>
@@ -409,7 +433,7 @@
                     <div><label class="block text-sm font-semibold text-gray-700 mb-2">Kondisi</label>
                         <div class="flex items-center space-x-6 pt-3"><label class="flex items-center"><input
                                     type="radio" class="set-item-condition" name="set_item_condition_INDEX"
-                                    value="1" checked><span class="ml-2 text-gray-700">Bagus</span></label><label
+                                    value="1" checked><span class="ml-2 text-gray-700">Baik</span></label><label
                                 class="flex items-center"><input type="radio" class="set-item-condition"
                                     name="set_item_condition_INDEX" value="0"><span
                                     class="ml-2 text-gray-700">Rusak</span></label></div>
@@ -470,6 +494,10 @@
             background-color: #f9fafb;
             /* bg-gray-50 */
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .swal2-input {
+            padding: 0 0.75rem !important;
         }
     </style>
 
@@ -539,6 +567,9 @@
             });
             document.getElementById('action-btn-details').addEventListener('click', openDetailModal);
             document.getElementById('action-btn-attach').addEventListener('click', openAttachDeskModal);
+            document.getElementById('action-btn-attach-lab').addEventListener('click', openAttachLabModal);
+            document.getElementById('action-btn-detach-desk').addEventListener('click', detachSetFromDesk);
+            document.getElementById('action-btn-detach-lab').addEventListener('click', detachSetFromLab);
         }
 
         async function openDetailModal() {
@@ -578,7 +609,7 @@
                 `<div class="border-t pt-4"><h4 class="font-semibold text-gray-800 mb-4">Items dalam Set (${data.items.length}):</h4>`;
             data.items.forEach((item, idx) => {
                 const condBadge = item.condition ?
-                    '<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800">Bagus</span>' :
+                    '<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800">Baik</span>' :
                     '<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800">Rusak</span>';
                 const location = item.desk ? `${item.desk.lab.name} - Meja ${item.desk.location}` :
                     'Belum Terpasang';
@@ -1364,6 +1395,141 @@
             const display = document.getElementById('set-selected-desks-display');
             if (setSelectedDeskLocations.length === 0) display.innerHTML = 'Belum ada meja dipilih.';
             else display.innerHTML = `Meja dipilih: ${setSelectedDeskLocations[0]}`;
+        }
+
+        async function openAttachLabModal() {
+            if (currentAllAttached) {
+                Swal.fire('Info', 'Set ini sudah terpasang.', 'info');
+                return;
+            }
+            const result = await Swal.fire({
+                title: 'Pilih Laboratorium',
+                html: '<select id="swal-lab-select" class="swal2-input" style="width:80%;padding:0.5rem"><option value="">-- Pilih Lab --</option></select>',
+                showCancelButton: true,
+                confirmButtonText: 'Pasang ke Lab',
+                cancelButtonText: 'Batal',
+                didOpen: async () => {
+                    const select = document.getElementById('swal-lab-select');
+                    try {
+                        const response = await fetch("{{ route('admin.labs.list') }}");
+                        const labs = await response.json();
+                        labs.forEach(lab => {
+                            const option = document.createElement('option');
+                            option.value = lab.id;
+                            option.textContent = lab.name;
+                            select.appendChild(option);
+                        });
+                    } catch (error) {
+                        console.error('Error loading labs:', error);
+                    }
+                },
+                preConfirm: () => {
+                    const labId = document.getElementById('swal-lab-select').value;
+                    if (!labId) {
+                        Swal.showValidationMessage('Silakan pilih laboratorium');
+                        return false;
+                    }
+                    return labId;
+                }
+            });
+            if (result.isConfirmed && result.value) {
+                await attachSetToLab(result.value);
+            }
+        }
+
+        async function attachSetToLab(labId) {
+            showLoading('Memasang Set ke Lab...');
+            try {
+                const response = await fetch(`/admin/sets/${currentSetId}/attach-lab`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({
+                        lab_id: labId
+                    })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Gagal memasang set ke lab.');
+                hideLoading();
+                showToast('Berhasil!', data.message, 'success');
+                document.getElementById('action-modal').classList.add('hidden');
+                checkModalState();
+                setTimeout(() => location.reload(), 1000);
+            } catch (error) {
+                hideLoading();
+                Swal.fire('Gagal', error.message, 'error');
+            }
+        }
+
+        async function detachSetFromDesk() {
+            const result = await Swal.fire({
+                title: 'Lepas Set dari Meja?',
+                text: `Semua item dalam set '${currentSetName}' akan dilepas dari meja.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Lepas!',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#ef4444'
+            });
+            if (!result.isConfirmed) return;
+            
+            showLoading('Melepas Set dari Meja...');
+            try {
+                const response = await fetch(`/admin/sets/${currentSetId}/detach-desks`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Gagal melepas set');
+                hideLoading();
+                showToast('Berhasil!', data.message, 'success');
+                document.getElementById('action-modal').classList.add('hidden');
+                checkModalState();
+                setTimeout(() => location.reload(), 1000);
+            } catch (error) {
+                hideLoading();
+                Swal.fire('Gagal', error.message, 'error');
+            }
+        }
+
+        async function detachSetFromLab() {
+            const result = await Swal.fire({
+                title: 'Lepas Set dari Lab?',
+                text: `Semua item dalam set '${currentSetName}' akan dilepas dari lemari lab.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Lepas!',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#6366f1'
+            });
+            if (!result.isConfirmed) return;
+            
+            showLoading('Melepas Set dari Lab...');
+            try {
+                const response = await fetch(`/admin/sets/${currentSetId}/detach-labs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Gagal melepas set');
+                hideLoading();
+                showToast('Berhasil!', data.message, 'success');
+                document.getElementById('action-modal').classList.add('hidden');
+                checkModalState();
+                setTimeout(() => location.reload(), 1000);
+            } catch (error) {
+                hideLoading();
+                Swal.fire('Gagal', error.message, 'error');
+            }
         }
 
         // --- MAIN INIT ---

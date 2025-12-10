@@ -239,7 +239,7 @@ class ItemsController extends Controller
             'set_id.exists' => 'Set ID yang dipilih tidak ditemukan.',
 
             'condition.required' => 'Mohon tentukan kondisi barang.',
-            'condition.boolean' => 'Kondisi barang hanya boleh berupa Rusak atau Bagus.',
+            'condition.boolean' => 'Kondisi barang hanya boleh berupa Rusak atau Baik.',
 
             'type.required' => 'Mohon pilih tipe atau buat tipe baru untuk barang ini.',
 
@@ -431,7 +431,7 @@ class ItemsController extends Controller
             $item->condition = !$item->condition;
             $item->save();
 
-            $newConditionText = $item->condition ? 'Bagus' : 'Rusak';
+            $newConditionText = $item->condition ? 'Baik' : 'Rusak';
 
             return response()->json([
                 'success' => true,
@@ -492,13 +492,14 @@ class ItemsController extends Controller
 
     public function attachToDesk(Request $request, Items $item, Desks $desk)
     {
-        // Validasi lagi untuk keamanan (mencegah race condition)
-        if ($item->desk_id) {
-            return response()->json(['success' => false, 'message' => 'Item ini sudah terpasang di meja lain.'], 409); // 409 Conflict
-        }
+        // // Validasi lagi untuk keamanan (mencegah race condition)
+        // if ($item->desk_id) {
+        //     return response()->json(['success' => false, 'message' => 'Item ini sudah terpasang di meja lain.'], 409); // 409 Conflict
+        // }
 
         try {
             $item->desk_id = $desk->id;
+            $item->lab_id = null; // Clear lab_id jika attach ke desk
             $item->save();
 
             return response()->json([
@@ -508,6 +509,74 @@ class ItemsController extends Controller
         } catch (\Exception $e) {
             Log::error('Error attachToDesk: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Gagal memasang item ke meja.'], 500);
+        }
+    }
+
+    public function attachToLab(Request $request, Items $item, Labs $lab)
+    {
+        if ($item->desk_id) {
+            return response()->json(['success' => false, 'message' => 'Item ini sudah terpasang di meja. Lepas dari meja terlebih dahulu.'], 409);
+        }
+
+        // if ($item->lab_id) {
+        //     return response()->json(['success' => false, 'message' => 'Item ini sudah terpasang di lab lain.'], 409);
+        // }
+
+        try {
+            $item->lab_id = $lab->id;
+            $item->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Item '{$item->name}' berhasil dipasang ke Lab '{$lab->name}'."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error attachToLab: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal memasang item ke lab.'], 500);
+        }
+    }
+
+    public function detachFromDesk(Request $request, Items $item)
+    {
+        if (!$item->desk_id) {
+            return response()->json(['success' => false, 'message' => 'Item ini tidak terpasang di meja manapun.'], 400);
+        }
+
+        try {
+            $desk = Desks::where('id', $item->desk_id)->first();
+            $item->desk_id = null;
+            if ($desk?->lab_id) {
+                $item->lab_id = $desk->lab_id;
+            }
+            $item->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Item '{$item->name}' berhasil dilepas dari meja."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error detachFromDesk: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal melepas item dari meja.'], 500);
+        }
+    }
+
+    public function detachFromLab(Request $request, Items $item)
+    {
+        if (!$item->lab_id) {
+            return response()->json(['success' => false, 'message' => 'Item ini tidak terpasang di lab manapun.'], 400);
+        }
+
+        try {
+            $item->lab_id = null;
+            $item->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Item '{$item->name}' berhasil dilepas dari lab."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error detachFromLab: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal melepas item dari lab.'], 500);
         }
     }
 
@@ -629,6 +698,66 @@ class ItemsController extends Controller
             );
 
             $model->specSetValues()->attach($specValueId);
+        }
+    }
+
+    public function getAvailableComponents(Request $request, Items $item)
+    {
+        try {
+            $components = Components::whereNull('item_id')
+                ->where('condition', 1)
+                ->with(['type', 'specSetValues.specAttributes'])
+                ->orderBy('name')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'components' => $components
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error getAvailableComponents: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal memuat komponen.'], 500);
+        }
+    }
+
+    public function attachComponent(Request $request, Items $item, Components $component)
+    {
+        // if ($component->item_id) {
+        //     return response()->json(['success' => false, 'message' => 'Komponen sudah terpasang di item lain.'], 409);
+        // }
+
+        try {
+            $component->item_id = $item->id;
+            $component->lab_id = null;
+            $component->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Komponen '{$component->name}' berhasil dipasang ke '{$item->name}'."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error attachComponent: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal memasang komponen.'], 500);
+        }
+    }
+
+    public function detachComponent(Request $request, Items $item, Components $component)
+    {
+        if ($component->item_id != $item->id) {
+            return response()->json(['success' => false, 'message' => 'Komponen tidak terpasang di item ini.'], 400);
+        }
+
+        try {
+            $component->item_id = null;
+            $component->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Komponen '{$component->name}' berhasil dilepas dari '{$item->name}'."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error detachComponent: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal melepas komponen.'], 500);
         }
     }
 }

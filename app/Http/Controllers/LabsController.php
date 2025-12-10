@@ -52,6 +52,32 @@ class LabsController extends Controller
         return response()->json($desks->toArray());
     }
 
+    public function getLabStorage(Labs $lab)
+    {
+        $items = $lab->items()
+            ->with([
+                'type',
+                'specSetValues.specAttributes',
+                'components.type',
+                'components.specSetValues.specAttributes',
+            ])
+            ->whereNull('desk_id')
+            ->get();
+
+        $components = \App\Models\Components::where('lab_id', $lab->id)
+            ->with([
+                'type',
+                'specSetValues.specAttributes',
+            ])
+            ->whereNull('item_id')
+            ->get();
+
+        return response()->json([
+            'items' => $items,
+            'components' => $components
+        ]);
+    }
+
     public function getAvailableSets(Request $request, Labs $lab)
     {
         $start = $request->query('start');
@@ -144,16 +170,23 @@ class LabsController extends Controller
                     'type' => $item->type ? $item->type->name : null,
                     'condition' => $item->condition,
                     'available' => $item->condition == 1 && !$isUnderRepair && !$isBooked,
-                    'specifications' => $item->specifications ?? null,
+                    'specifications' => $item->specSetValues->map(fn($spec) => [
+                        'name' => $spec->specAttributes->name,
+                        'value' => $spec->value,
+                    ]),
                     'components' => $item->components->map(fn($c) => [
                         'id' => $c->id,
                         'name' => $c->name,
                         'serial_code' => $c->serial_code,
-                        'type' => $c->type ? $c->type->name : null
+                        'type' => $c->type ? $c->type->name : null,
+                        'specifications' => $c->specSetValues->map(fn($spec) => [
+                            'name' => $spec->specAttributes->name,
+                            'value' => $spec->value,
+                        ]),
                     ])
                 ];
             });
-
+            Log::info($items);
             return [
                 'id' => $desk->id,
                 'location' => $desk->location,

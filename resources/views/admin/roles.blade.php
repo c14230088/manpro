@@ -178,20 +178,31 @@
                 <p class="text-gray-500 text-sm mt-1">Manage Units and User Access Rights</p>
             </div>
 
-            {{-- Swap Button --}}
-            <button id="swap-mode-btn"
-                class="group flex items-center gap-3 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-indigo-300 hover:text-indigo-600 transition-all duration-300 w-full md:w-auto justify-center">
-                <span id="mode-text-left" class="font-bold text-sm text-indigo-600">Assign Users to Unit</span>
-                <div class="bg-gray-100 p-1.5 rounded-full group-hover:bg-indigo-100 transition-colors">
-                    <svg id="swap-icon"
-                        class="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-transform duration-500"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+            <div class="flex gap-3 w-full md:w-auto">
+                {{-- Create Unit Button --}}
+                <button onclick="openCreateUnitModal()"
+                    class="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl shadow-sm hover:bg-emerald-700 transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                </div>
-                <span id="mode-text-right" class="text-sm text-gray-400 font-medium">Assign Unit to User</span>
-            </button>
+                    <span class="text-sm font-semibold">Create Unit</span>
+                </button>
+
+                {{-- Swap Button --}}
+                <button id="swap-mode-btn"
+                    class="group flex items-center gap-3 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-indigo-300 hover:text-indigo-600 transition-all duration-300 w-full md:w-auto justify-center">
+                    <span id="mode-text-left" class="font-bold text-sm text-indigo-600">Assign Users to Unit</span>
+                    <div class="bg-gray-100 p-1.5 rounded-full group-hover:bg-indigo-100 transition-colors">
+                        <svg id="swap-icon"
+                            class="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-transform duration-500"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                        </svg>
+                    </div>
+                    <span id="mode-text-right" class="text-sm text-gray-400 font-medium">Assign Unit to User</span>
+                </button>
+            </div>
         </div>
 
         {{-- Main Two-Column Layout --}}
@@ -380,6 +391,67 @@
                         <button type="button" onclick="closePermModal()"
                             class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Close</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Create Unit Modal --}}
+    <div id="create-unit-modal" class="fixed inset-0 z-[2000] hidden" aria-labelledby="create-unit-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-60 transition-opacity backdrop-blur-sm" onclick="closeCreateUnitModal()"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto pointer-events-none">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="pointer-events-auto relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-200">
+                    <form id="create-unit-form" onsubmit="submitCreateUnit(event)">
+                        <div class="bg-white px-4 py-4 sm:px-6 border-b border-gray-100">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-emerald-100 p-2 rounded-lg">
+                                        <svg class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold leading-6 text-gray-900" id="create-unit-title">Create New Unit</h3>
+                                        <p class="text-xs text-gray-500">Add a new organizational unit</p>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="closeCreateUnitModal()" class="text-gray-400 hover:text-gray-500 transition-colors">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white px-4 py-5 sm:p-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="unit-name" class="block text-sm font-semibold text-gray-700 mb-2">Unit Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="unit-name" name="name" required maxlength="255"
+                                        class="block w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg bg-white focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                                        placeholder="e.g., IT Department">
+                                </div>
+                                <div>
+                                    <label for="unit-description" class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                                    <textarea id="unit-description" name="description" rows="3" maxlength="500"
+                                        class="block w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg bg-white focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                                        placeholder="Brief description of the unit"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-100 gap-3">
+                            <button type="submit"
+                                class="inline-flex w-full justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 sm:w-auto transition-colors">
+                                Create Unit
+                            </button>
+                            <button type="button" onclick="closeCreateUnitModal()"
+                                class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -961,6 +1033,56 @@
                 });
             } else {
                 alert(`${title}: ${message}`);
+            }
+        }
+
+        // --- CREATE UNIT MODAL FUNCTIONS ---
+        function openCreateUnitModal() {
+            document.getElementById('create-unit-modal').classList.remove('hidden');
+            document.getElementById('create-unit-form').reset();
+        }
+
+        function closeCreateUnitModal() {
+            document.getElementById('create-unit-modal').classList.add('hidden');
+        }
+
+        async function submitCreateUnit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch("{{ route('admin.units.create') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Success', result.message, 'success');
+                    closeCreateUnitModal();
+                    
+                    // Add new unit to unitsData
+                    unitsData.push(result.unit);
+                    
+                    // Re-render if in UNIT_TO_USER mode
+                    if (state.mode === 'UNIT_TO_USER') {
+                        renderLeftPanel();
+                    } else {
+                        renderRightPanel();
+                    }
+                } else {
+                    throw new Error(result.message || 'Failed to create unit');
+                }
+            } catch (error) {
+                showToast('Error', error.message, 'error');
             }
         }
     </script>

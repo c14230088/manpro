@@ -377,7 +377,7 @@
                                     <label class="flex items-center">
                                         <input type="radio" name="is_successful" value="1"
                                             class="text-indigo-600 focus:ring-indigo-500">
-                                        <span class="ml-2 text-sm text-gray-700">Berhasil (Bagus)</span>
+                                        <span class="ml-2 text-sm text-gray-700">Berhasil (Baik)</span>
                                     </label>
                                     <label class="flex items-center">
                                         <input type="radio" name="is_successful" value="0"

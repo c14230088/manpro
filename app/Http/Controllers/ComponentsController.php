@@ -52,7 +52,7 @@ class ComponentsController extends Controller
             $component->condition = !$component->condition;
             $component->save();
 
-            $newConditionText = $component->condition ? 'Bagus' : 'Rusak';
+            $newConditionText = $component->condition ? 'Baik' : 'Rusak';
 
             return response()->json([
                 'success' => true,
@@ -108,6 +108,70 @@ class ComponentsController extends Controller
             DB::rollBack();
             Log::error('Error completeRepairFromComponent: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Gagal menyelesaikan repair.'], 500);
+        }
+    }
+
+    public function attachToLab(Request $request, Components $component, \App\Models\Labs $lab)
+    {
+        if ($component->item_id) {
+            return response()->json(['success' => false, 'message' => 'Component ini sudah terpasang di item. Lepas dari item terlebih dahulu.'], 409);
+        }
+
+        // if ($component->lab_id) {
+        //     return response()->json(['success' => false, 'message' => 'Component ini sudah terpasang di lab lain.'], 409);
+        // }
+
+        try {
+            $component->lab_id = $lab->id;
+            $component->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Component '{$component->name}' berhasil dipasang ke Lab '{$lab->name}'."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error attachComponentToLab: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal memasang component ke lab.'], 500);
+        }
+    }
+
+    public function detachFromItem(Request $request, Components $component)
+    {
+        if (!$component->item_id) {
+            return response()->json(['success' => false, 'message' => 'Component ini tidak terpasang di item manapun.'], 400);
+        }
+
+        try {
+            $component->item_id = null;
+            $component->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Component '{$component->name}' berhasil dilepas dari item."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error detachComponentFromItem: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal melepas component dari item.'], 500);
+        }
+    }
+
+    public function detachFromLab(Request $request, Components $component)
+    {
+        if (!$component->lab_id) {
+            return response()->json(['success' => false, 'message' => 'Component ini tidak terpasang di lab manapun.'], 400);
+        }
+
+        try {
+            $component->lab_id = null;
+            $component->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Component '{$component->name}' berhasil dilepas dari lab."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error detachComponentFromLab: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal melepas component dari lab.'], 500);
         }
     }
 }

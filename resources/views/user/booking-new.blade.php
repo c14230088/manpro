@@ -5,26 +5,26 @@
 @section('style')
     <style>
         /* --- 1. Custom Scrollbar --- */
-        .custom-scroll {
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 #f1f5f9;
-        }
-        .custom-scroll::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        .custom-scroll::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-        }
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-            border: 2px solid #f1f5f9;
-        }
-        .custom-scroll::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        /* .custom-scroll {
+                scrollbar-width: thin;
+                scrollbar-color: #cbd5e1 #f1f5f9;
+            }
+            .custom-scroll::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            .custom-scroll::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 4px;
+            }
+            .custom-scroll::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 4px;
+                border: 2px solid #f1f5f9;
+            }
+            .custom-scroll::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            } */
 
         /* --- 2. Scroll Fix Helper --- */
         /* Class ini dikhususkan agar scroll hanya terjadi di dalam panel, tidak bocor ke body */
@@ -46,7 +46,7 @@
             background-color: #ffffff;
             min-width: fit-content;
         }
-        
+
         /* Wrapper untuk Zooming */
         #desk-grid-scale-wrapper {
             transform-origin: center left;
@@ -77,16 +77,19 @@
             background-color: white;
             user-select: none;
         }
+
         .desk-card.available {
             border-color: #cbd5e1;
             color: #334155;
         }
+
         .desk-card.available:hover {
             border-color: #6366f1;
             transform: translateY(-4px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             z-index: 10;
         }
+
         .desk-card.active {
             border-color: #4f46e5 !important;
             background-color: #eef2ff !important;
@@ -94,6 +97,7 @@
             z-index: 20;
             transform: translateY(-4px);
         }
+
         .desk-card.full {
             background-color: #fff1f2;
             border-color: #fda4af;
@@ -101,6 +105,7 @@
             cursor: not-allowed;
             opacity: 0.9;
         }
+
         .desk-card.empty {
             background-color: #f8fafc;
             border-color: #e2e8f0;
@@ -109,15 +114,24 @@
         }
 
         /* --- 6. Item Cards --- */
-        .item-card-default { @apply border-gray-200 bg-white hover:border-indigo-300; }
-        .item-card-selected { @apply border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500; }
-        .item-card-booked { @apply border-gray-100 bg-gray-100 opacity-60 cursor-not-allowed; }
+        .item-card-default {
+            @apply border-gray-200 bg-white hover:border-indigo-300;
+        }
+
+        .item-card-selected {
+            @apply border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500;
+        }
+
+        .item-card-booked {
+            @apply border-gray-100 bg-gray-100 opacity-60 cursor-not-allowed;
+        }
 
         /* --- 7. Resizer & Zoom Controls --- */
         .resizing {
             cursor: col-resize;
             user-select: none;
         }
+
         .zoom-controls {
             position: absolute;
             bottom: 1.5rem;
@@ -133,6 +147,7 @@
             z-index: 40;
             backdrop-filter: blur(4px);
         }
+
         .zoom-btn {
             width: 2.5rem;
             height: 2.5rem;
@@ -147,11 +162,13 @@
             transition: all 0.2s;
             font-weight: bold;
         }
+
         .zoom-btn:hover {
             background-color: #f1f5f9;
             color: #4f46e5;
             border-color: #cbd5e1;
         }
+
         .zoom-btn:active {
             transform: scale(0.95);
         }
@@ -174,19 +191,22 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <label class="cursor-pointer booking-type-label">
                                 <input type="radio" name="booking_type" value="lab" class="peer sr-only">
-                                <div class="p-4 border-2 rounded-lg peer-checked:border-indigo-600 peer-checked:bg-indigo-50 text-center transition-all hover:shadow-md">
+                                <div
+                                    class="p-4 border-2 rounded-lg peer-checked:border-indigo-600 peer-checked:bg-indigo-50 text-center transition-all hover:shadow-md">
                                     <span class="font-semibold">Laboratorium</span>
                                 </div>
                             </label>
                             <label class="cursor-pointer booking-type-label">
                                 <input type="radio" name="booking_type" value="sets" class="peer sr-only">
-                                <div class="p-4 border-2 rounded-lg peer-checked:border-indigo-600 peer-checked:bg-indigo-50 text-center transition-all hover:shadow-md">
+                                <div
+                                    class="p-4 border-2 rounded-lg peer-checked:border-indigo-600 peer-checked:bg-indigo-50 text-center transition-all hover:shadow-md">
                                     <span class="font-semibold">Set Lengkap</span>
                                 </div>
                             </label>
                             <label class="cursor-pointer booking-type-label">
                                 <input type="radio" name="booking_type" value="items" class="peer sr-only">
-                                <div class="p-4 border-2 rounded-lg peer-checked:border-indigo-600 peer-checked:bg-indigo-50 text-center transition-all hover:shadow-md">
+                                <div
+                                    class="p-4 border-2 rounded-lg peer-checked:border-indigo-600 peer-checked:bg-indigo-50 text-center transition-all hover:shadow-md">
                                     <span class="font-semibold">Item Individual</span>
                                 </div>
                             </label>
@@ -196,24 +216,34 @@
                     {{-- Form Fields --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Mulai Pinjam <span class="text-red-500">*</span></label>
-                            <input type="datetime-local" id="borrowed_at" required class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
+                            <label class="block text-sm font-medium mb-1">Mulai Pinjam <span
+                                    class="text-red-500">*</span></label>
+                            <input type="datetime-local" id="borrowed_at" required
+                                class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Selesai Pinjam <span class="text-red-500">*</span></label>
-                            <input type="datetime-local" id="return_deadline_at" required class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
+                            <label class="block text-sm font-medium mb-1">Selesai Pinjam <span
+                                    class="text-red-500">*</span></label>
+                            <input type="datetime-local" id="return_deadline_at" required
+                                class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium mb-1">Nama Kegiatan <span class="text-red-500">*</span></label>
-                            <input type="text" id="event_name" required maxlength="255" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition">
+                            <label class="block text-sm font-medium mb-1">Nama Kegiatan <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" id="event_name" required maxlength="255"
+                                class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Nomor WhatsApp <span class="text-red-500">*</span></label>
-                            <input type="text" id="phone_number" required pattern="^\d{10,20}$" placeholder="08123456789" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition">
+                            <label class="block text-sm font-medium mb-1">Nomor WhatsApp <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" id="phone_number" required pattern="^\d{10,20}$" placeholder="08123456789"
+                                class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Tipe Penggunaan <span class="text-red-500">*</span></label>
-                            <select id="type" required class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
+                            <label class="block text-sm font-medium mb-1">Tipe Penggunaan <span
+                                    class="text-red-500">*</span></label>
+                            <select id="type" required
+                                class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
                                 <option value="0">Onsite</option>
                                 <option value="1">Remote</option>
                                 <option value="2">Keluar Lab</option>
@@ -224,38 +254,49 @@
                     {{-- Dynamic Sections --}}
                     <div id="lab-section" class="hidden space-y-4">
                         <div>
-                            <label class="block text-sm font-medium mb-2">Pilih Laboratorium <span class="text-red-500">*</span></label>
-                            <select id="lab-select" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
+                            <label class="block text-sm font-medium mb-2">Pilih Laboratorium <span
+                                    class="text-red-500">*</span></label>
+                            <select id="lab-select"
+                                class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
                                 <option value="">-- Pilih Lab --</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-2">Jumlah Peserta <span class="text-red-500">*</span></label>
-                            <input type="number" id="attendee_count" min="1" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition">
+                            <label class="block text-sm font-medium mb-2">Jumlah Peserta <span
+                                    class="text-red-500">*</span></label>
+                            <input type="number" id="attendee_count" min="1"
+                                class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition">
                         </div>
                     </div>
 
                     <div id="sets-section" class="hidden space-y-4">
                         <div class="flex gap-2">
-                            <select id="set-lab-select" class="flex-1 border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
+                            <select id="set-lab-select"
+                                class="flex-1 border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
                                 <option value="">-- Pilih Lab --</option>
                             </select>
-                            <button type="button" id="add-set-lab-btn" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">Tambah</button>
+                            <button type="button" id="add-set-lab-btn"
+                                class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">Tambah</button>
                         </div>
                         <div id="set-labs-container" class="space-y-3"></div>
                     </div>
 
                     <div id="items-section" class="hidden space-y-4">
                         <div class="flex gap-2">
-                            <select id="item-lab-select" class="flex-1 border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
+                            <select id="item-lab-select"
+                                class="flex-1 border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
                                 <option value="">-- Pilih Lab --</option>
                             </select>
-                            <button type="button" id="browse-items-btn" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">Browse Items</button>
+                            <button type="button" id="browse-items-btn"
+                                class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">Browse
+                                Items</button>
                         </div>
                         <div id="cart-container" class="border rounded p-4 bg-gray-50">
                             <div class="flex justify-between items-center mb-3">
                                 <h3 class="font-bold text-gray-800">Keranjang Item</h3>
-                                <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><span id="cart-count">0</span> items</span>
+                                <span
+                                    class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><span
+                                        id="cart-count">0</span> items</span>
                             </div>
                             <div id="cart-items" class="space-y-2 max-h-60 overflow-y-auto custom-scroll pr-2">
                                 <p class="text-gray-500 text-sm text-center py-2">Keranjang masih kosong</p>
@@ -263,7 +304,8 @@
                         </div>
                     </div>
 
-                    <button type="button" id="submit-btn" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <button type="button" id="submit-btn"
+                        class="w-full py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                         Ajukan Peminjaman
                     </button>
                 </div>
@@ -272,28 +314,40 @@
     </div>
 
     {{-- UNIFIED DESK MAP MODAL --}}
-    <div id="desk-map-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="desk-map-modal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         {{-- Wrapper Modal dengan Fixed Height --}}
-        <div class="bg-white rounded-xl w-full max-w-[95vw] h-[90vh] flex flex-col shadow-2xl overflow-hidden relative" id="desk-map-content">
+        <div class="bg-white rounded-xl w-full max-w-[95vw] h-[90vh] flex flex-col shadow-2xl overflow-hidden relative"
+            id="desk-map-content">
 
             {{-- Header (Fixed Height) --}}
-            <div class="bg-white border-b px-6 py-4 flex justify-between items-center z-20 shadow-sm shrink-0 select-none h-[80px]">
+            <div
+                class="bg-white border-b px-6 py-4 flex justify-between items-center z-20 shadow-sm shrink-0 select-none h-[80px]">
                 <div>
-                    <h3 class="text-xl font-bold text-gray-800">Layout: <span id="modal-lab-name" class="text-indigo-600"></span></h3>
+                    <h3 class="text-xl font-bold text-gray-800">Layout: <span id="modal-lab-name"
+                            class="text-indigo-600"></span></h3>
                     <p class="text-sm text-gray-500">Pilih meja untuk melihat item.</p>
                 </div>
 
                 <div class="flex items-center gap-4">
                     {{-- Legend --}}
-                    <div class="hidden md:flex items-center gap-3 text-xs text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg border">
-                        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Tersedia</div>
-                        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-400"></span> Penuh</div>
-                        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-indigo-600 border border-indigo-200"></span> Dipilih</div>
-                        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-slate-300"></span> Kosong</div>
+                    <div
+                        class="hidden md:flex items-center gap-3 text-xs text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg border">
+                        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                            Tersedia</div>
+                        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-400"></span> Penuh
+                        </div>
+                        <div class="flex items-center gap-1"><span
+                                class="w-3 h-3 rounded-full bg-indigo-600 border border-indigo-200"></span> Dipilih</div>
+                        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-slate-300"></span>
+                            Kosong</div>
                     </div>
-                    <button type="button" id="close-modal-btn" class="text-gray-400 hover:text-gray-600 transition p-1 hover:bg-gray-100 rounded-full cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <button type="button" id="close-modal-btn"
+                        class="text-gray-400 hover:text-gray-600 transition p-1 hover:bg-gray-100 rounded-full cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -308,48 +362,64 @@
                     <div class="panel-scroll-area p-8 flex items-start justify-start" id="map-scroll-container">
                         {{-- Wrapper untuk Scaling/Zooming --}}
                         <div id="desk-grid-scale-wrapper">
-                             <div id="desk-grid-container">
+                            <div id="desk-grid-container">
                                 {{-- JS akan merender grid di sini --}}
-                             </div>
+                            </div>
                         </div>
                     </div>
 
                     {{-- Zoom Controls --}}
                     <div class="zoom-controls">
                         <button type="button" class="zoom-btn" onclick="zoomOut()" title="Zoom Out">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                            </svg>
                         </button>
-                        <button type="button" class="zoom-btn text-xs font-mono" onclick="resetZoom()" title="Reset Zoom" id="zoom-level-text">
+                        <button type="button" class="zoom-btn text-xs font-mono" onclick="resetZoom()"
+                            title="Reset Zoom" id="zoom-level-text">
                             100%
                         </button>
                         <button type="button" class="zoom-btn" onclick="zoomIn()" title="Zoom In">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
                         </button>
                     </div>
                 </div>
 
                 {{-- RESIZER HANDLE --}}
-                <div id="drag-handle" class="w-[6px] bg-gray-200 hover:bg-indigo-500 active:bg-indigo-600 cursor-col-resize flex items-center justify-center z-30 transition-colors shadow-sm select-none">
+                <div id="drag-handle"
+                    class="w-[6px] bg-gray-200 hover:bg-indigo-500 active:bg-indigo-600 cursor-col-resize flex items-center justify-center z-30 transition-colors shadow-sm select-none">
                     <div class="h-8 w-[2px] bg-gray-400 rounded"></div>
                 </div>
 
                 {{-- RIGHT PANEL: ITEM DETAILS --}}
-                <div id="right-panel" class="flex-1 h-full flex flex-col bg-white min-w-[350px] shadow-[inset_4px_0_6px_-1px_rgba(0,0,0,0.05)] z-10">
+                <div id="right-panel"
+                    class="flex-1 h-full flex flex-col bg-white min-w-[350px] shadow-[inset_4px_0_6px_-1px_rgba(0,0,0,0.05)] z-10">
                     <div class="p-4 bg-white border-b sticky top-0 z-10 shadow-sm">
                         <h4 class="font-bold text-gray-700 flex items-center gap-2 truncate">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
-                            <span class="truncate">Item Meja: <span id="detail-desk-name" class="text-indigo-600">--</span></span>
+                            <span class="truncate">Item Meja: <span id="detail-desk-name"
+                                    class="text-indigo-600">--</span></span>
                         </h4>
                     </div>
 
                     {{-- Scroll Area khusus panel kanan --}}
                     <div id="item-list-container" class="panel-scroll-area p-4 space-y-3 custom-scroll">
                         <div class="h-full flex flex-col items-center justify-center text-gray-400 text-center px-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2 opacity-20" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                             <p class="text-sm">Klik meja di peta sebelah kiri untuk melihat item.</p>
                         </div>
@@ -374,6 +444,10 @@
         const MIN_ZOOM = 0.4;
         const MAX_ZOOM = 2.0;
 
+        // --- LENIS INSTANCES ---
+        let lenisLeft = null;
+        let lenisRight = null;
+
         document.addEventListener('DOMContentLoaded', async () => {
             gsap.from('#main-card', {
                 duration: 0.6,
@@ -394,11 +468,14 @@
         function updateZoomTransform() {
             const wrapper = document.getElementById('desk-grid-scale-wrapper');
             const textLabel = document.getElementById('zoom-level-text');
-            if(wrapper) {
+            if (wrapper) {
                 wrapper.style.transform = `scale(${currentZoom})`;
             }
-            if(textLabel) {
+            if (textLabel) {
                 textLabel.textContent = `${Math.round(currentZoom * 100)}%`;
+            }
+            if (lenisLeft) {
+                lenisLeft.resize();
             }
         }
 
@@ -453,10 +530,19 @@
                             onComplete: () => el.classList.add('hidden')
                         });
                     });
-                    const targetId = this.value === 'lab' ? 'lab-section' : this.value === 'sets' ? 'sets-section' : 'items-section';
+                    const targetId = this.value === 'lab' ? 'lab-section' : this.value === 'sets' ?
+                        'sets-section' : 'items-section';
                     const target = document.getElementById(targetId);
                     target.classList.remove('hidden');
-                    gsap.fromTo(target, { opacity: 0, height: 0 }, { duration: 0.3, opacity: 1, height: 'auto', clearProps: 'all' });
+                    gsap.fromTo(target, {
+                        opacity: 0,
+                        height: 0
+                    }, {
+                        duration: 0.3,
+                        opacity: 1,
+                        height: 'auto',
+                        clearProps: 'all'
+                    });
                 });
             });
             document.getElementById('add-set-lab-btn').addEventListener('click', addSetLab);
@@ -494,14 +580,27 @@
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             const content = modal.querySelector('div[id$="-content"]');
-            document.body.style.overflow = ''; // Restore body scroll
+            
+            // Destroy Lenis instances
+            if (lenisLeft) {
+                lenisLeft.destroy();
+                lenisLeft = null;
+            }
+            if (lenisRight) {
+                lenisRight.destroy();
+                lenisRight = null;
+            }
+            
             gsap.to(content, {
                 duration: 0.2,
                 scale: 0.95,
                 opacity: 0,
                 onComplete: () => {
                     modal.classList.add('hidden');
-                    gsap.set(content, { scale: 1, opacity: 1 });
+                    gsap.set(content, {
+                        scale: 1,
+                        opacity: 1
+                    });
                 }
             });
         }
@@ -509,9 +608,56 @@
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
             const content = modal.querySelector('div[id$="-content"]');
-            document.body.style.overflow = 'hidden'; // Prevent body scroll
             modal.classList.remove('hidden');
-            gsap.fromTo(content, { scale: 0.95, opacity: 0 }, { duration: 0.3, scale: 1, opacity: 1, ease: 'back.out(1.2)' });
+            
+            gsap.fromTo(content, {
+                scale: 0.95,
+                opacity: 0
+            }, {
+                duration: 0.3,
+                scale: 1,
+                opacity: 1,
+                ease: 'back.out(1.2)',
+                onComplete: () => {
+                    // Initialize Lenis for modal scroll areas
+                    initModalLenis();
+                }
+            });
+        }
+
+        function initModalLenis() {
+            const leftScroll = document.getElementById('map-scroll-container');
+            const rightScroll = document.getElementById('item-list-container');
+            
+            if (leftScroll && !lenisLeft) {
+                lenisLeft = new Lenis({
+                    wrapper: leftScroll,
+                    content: leftScroll.firstElementChild,
+                    duration: 1.2,
+                    smoothWheel: true
+                });
+                
+                function rafLeft(time) {
+                    lenisLeft.raf(time);
+                    if (lenisLeft) requestAnimationFrame(rafLeft);
+                }
+                requestAnimationFrame(rafLeft);
+            }
+            
+            if (rightScroll && !lenisRight) {
+                lenisRight = new Lenis({
+                    wrapper: rightScroll,
+                    content: rightScroll.firstElementChild,
+                    duration: 1.2,
+                    smoothWheel: true
+                });
+                
+                function rafRight(time) {
+                    lenisRight.raf(time);
+                    if (lenisRight) requestAnimationFrame(rafRight);
+                }
+                requestAnimationFrame(rafRight);
+            }
         }
 
         function setupKeyboardNav() {
@@ -580,7 +726,11 @@
                     <input type="number" min="1" max="${data.available_count}" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500 transition" data-lab-id="${labId}" name="set_quantity" required>
                 </div>`;
                 container.appendChild(div);
-                gsap.from(div, { duration: 0.3, x: -20, opacity: 0 });
+                gsap.from(div, {
+                    duration: 0.3,
+                    x: -20,
+                    opacity: 0
+                });
                 showToast('Lab ditambahkan', '', 'success');
             } catch (error) {
                 Swal.close();
@@ -590,7 +740,15 @@
 
         function removeSetLab(btn) {
             const div = btn.closest('div.border');
-            gsap.to(div, { duration: 0.3, x: 20, opacity: 0, height: 0, margin: 0, padding: 0, onComplete: () => div.remove() });
+            gsap.to(div, {
+                duration: 0.3,
+                x: 20,
+                opacity: 0,
+                height: 0,
+                margin: 0,
+                padding: 0,
+                onComplete: () => div.remove()
+            });
         }
 
         async function browseItems() {
@@ -619,7 +777,7 @@
                     </svg>
                     <p class="text-sm">Klik meja di peta sebelah kiri untuk melihat item.</p>
                 </div>`;
-                
+
                 renderDeskMap();
                 openModal('desk-map-modal');
             } catch (error) {
@@ -636,14 +794,16 @@
             container.innerHTML = '';
 
             if (!currentDeskMap || currentDeskMap.length === 0) {
-                container.innerHTML = '<div class="text-center py-12 text-gray-400 italic">Data layout tidak tersedia.</div>';
+                container.innerHTML =
+                    '<div class="text-center py-12 text-gray-400 italic">Data layout tidak tersedia.</div>';
                 return;
             }
 
-            let maxRow = 0, maxCol = 0;
+            let maxRow = 0,
+                maxCol = 0;
             currentDeskMap.forEach(d => {
                 if (!d.location || d.location.length < 2) return;
-                const row = d.location.charCodeAt(0) - 64; 
+                const row = d.location.charCodeAt(0) - 64;
                 const col = parseInt(d.location.substring(1));
                 if (row > maxRow) maxRow = row;
                 if (col > maxCol) maxCol = col;
@@ -664,7 +824,7 @@
             currentDeskMap.forEach((desk, index) => {
                 const row = desk.location.charCodeAt(0) - 64;
                 const col = parseInt(desk.location.substring(1));
-                
+
                 const availableItems = desk.items.filter(i => i.available).length;
                 const totalItems = desk.items.length;
                 const deskJson = encodeURIComponent(JSON.stringify(desk));
@@ -684,7 +844,8 @@
                 } else if (availableItems === 0) {
                     cardTypeClass = 'full';
                     iconColorClass = 'text-rose-400';
-                    statusHtml = '<span class="text-xs font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">Penuh</span>';
+                    statusHtml =
+                        '<span class="text-xs font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">Penuh</span>';
                 } else {
                     statusHtml = `
                         <div class="flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-100">
@@ -722,7 +883,7 @@
 
             html += '</div></div>';
             container.innerHTML = html;
-            
+
             // RESET ZOOM SETIAP KALI RENDER MAP BARU
             resetZoom();
 
@@ -730,7 +891,11 @@
                 duration: 0.4,
                 scale: 0.5,
                 opacity: 0,
-                stagger: { amount: 0.3, grid: [maxRow, maxCol], from: "start" },
+                stagger: {
+                    amount: 0.3,
+                    grid: [maxRow, maxCol],
+                    from: "start"
+                },
                 ease: 'back.out(1.2)',
                 clearProps: 'all'
             });
@@ -752,31 +917,49 @@
         function populateItemPanel(desk) {
             const listContainer = document.getElementById('item-list-container');
             let html = '<div class="space-y-3 pb-4">';
-            
+
             desk.items.forEach((item, idx) => {
                 const inCart = cart.some(c => c.id === item.id);
                 const itemData = encodeURIComponent(JSON.stringify(item));
-                let cardClass = '', statusBadge = '', actionBtn = '';
+                let cardClass = '',
+                    statusBadge = '',
+                    actionBtn = '';
 
                 if (!item.available) {
                     cardClass = 'item-card-booked';
-                    statusBadge = '<span class="bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded">FULL</span>';
+                    statusBadge =
+                        '<span class="bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded">FULL</span>';
                     actionBtn = '<span class="text-gray-400 text-xs italic font-medium">Booked</span>';
                 } else if (inCart) {
                     cardClass = 'item-card-selected';
-                    statusBadge = '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded">TERPILIH</span>';
+                    statusBadge =
+                        '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded">TERPILIH</span>';
                     actionBtn = `
                     <button onclick="removeFromCart('${item.id}')" class="p-2 bg-white border border-red-200 text-red-500 rounded-md hover:bg-red-50 hover:text-red-600 transition shadow-sm" title="Batalkan">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>`;
                 } else {
                     cardClass = 'item-card-default';
-                    statusBadge = '<span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded">TERSEDIA</span>';
+                    statusBadge =
+                        '<span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded">TERSEDIA</span>';
                     actionBtn = `
                     <button onclick="addToCart('${itemData}')" class="px-3 py-1.5 bg-indigo-600 text-white rounded text-xs font-medium hover:bg-indigo-700 transition shadow-sm active:scale-95">
                         + Ambil
                     </button>`;
                 }
+
+                const specsHtml = item.specifications && item.specifications.length > 0 
+                    ? item.specifications.map(s => `<p class="mb-1"><span class="font-semibold">${s.name}:</span> ${s.value}</p>`).join('') 
+                    : '<p class="text-gray-400 italic">No specifications</p>';
+                
+                const componentsHtml = item.components && item.components.length > 0
+                    ? item.components.map(c => {
+                        const cSpecs = c.specifications && c.specifications.length > 0
+                            ? c.specifications.map(s => `<span class="text-gray-500">${s.name}: ${s.value}</span>`).join(', ')
+                            : '';
+                        return `<p class="mb-1"><span class="font-semibold">${c.type}:</span> ${c.name} <span class="text-gray-400">(${c.serial_code})</span>${cSpecs ? `<br><span class="text-[10px] ml-4">${cSpecs}</span>` : ''}</p>`;
+                    }).join('')
+                    : '';
 
                 html += `
                 <div class="border rounded-lg p-3 transition-all ${cardClass}">
@@ -784,30 +967,45 @@
                         <div class="flex-1 pr-2">
                             <div class="flex items-center gap-2 mb-1"><span class="font-bold text-gray-800 text-sm">${item.name}</span>${statusBadge}</div>
                             <div class="text-xs text-gray-500 font-mono">${item.serial_code}</div>
-                            ${item.components.length > 0 ? `<div class="text-xs text-indigo-500 mt-1 font-medium">+ ${item.components.length} components</div>` : ''}
+                            ${item.components && item.components.length > 0 ? `<div class="text-xs text-indigo-500 mt-1 font-medium">+ ${item.components.length} components</div>` : ''}
                         </div>
                         <div class="flex items-center self-center">${actionBtn}</div>
                     </div>
-                    <button onclick="toggleSpec('spec-${idx}', this)" class="text-xs text-gray-500 hover:text-indigo-600 flex items-center gap-1 w-full mt-2 pt-2 border-t border-dashed focus:outline-none"><span>Lihat Spesifikasi</span><svg class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+                    <button onclick="toggleSpec('spec-${idx}', this)" class="text-xs text-gray-500 hover:text-indigo-600 flex items-center gap-1 w-full mt-2 pt-2 border-t border-dashed focus:outline-none"><span>Lihat Detail</span><svg class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     <div id="spec-${idx}" class="hidden mt-2 text-xs bg-gray-50 p-2 rounded text-gray-600">
-                        <p class="mb-1"><span class="font-semibold">Type:</span> ${item.type}</p>
-                        <p class="mb-1"><span class="font-semibold">Specs:</span> ${item.specifications || '-'}</p>
+                        <p class="mb-2"><span class="font-semibold">Type:</span> ${item.type || '-'}</p>
+                        <div class="mb-2"><span class="font-semibold block mb-1">Specifications:</span>${specsHtml}</div>
+                        ${componentsHtml ? `<div><span class="font-semibold block mb-1">Components:</span>${componentsHtml}</div>` : ''}
                     </div>
                 </div>`;
             });
             html += '</div>';
             listContainer.innerHTML = html;
-            gsap.from('#item-list-container > div', { opacity: 0, y: 10, duration: 0.2 });
+            gsap.from('#item-list-container > div', {
+                opacity: 0,
+                y: 10,
+                duration: 0.2
+            });
         }
 
         function toggleSpec(id, thiss) {
             const el = document.getElementById(id);
             if (el.classList.contains('hidden')) {
-                gsap.to(thiss.lastElementChild, { rotate: 180, duration: .3 });
+                gsap.to(thiss.lastElementChild, {
+                    rotate: 180,
+                    duration: .3
+                });
                 el.classList.remove('hidden');
-                gsap.from(el, { height: 0, opacity: 0, duration: 0.2 });
+                gsap.from(el, {
+                    height: 0,
+                    opacity: 0,
+                    duration: 0.2
+                });
             } else {
-                gsap.to(thiss.lastElementChild, { rotate: 0, duration: .3 });
+                gsap.to(thiss.lastElementChild, {
+                    rotate: 0,
+                    duration: .3
+                });
                 el.classList.add('hidden');
             }
         }
@@ -863,10 +1061,14 @@
             const phoneNumber = document.getElementById('phone_number').value.trim();
             const type = document.getElementById('type').value;
 
-            if (!eventName || eventName.length > 255) return showToast('Nama kegiatan harus diisi (max 255 karakter)', '', 'warning');
-            if (!borrowedAt || new Date(borrowedAt) <= new Date()) return showToast('Waktu mulai tidak valid', '', 'warning');
-            if (!returnDeadlineAt || new Date(returnDeadlineAt) <= new Date(borrowedAt)) return showToast('Waktu selesai tidak valid', '', 'warning');
-            if (!/^\d{10,20}$/.test(phoneNumber)) return showToast('Nomor WhatsApp harus 10-20 digit angka', '', 'warning');
+            if (!eventName || eventName.length > 255) return showToast('Nama kegiatan harus diisi (max 255 karakter)',
+                '', 'warning');
+            if (!borrowedAt || new Date(borrowedAt) <= new Date()) return showToast('Waktu mulai tidak valid', '',
+                'warning');
+            if (!returnDeadlineAt || new Date(returnDeadlineAt) <= new Date(borrowedAt)) return showToast(
+                'Waktu selesai tidak valid', '', 'warning');
+            if (!/^\d{10,20}$/.test(phoneNumber)) return showToast('Nomor WhatsApp harus 10-20 digit angka', '',
+                'warning');
 
             let payload = {
                 booking_type: bookingType,
@@ -908,13 +1110,21 @@
             try {
                 const response = await fetch('/booking', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
                     body: JSON.stringify(payload)
                 });
                 const data = await response.json();
                 Swal.close();
                 if (data.success) {
-                    await Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Booking berhasil diajukan', confirmButtonColor: '#4F46E5' });
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Booking berhasil diajukan',
+                        confirmButtonColor: '#4F46E5'
+                    });
                     window.location.reload();
                 } else {
                     throw new Error(data.message || 'Booking gagal');
@@ -922,7 +1132,12 @@
             } catch (error) {
                 btn.disabled = false;
                 btn.innerText = originalText;
-                Swal.fire({ icon: 'error', title: 'Gagal!', text: error.message, confirmButtonColor: '#4F46E5' });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: error.message,
+                    confirmButtonColor: '#4F46E5'
+                });
             }
         }
     </script>

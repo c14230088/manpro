@@ -11,7 +11,7 @@
     {{-- Filter Form --}}
     {{-- ========================================================= --}}
     <div class="max-w-7xl mx-auto px-6 pb-6">
-        <form action="{{ route('admin.items') }}" method="GET" id="filter-form">
+        <div id="filter-form">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Filter Kontrol</h2>
 
@@ -23,8 +23,7 @@
                         <select id="filter_lab_select" name="lab_id" placeholder="Semua Lab...">
                             <option value="">Semua Laboratorium</option>
                             @foreach ($labs as $lab)
-                                <option value="{{ $lab->id }}" @selected(data_get($filters, 'lab_id') == $lab->id)>{{ $lab->name }}
-                                </option>
+                                <option value="{{ $lab->id }}">{{ $lab->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -35,8 +34,7 @@
                         <select id="filter_type_select" name="type_id" placeholder="Semua Tipe...">
                             <option value="">Semua Tipe</option>
                             @foreach ($types as $type)
-                                <option value="{{ $type->id }}" @selected(data_get($filters, 'type_id') == $type->id)>{{ $type->name }}
-                                </option>
+                                <option value="{{ $type->id }}">{{ $type->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -47,8 +45,8 @@
                             Pemasangan</label>
                         <select id="filter_status" name="status" placeholder="Semua Status...">
                             <option value="">Semua Status</option>
-                            <option value="unaffiliated" @selected(data_get($filters, 'status') == 'unaffiliated')>Belum Terpasang</option>
-                            <option value="affiliated" @selected(data_get($filters, 'status') == 'affiliated')>Sudah Terpasang</option>
+                            <option value="unaffiliated">Belum Terpasang</option>
+                            <option value="affiliated">Sudah Terpasang</option>
                         </select>
                         <p class="text-xs text-gray-500 mt-1">Hanya berlaku untuk 'Item'.</p>
                     </div>
@@ -58,13 +56,10 @@
                         <label for="filter_condition" class="block text-sm font-semibold text-gray-700 mb-2">Kondisi</label>
                         <select id="filter_condition" name="condition" placeholder="Semua Kondisi...">
                             <option value="">Semua Kondisi</option>
-                            <option value="1" @selected(data_get($filters, 'condition') == '1')>Bagus</option>
-                            <option value="0" @selected(data_get($filters, 'condition') == '0')>Rusak</option>
-
-                            {{-- ⬇️ OPSI BARU ⬇️ --}}
-                            <option value="under_repair" @selected(data_get($filters, 'condition') == 'under_repair')>Sedang Diperbaiki</option>
-                            <option value="parent_under_repair" @selected(data_get($filters, 'condition') == 'parent_under_repair')>Induk Sedang Diperbaiki
-                            </option>
+                            <option value="1">Baik</option>
+                            <option value="0">Rusak</option>
+                            <option value="under_repair">Sedang Diperbaiki</option>
+                            <option value="parent_under_repair">Induk Sedang Diperbaiki</option>
                         </select>
                         <p class="text-xs text-gray-500 mt-1">"Induk Sedang Diperbaiki" hanya untuk Components.</p>
                     </div>
@@ -76,10 +71,8 @@
                         <select id="filter_spec_attr" name="spec_attribute_id" placeholder="Pilih Atribut...">
                             <option value="">Semua Atribut</option>
                             @foreach ($specification as $spec)
-                                <option value="{{ $spec->id }}" data-values='@json($spec->specValues)'
-                                    @selected(data_get($filters, 'spec_attribute_id') == $spec->id)>
-                                    {{ $spec->name }}
-                                </option>
+                                <option value="{{ $spec->id }}" data-values='@json($spec->specValues)'>
+                                    {{ $spec->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -97,10 +90,10 @@
                     <div class="relative flex w-full flex-wrap mt-6 sm:w-1/2 items-stretch">
                         <input id="datatable-search-input" type="search"
                             class="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
-                            placeholder="Search" aria-label="Search" aria-describedby="button-addon1" />
+                            placeholder="Search" aria-label="Search" />
                         <button
                             class="relative z-[2] flex items-center rounded-r bg-primary px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-primary-800 active:shadow-lg"
-                            type="button" id="advanced-search-button" data-te-ripple-init data-te-ripple-color="light">
+                            type="button" id="advanced-search-button">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
                                 <path fill-rule="evenodd"
                                     d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
@@ -109,20 +102,16 @@
                         </button>
                     </div>
                     <div class="flex justify-center sm:justify-end items-center gap-3 mt-6 w-full sm:w-1/2">
-                        <a id="reset-filter-btn" href="{{ route('admin.items') }}"
+                        <button id="reset-filter-btn" type="button"
                             class="px-6 py-2 bg-gray-200 w-1/2 sm:w-full flex justify-center items-center text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition-colors">
                             <span class="m-auto text-center">
                                 Reset Filter
                             </span>
-                        </a>
-                        <button id="apply-filter-btn" type="submit"
-                            class="px-6 py-2 bg-indigo-600 w-1/2 sm:w-full text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors">
-                            Terapkan Filter
                         </button>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
 
     {{-- ========================================================= --}}
@@ -197,23 +186,55 @@
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @forelse ($items as $item)
-                                        <tr class="item-row">
+                                        {{-- SIAPKAN DATA SPESIFIKASI UNTUK FILTER JS --}}
+                                        @php
+                                            $itemSpecsJson = $item->specSetValues
+                                                ->map(function ($s) {
+                                                    return [
+                                                        'attr_id' => $s->spec_attribute_id,
+                                                        'val_id' => $s->spec_value_id,
+                                                    ];
+                                                })
+                                                ->toJson();
+
+                                            // Tentukan ID Lab (bisa dari Desk atau langsung Lab)
+                                            $labId = $item->desk ? $item->desk->lab_id : $item->lab_id ?? '';
+
+                                            // Tentukan Status Affiliasi
+                                            $status = $item->desk || $item->lab ? 'affiliated' : 'unaffiliated';
+                                        @endphp
+
+                                        <tr class="item-row group hover:bg-gray-50 transition-colors"
+                                            data-lab-id="{{ $labId }}" data-type-id="{{ $item->type_id }}"
+                                            data-status="{{ $status }}" data-condition="{{ $item->condition }}"
+                                            data-specs='{{ $itemSpecsJson }}'
+                                            data-search="{{ strtolower($item->name . ' ' . $item->serial_code) }}">
+
+                                            {{-- ... (Isi kolom <td> biarkan sama seperti sebelumnya) ... --}}
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-semibold text-gray-900">{{ $item->name }}</div>
                                                 <div class="text-xs text-gray-600 font-mono">{{ $item->serial_code }}
                                                 </div>
                                             </td>
+                                            {{-- ... dst ... --}}
+
+                                            {{-- PASTIKAN SEMUA KOLOM <td> ANDA MASIH ADA DI SINI --}}
+                                            {{-- SAYA HANYA MENYINGKATNYA AGAR FOKUS KE TAG <tr> --}}
                                             <td class="px-6 py-4 whitespace-nowrap">
+                                                {{-- Logika Lokasi Item --}}
                                                 @if ($item->desk)
                                                     <div class="text-sm font-medium text-gray-900">
                                                         {{ $item->desk->lab->name ?? 'N/A' }}</div>
                                                     <div class="text-sm text-gray-600">Meja {{ $item->desk->location }}
                                                     </div>
+                                                @elseif ($item->lab)
+                                                    <div class="text-sm font-medium text-indigo-700">
+                                                        {{ $item->lab->name }}</div>
+                                                    <div class="text-sm text-indigo-600">Lemari Lab</div>
                                                 @else
                                                     <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-700">
-                                                        Belum Terpasang
-                                                    </span>
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-700">Belum
+                                                        Terpasang</span>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -231,41 +252,36 @@
                                                 @endforeach
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                @php
-                                                    $isUnderRepair = $item->repairs->isNotEmpty();
-                                                @endphp
-
-                                                @if ($isUnderRepair)
+                                                @if ($item->repairs->isNotEmpty())
                                                     <span
-                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                        Sedang Diperbaiki
-                                                    </span>
+                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Sedang
+                                                        Diperbaiki</span>
                                                 @elseif ($item->condition)
                                                     <span
-                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                        Bagus
-                                                    </span>
+                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Baik</span>
                                                 @else
                                                     <span
-                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                        Rusak
-                                                    </span>
+                                                        class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rusak</span>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                {{-- Tombol Aksi Item --}}
                                                 <button type="button"
-                                                    class="btn-open-action-item px-4 py-2 bg-indigo-600 text-gray-100 hover:text-gray-200 text-xs font-semibold rounded-md hover:bg-indigo-800 focus:outline-none"
+                                                    class="btn-open-action-item px-4 py-2 bg-indigo-600 text-gray-100 text-xs font-semibold rounded-md hover:bg-indigo-800"
                                                     data-item-id="{{ $item->id }}"
                                                     data-item-name="{{ $item->name }}"
-                                                    data-item-condition="{{ $item->condition }}">
+                                                    data-item-condition="{{ $item->condition }}"
+                                                    data-item-desk-id="{{ $item->desk_id }}"
+                                                    data-item-lab-id="{{ $labId }}"
+                                                    data-item-type-id="{{ $item->type_id }}">
                                                     Aksi
                                                 </button>
                                             </td>
                                         </tr>
                                         @empty
-                                            <tr>
+                                            <tr id="no-items-row">
                                                 <td colspan="6" class="px-6 py-12 text-center text-gray-500">
-                                                    Tidak ada item yang cocok dengan filter Anda.
+                                                    Tidak ada item yang ditemukan.
                                                 </td>
                                             </tr>
                                         @endforelse
@@ -328,7 +344,39 @@
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         @forelse ($components as $comp)
-                                            <tr class="component-row">
+                                            @php
+                                                $compSpecsJson = $comp->specSetValues
+                                                    ->map(function ($s) {
+                                                        return [
+                                                            'attr_id' => $s->spec_attribute_id,
+                                                            'val_id' => $s->spec_value_id,
+                                                        ];
+                                                    })
+                                                    ->toJson();
+
+                                                $compLabId = $comp->lab_id;
+                                                // Jika attached ke item, cek itemnya ada di lab mana
+                                                if (!$compLabId && $comp->item && $comp->item->desk) {
+                                                    $compLabId = $comp->item->desk->lab_id;
+                                                } elseif (!$compLabId && $comp->item && $comp->item->lab) {
+                                                    $compLabId = $comp->item->lab_id;
+                                                }
+
+                                                // Kondisi Khusus Component
+                                                $compConditionVal = $comp->condition;
+                                                if ($comp->repairs->isNotEmpty()) {
+                                                    $compConditionVal = 'under_repair';
+                                                } elseif ($comp->item && $comp->item->repairs->isNotEmpty()) {
+                                                    $compConditionVal = 'parent_under_repair';
+                                                }
+                                            @endphp
+
+                                            <tr class="component-row group hover:bg-gray-50 transition-colors"
+                                                data-lab-id="{{ $compLabId }}" data-type-id="{{ $comp->type_id }}"
+                                                data-condition="{{ $compConditionVal }}" data-specs='{{ $compSpecsJson }}'
+                                                data-search="{{ strtolower($comp->name . ' ' . $comp->serial_code) }}">
+
+                                                {{-- ... Isi kolom <td> komponen (Biarkan sama, hanya wrapper tr yang berubah) ... --}}
                                                 <td class="px-6 py-4 whitespace-nowrap">
                                                     <div class="text-sm font-semibold text-gray-900">{{ $comp->name }}</div>
                                                     <div class="text-xs text-gray-600 font-mono">{{ $comp->serial_code }}
@@ -336,30 +384,20 @@
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
                                                     @if ($comp->item)
-                                                        <div class="text-sm font-medium text-gray-900">
-                                                            {{ $comp->item->name }}
+                                                        <div class="text-sm font-medium text-gray-900">{{ $comp->item->name }}
                                                         </div>
-                                                        @if ($comp->item->desk)
-                                                            <div class="text-sm text-gray-600">
-                                                                ({{ $comp->item->desk->lab->name }} - Meja
-                                                                {{ $comp->item->desk->location }})
-                                                            </div>
-                                                        @else
-                                                            <div class="text-sm text-gray-600">(Item Induk belum terpasang)
-                                                            </div>
-                                                        @endif
+                                                    @elseif ($comp->lab)
+                                                        <div class="text-sm font-medium text-indigo-700">
+                                                            {{ $comp->lab->name }}</div>
                                                     @else
                                                         <span
-                                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-700">
-                                                            Belum Terpasang
-                                                        </span>
+                                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-700">Belum
+                                                            Terpasang</span>
                                                     @endif
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
                                                     <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                                        {{ $comp->type->name ?? 'N/A' }}
-                                                    </span>
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">{{ $comp->type->name ?? 'N/A' }}</span>
                                                 </td>
                                                 <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
                                                     @foreach ($comp->specSetValues as $spec)
@@ -370,53 +408,40 @@
                                                     @endforeach
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
-                                                    @php
-                                                        // Cek Component Repairs
-                                                        $isCompUnderRepair = $comp->repairs->isNotEmpty();
-
-                                                        // Cek Parent Repairs (Jika punya parent)
-                                                        $isParentUnderRepair = false;
-                                                        if ($comp->item && $comp->item->repairs->isNotEmpty()) {
-                                                            $isParentUnderRepair = true;
-                                                        }
-                                                    @endphp
-
-                                                    @if ($isCompUnderRepair)
+                                                    {{-- Badge Kondisi (Biarkan logika blade yang lama) --}}
+                                                    @if ($comp->repairs->isNotEmpty())
                                                         <span
-                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                            Sedang Diperbaiki
-                                                        </span>
-                                                    @elseif ($isParentUnderRepair)
+                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Sedang
+                                                            Diperbaiki</span>
+                                                    @elseif (isset($isParentUnderRepair) && $isParentUnderRepair)
                                                         <span
-                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
-                                                            Induk Sedang Diperbaiki
-                                                        </span>
+                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">Induk
+                                                            Sedang Diperbaiki</span>
                                                     @elseif ($comp->condition)
                                                         <span
-                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                            Bagus
-                                                        </span>
+                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Baik</span>
                                                     @else
                                                         <span
-                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                            Rusak
-                                                        </span>
+                                                            class="condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rusak</span>
                                                     @endif
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                                     <button type="button"
-                                                        class="btn-open-action-component px-4 py-2 bg-indigo-600 text-gray-100 hover:text-gray-200 text-xs font-semibold rounded-md hover:bg-indigo-800 focus:outline-none"
+                                                        class="btn-open-action-component px-4 py-2 bg-indigo-600 text-gray-100 text-xs font-semibold rounded-md hover:bg-indigo-800"
                                                         data-item-id="{{ $comp->id }}"
                                                         data-item-name="{{ $comp->name }}"
-                                                        data-item-condition="{{ $comp->condition }}">
+                                                        data-item-condition="{{ $comp->condition }}"
+                                                        data-item-item-id="{{ $comp->item_id }}"
+                                                        data-item-lab-id="{{ $compLabId }}"
+                                                        data-item-type-id="{{ $comp->type_id }}">
                                                         Aksi
                                                     </button>
                                                 </td>
                                             </tr>
                                             @empty
-                                                <tr>
+                                                <tr id="no-components-row">
                                                     <td colspan="6" class="px-6 py-12 text-center text-gray-500">
-                                                        Tidak ada komponen yang cocok dengan filter Anda.
+                                                        Tidak ada komponen yang ditemukan.
                                                     </td>
                                                 </tr>
                                             @endforelse
@@ -508,7 +533,7 @@
                                                     <input type="radio" name="condition" value="1"
                                                         class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
                                                         checked>
-                                                    <span class="ml-2 text-gray-700">Bagus</span>
+                                                    <span class="ml-2 text-gray-700">Baik</span>
                                                 </label>
                                                 <label class="flex items-center">
                                                     <input type="radio" name="condition" value="0"
@@ -641,6 +666,14 @@
                                 </svg>
                                 <span class="font-semibold">Pasang ke Meja</span>
                             </button>
+                            <button id="action-btn-attach-lab"
+                                class="p-6 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg">
+                                <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                                <span class="font-semibold">Pasang ke Lab</span>
+                            </button>
                             <button id="action-btn-manage-comp"
                                 class="p-6 bg-gray-700 hover:bg-gray-800 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg">
                                 <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -658,6 +691,30 @@
                                     </path>
                                 </svg>
                                 <span class="font-semibold">Edit Komponen</span>
+                            </button>
+                            <button id="action-btn-detach-desk"
+                                class="p-6 bg-red-500 hover:bg-red-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg">
+                                <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <span class="font-semibold">Lepas dari Meja</span>
+                            </button>
+                            <button id="action-btn-detach-lab"
+                                class="p-6 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg">
+                                <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <span class="font-semibold">Lepas dari Lab</span>
+                            </button>
+                            <button id="action-btn-detach-item"
+                                class="p-6 bg-purple-500 hover:bg-purple-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg">
+                                <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <span class="font-semibold">Lepas dari Item</span>
                             </button>
                         </div>
                     </div>
@@ -916,6 +973,46 @@
             {{-- ⬆️ MODAL 6 SELESAI ⬆️ --}}
 
             {{-- ========================================================= --}}
+            {{-- MODAL 7: Kelola Komponen --}}
+            {{-- ========================================================= --}}
+            <div id="manage-components-modal" class="hidden" role="dialog" aria-modal="true">
+                <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[3000]"></div>
+                <div id="manage-components-modal-overlay" class="fixed inset-0 flex items-center justify-center p-4 z-[3001]">
+                    <div id="manage-components-modal-area"
+                        class="relative bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
+                        <div class="flex justify-between items-center p-4 border-b border-gray-200 rounded-t">
+                            <h3 class="text-xl font-semibold text-gray-900">
+                                Kelola Komponen: <span id="manage-comp-item-name" class="text-indigo-600"></span>
+                            </h3>
+                            <button id="manage-components-modal-close-btn" type="button"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-6 overflow-y-auto">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-3">Komponen Terpasang</h4>
+                                    <div id="attached-components-list" class="space-y-2 min-h-[200px]">
+                                        <div class="text-center py-8 text-gray-500">Memuat...</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-3">Komponen Tersedia</h4>
+                                    <div id="available-components-list" class="space-y-2 min-h-[200px]">
+                                        <div class="text-center py-8 text-gray-500">Memuat...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ========================================================= --}}
             {{-- TEMPLATES --}}
             {{-- ========================================================= --}}
 
@@ -975,7 +1072,7 @@
                                 <label class="flex items-center">
                                     <input type="radio" class="new-component-condition" name="component_condition_NEW-INDEX"
                                         value="1" class="h-4 w-4 text-purple-600" checked>
-                                    <span class="ml-2 text-gray-700">Bagus</span>
+                                    <span class="ml-2 text-gray-700">Baik</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input type="radio" class="new-component-condition" name="component_condition_NEW-INDEX"
@@ -1035,7 +1132,7 @@
                                     <label class="flex items-center">
                                         <input type="radio" class="set-item-condition" name="set_item_condition_INDEX"
                                             value="1" class="h-4 w-4 text-indigo-600" checked>
-                                        <span class="ml-2 text-gray-700">Bagus</span>
+                                        <span class="ml-2 text-gray-700">Baik</span>
                                     </label>
                                     <label class="flex items-center">
                                         <input type="radio" class="set-item-condition" name="set_item_condition_INDEX"
@@ -1083,8 +1180,16 @@
         @endsection
 
     @section('script')
+        <script>
+            window.attachComponentToItem = attachComponentToItem;
+            window.detachComponentFromItem = detachComponentFromItem;
+        </script>
         {{-- Style untuk TomSelect --}}
         <style>
+            .swal2-input {
+                padding: 0 0.75rem !important;
+            }
+
             .filter-select .ts-control {
                 @apply block w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white;
                 padding-top: 0.6rem;
@@ -1119,10 +1224,55 @@
         <script>
             document.getElementById('items').classList.add('bg-slate-100');
 
+            initializeManageComponentsModal();
+            initializeClientSideFiltering();
+
             // Data dari Blade
             const allTypes = @json($types);
             const allSpecAttributes = @json($specification);
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // Event listener untuk tombol aksi Item
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn-open-action-item')) {
+                    const btn = e.target;
+                    currentItemId = btn.dataset.itemId;
+                    currentItemName = btn.dataset.itemName;
+                    currentItemCondition = parseInt(btn.dataset.itemCondition);
+                    currentItemType = 'item';
+                    currentDeskId = btn.dataset.itemDeskId || null;
+                    currentLabId = btn.dataset.itemLabId || null;
+                    currentItemIdParent = null;
+
+                    const modal = document.getElementById('action-modal');
+                    const titleEl = document.getElementById('action-modal-title');
+                    if (titleEl) titleEl.textContent = `Aksi untuk ${currentItemName}`;
+                    if (modal) modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+
+                    updateActionModalButtons('item');
+                }
+
+                // Event listener untuk tombol aksi Component
+                if (e.target.classList.contains('btn-open-action-component')) {
+                    const btn = e.target;
+                    currentItemId = btn.dataset.itemId;
+                    currentItemName = btn.dataset.itemName;
+                    currentItemCondition = parseInt(btn.dataset.itemCondition);
+                    currentItemType = 'component';
+                    currentDeskId = null;
+                    currentItemIdParent = btn.dataset.itemItemId || null;
+                    currentLabId = btn.dataset.itemLabId || null;
+
+                    const modal = document.getElementById('action-modal');
+                    const titleEl = document.getElementById('action-modal-title');
+                    if (titleEl) titleEl.textContent = `Aksi untuk ${currentItemName}`;
+                    if (modal) modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+
+                    updateActionModalButtons('component');
+                }
+            });
 
             // =================================================================
             // Variabel Global
@@ -1132,6 +1282,9 @@
             let currentItemCondition = null;
             let currentItemType = 'item'; // 'item' or 'component'
             let currentIsComponent = 0; // 0 for item, 1 for component
+            let currentDeskId = null; // untuk item
+            let currentItemIdParent = null; // untuk component (item_id)
+            let currentLabId = null; // untuk item dan component
 
             // Variabel untuk Modal Create Item
             let tomSelectInstances = {
@@ -1158,20 +1311,6 @@
             let tomSelectSetLab;
             let setLabDesks = [];
             let setSelectedDeskLocations = [];
-
-            // =================================================================
-            // Fungsi Utility (Loading & Toast)
-            // =================================================================
-            function showLoading(title = 'Loading...', text = 'silakan tunggu...') {
-                Swal.fire({
-                    title: title,
-                    text: text,
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-            }
 
             function hideLoading() {
                 Swal.close();
@@ -1226,7 +1365,8 @@
                     !document.getElementById('attach-desk-modal').classList.contains('hidden') ||
                     !document.getElementById('detail-modal').classList.contains('hidden') ||
                     !document.getElementById('create-set-modal').classList.contains('hidden') ||
-                    !document.getElementById('repair-modal').classList.contains('hidden');
+                    !document.getElementById('repair-modal').classList.contains('hidden') ||
+                    !document.getElementById('manage-components-modal').classList.contains('hidden');
 
                 if (!isAnyModalOpen) {
                     document.body.style.overflow = '';
@@ -1545,6 +1685,95 @@
                     attr: attrTomSelect,
                     val: valueTomSelect
                 };
+            }
+
+            async function submitCreateItemForm(submitBtn, form) {
+                showLoading('Menyimpan Item...');
+                submitBtn.disabled = true;
+
+                const formData = {
+                    is_component: form.querySelector('input[name="is_component"]:checked').value,
+                    name: document.getElementById('name').value,
+                    serial_code: document.getElementById('serial_code').value,
+                    condition: form.querySelector('input[name="condition"]:checked').value,
+                    type: tomSelectType.getValue(),
+                    produced_at: document.getElementById('produced_at').value,
+                    _token: form.querySelector('input[name="_token"]').value,
+                    specifications: [],
+                    new_components: []
+                };
+
+                tomSelectInstances.mainSpecs.forEach(spec => {
+                    const attrVal = spec.attr.getValue();
+                    const valVal = spec.val.getValue();
+                    if (attrVal && valVal) {
+                        formData.specifications.push({
+                            attribute: attrVal,
+                            value: valVal
+                        });
+                    }
+                });
+
+                if (formData.is_component === '0') {
+                    tomSelectInstances.newComponents.forEach(compInstance => {
+                        const compRow = compInstance.row;
+                        const componentData = {
+                            name: compRow.querySelector('.new-component-name').value,
+                            serial_code: compRow.querySelector('.new-component-serial').value,
+                            condition: compRow.querySelector('.new-component-condition:checked').value,
+                            type: compInstance.typeSelect.getValue(),
+                            produced_at: compRow.querySelector('.new-component-produced-at').value,
+                            specifications: []
+                        };
+                        compInstance.specInstances.forEach(spec => {
+                            const attrVal = spec.attr.getValue();
+                            const valVal = spec.val.getValue();
+                            if (attrVal && valVal) {
+                                componentData.specifications.push({
+                                    attribute: attrVal,
+                                    value: valVal
+                                });
+                            }
+                        });
+                        formData.new_components.push(componentData);
+                    });
+                }
+
+                try {
+                    const response = await fetch(form.dataset.action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': formData._token
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        if (response.status === 422) {
+                            throw new Error(data.message || 'Data tidak valid.');
+                        }
+                        throw new Error(data.message || 'Terjadi kesalahan.');
+                    }
+
+                    hideLoading();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                    }).then(() => {
+                        location.reload();
+                    });
+
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Gagal Menyimpan', error.message, 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                }
             }
 
             async function submitCreateSetForm(submitBtn, form) {
@@ -2258,6 +2487,375 @@
             }
 
             // =================================================================
+            // FUNGSI KELOLA KOMPONEN
+            // =================================================================
+            function initializeManageComponentsModal() {
+                const modal = document.getElementById('manage-components-modal');
+                const overlay = document.getElementById('manage-components-modal-overlay');
+                const closeBtn = document.getElementById('manage-components-modal-close-btn');
+
+                if (!modal) return;
+
+                const closeModal = () => {
+                    modal.classList.add('hidden');
+                    checkModalStateAndToggleBodyOverflow();
+                }
+
+                closeBtn.addEventListener('click', closeModal);
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) closeModal();
+                });
+            }
+
+            async function openManageComponentsModal() {
+                const modal = document.getElementById('manage-components-modal');
+                const itemNameEl = document.getElementById('manage-comp-item-name');
+
+                if (itemNameEl) itemNameEl.textContent = currentItemName;
+                if (modal) modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                await loadComponentsForItem();
+            }
+
+            async function loadComponentsForItem() {
+                const attachedList = document.getElementById('attached-components-list');
+                const availableList = document.getElementById('available-components-list');
+
+                attachedList.innerHTML = '<div class="text-center py-8 text-gray-500">Memuat...</div>';
+                availableList.innerHTML = '<div class="text-center py-8 text-gray-500">Memuat...</div>';
+
+                try {
+                    const [detailsRes, availableRes] = await Promise.all([
+                        fetch(`/admin/items/${currentItemId}/details`, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        }),
+                        fetch(`/admin/items/${currentItemId}/available-components`, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        })
+                    ]);
+
+                    const detailsData = await detailsRes.json();
+                    const availableData = await availableRes.json();
+
+                    renderAttachedComponents(detailsData.components || []);
+                    renderAvailableComponents(availableData.components || []);
+                } catch (error) {
+                    attachedList.innerHTML = '<div class="text-center py-8 text-red-500">Gagal memuat data</div>';
+                    availableList.innerHTML = '<div class="text-center py-8 text-red-500">Gagal memuat data</div>';
+                }
+            }
+
+            function renderAttachedComponents(components) {
+                const list = document.getElementById('attached-components-list');
+                if (!components || components.length === 0) {
+                    list.innerHTML = '<div class="text-center py-8 text-gray-400 italic">Tidak ada komponen terpasang</div>';
+                    return;
+                }
+
+                list.innerHTML = components.map(comp => `
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white hover:bg-gray-50 transition">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="font-semibold text-gray-800">${comp.name}</div>
+                                <div class="text-xs text-gray-500 font-mono">${comp.serial_code}</div>
+                                <div class="text-xs text-purple-600 mt-1">${comp.type ? comp.type.name : 'N/A'}</div>
+                            </div>
+                            <button onclick="detachComponentFromItem('${comp.id}', '${comp.name}')" 
+                                class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded transition">
+                                Lepas
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function renderAvailableComponents(components) {
+                const list = document.getElementById('available-components-list');
+                if (!components || components.length === 0) {
+                    list.innerHTML = '<div class="text-center py-8 text-gray-400 italic">Tidak ada komponen tersedia</div>';
+                    return;
+                }
+
+                list.innerHTML = components.map(comp => `
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white hover:bg-gray-50 transition">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="font-semibold text-gray-800">${comp.name}</div>
+                                <div class="text-xs text-gray-500 font-mono">${comp.serial_code}</div>
+                                <div class="text-xs text-purple-600 mt-1">${comp.type ? comp.type.name : 'N/A'}</div>
+                            </div>
+                            <button onclick="attachComponentToItem('${comp.id}', '${comp.name}')" 
+                                class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-xs rounded transition">
+                                Pasang
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            async function attachComponentToItem(componentId, componentName) {
+                const result = await Swal.fire({
+                    title: 'Pasang Komponen?',
+                    text: `Pasang '${componentName}' ke '${currentItemName}'?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Pasang!',
+                    cancelButtonText: 'Batal'
+                });
+
+                if (!result.isConfirmed) return;
+
+                showLoading('Memasang komponen...');
+                try {
+                    const response = await fetch(`/admin/items/${currentItemId}/attach-component/${componentId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Gagal memasang komponen');
+
+                    hideLoading();
+                    showToast('Berhasil!', data.message, 'success');
+                    await loadComponentsForItem();
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Gagal', error.message, 'error');
+                }
+            }
+
+            async function detachComponentFromItem(componentId, componentName) {
+                const result = await Swal.fire({
+                    title: 'Lepas Komponen?',
+                    text: `Lepas '${componentName}' dari '${currentItemName}'?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Lepas!',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#ef4444'
+                });
+
+                if (!result.isConfirmed) return;
+
+                showLoading('Melepas komponen...');
+                try {
+                    const response = await fetch(`/admin/items/${currentItemId}/detach-component/${componentId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Gagal melepas komponen');
+
+                    hideLoading();
+                    showToast('Berhasil!', data.message, 'success');
+                    await loadComponentsForItem();
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Gagal', error.message, 'error');
+                }
+            }
+
+            function initializeClientSideFiltering() {
+                // Definisi Element Filter
+                const els = {
+                    lab: document.getElementById('filter_lab_select'),
+                    type: document.getElementById('filter_type_select'),
+                    status: document.getElementById('filter_status'),
+                    condition: document.getElementById('filter_condition'),
+                    specAttr: document.getElementById('filter_spec_attr'),
+                    specVal: document.getElementById('filter_spec_val'),
+                    search: document.getElementById('datatable-search-input'),
+                    resetBtn: document.getElementById('reset-filter-btn')
+                };
+
+                // Objek untuk menyimpan instance TomSelect
+                const tomSelects = {};
+
+                // 1. Inisialisasi TomSelect Dasar
+                ['lab', 'type', 'status', 'condition'].forEach(key => {
+                    if (els[key]) {
+                        tomSelects[key] = new TomSelect(els[key], {
+                            plugins: ['clear_button'],
+                            onChange: filterTable // Panggil filter setiap kali berubah
+                        });
+                    }
+                });
+
+                // 2. Inisialisasi TomSelect untuk Spesifikasi (Dependent Dropdown)
+                if (els.specVal) {
+                    tomSelects.specVal = new TomSelect(els.specVal, {
+                        plugins: ['clear_button'],
+                        onChange: filterTable
+                    });
+                    tomSelects.specVal.disable(); // Disable value dulu sebelum attribute dipilih
+                }
+
+                if (els.specAttr) {
+                    tomSelects.specAttr = new TomSelect(els.specAttr, {
+                        plugins: ['clear_button'],
+                        onChange: function(attrId) {
+                            // Reset Value Select
+                            if (tomSelects.specVal) {
+                                tomSelects.specVal.clear();
+                                tomSelects.specVal.clearOptions();
+                                tomSelects.specVal.disable();
+
+                                if (attrId) {
+                                    // Ambil data values dari attribute yang dipilih (disimpan di data-values pada option HTML)
+                                    const option = this.options[attrId];
+                                    // TomSelect menyimpan atribut asli di properti data-values, tapi kita perlu akses DOM option aslinya atau data internal
+                                    // Cara termudah di TomSelect adalah akses via 'this.options' jika kita load manual, 
+                                    // tapi karena ini dari HTML select, kita cari elemen aslinya.
+
+                                    // Fallback: cari di elemen select asli
+                                    const rawOption = els.specAttr.querySelector(`option[value="${attrId}"]`);
+                                    if (rawOption && rawOption.dataset.values) {
+                                        try {
+                                            const values = JSON.parse(rawOption.dataset.values);
+                                            const options = values.map(v => ({
+                                                value: v.id,
+                                                text: v.value
+                                            }));
+                                            tomSelects.specVal.addOptions(options);
+                                            tomSelects.specVal.enable();
+                                        } catch (e) {
+                                            console.error("Gagal parse spec values", e);
+                                        }
+                                    }
+                                }
+                            }
+                            filterTable();
+                        }
+                    });
+                }
+
+                // 3. Event Listener Search Input
+                if (els.search) {
+                    els.search.addEventListener('input', filterTable);
+                }
+
+                // 4. Logic Reset Filter
+                if (els.resetBtn) {
+                    els.resetBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        // Clear semua TomSelect
+                        Object.values(tomSelects).forEach(ts => ts.clear());
+                        // Clear search text
+                        if (els.search) els.search.value = '';
+                        // Jalankan filter (akan mereset tampilan ke semua data)
+                        filterTable();
+                    });
+                }
+
+                // 5. Fungsi Utama Filter Table
+                function filterTable() {
+                    // Ambil nilai saat ini dari semua input
+                    const criteria = {
+                        labId: els.lab.value,
+                        typeId: els.type.value,
+                        status: els.status.value,
+                        condition: els.condition.value,
+                        specAttrId: els.specAttr.value,
+                        specValId: els.specVal.value,
+                        search: els.search.value.toLowerCase()
+                    };
+
+                    // Filter Rows Item
+                    applyFilterToSelector('.item-row', criteria);
+
+                    // Filter Rows Component
+                    applyFilterToSelector('.component-row', criteria);
+                }
+
+                // Helper untuk memfilter baris berdasarkan selector class
+                function applyFilterToSelector(selector, c) {
+                    const rows = document.querySelectorAll(selector);
+                    let visibleCount = 0;
+
+                    rows.forEach(row => {
+                        const rData = row.dataset;
+                        let show = true;
+
+                        // Filter Lab
+                        if (c.labId && rData.labId != c.labId) show = false;
+
+                        // Filter Tipe
+                        if (show && c.typeId && rData.typeId != c.typeId) show = false;
+
+                        // Filter Status (Hanya relevan untuk Item, tapi kita cek dataset status)
+                        if (show && c.status) {
+                            // Untuk item row yang punya data-status
+                            if (rData.status && rData.status !== c.status) show = false;
+                        }
+
+                        // Filter Kondisi
+                        if (show && c.condition) {
+                            // Mapping kondisi kompleks
+                            if (c.condition === 'under_repair') {
+                                if (rData.condition !== 'under_repair') show = false;
+                            } else if (c.condition === 'parent_under_repair') {
+                                if (rData.condition !== 'parent_under_repair') show = false;
+                            } else {
+                                // Kondisi Baik (1) atau Rusak (0)
+                                // Note: rData.condition mungkin string "1" atau "0", atau "under_repair"
+                                if (rData.condition !== c.condition) show = false;
+                            }
+                        }
+
+                        // Filter Spesifikasi (Advanced)
+                        if (show && c.specAttrId) {
+                            let hasSpec = false;
+                            try {
+                                const specs = JSON.parse(rData.specs || '[]');
+                                // Cek apakah item ini punya attribute yg dipilih
+                                // Jika Value juga dipilih, harus match Value ID juga
+                                // Jika Value TIDAK dipilih, cukup match Attribute ID saja
+                                hasSpec = specs.some(s => {
+                                    if (c.specValId) {
+                                        return s.attr_id == c.specAttrId && s.val_id == c.specValId;
+                                    } else {
+                                        return s.attr_id == c.specAttrId;
+                                    }
+                                });
+                            } catch (e) {
+                                console.error("JSON Parse error for specs", e);
+                            }
+                            if (!hasSpec) show = false;
+                        }
+
+                        // Filter Search Text (Nama & Serial Code)
+                        if (show && c.search) {
+                            if (!rData.search.includes(c.search)) show = false;
+                        }
+
+                        // Eksekusi Tampil/Sembunyi
+                        row.style.display = show ? '' : 'none';
+                        if (show) visibleCount++;
+                    });
+
+                    // Tampilkan pesan "Tidak ada data" jika kosong
+                    // Asumsi ada row khusus id="no-items-row" atau sejenis di blade
+                    // Kita bisa handle manual atau biarkan blade empty state (tapi blade empty state hanya jalan saat load awal server side)
+                    // Jadi kita tidak ubah DOM empty state di sini agar simpel, 
+                    // tapi secara visual tabel akan kosong jika visibleCount == 0.
+                }
+            }
+
+            // =================================================================
             // Inisialisasi Halaman
             // =================================================================
 
@@ -2277,6 +2875,9 @@
                     currentItemCondition = null;
                     currentItemType = 'item';
                     currentIsComponent = 0;
+                    currentDeskId = null;
+                    currentItemIdParent = null;
+                    currentLabId = null;
                 }
 
                 closeBtn.addEventListener('click', closeActionModal);
@@ -2289,31 +2890,127 @@
 
                 document.getElementById('action-btn-details').addEventListener('click', openDetailModal);
                 document.getElementById('action-btn-attach').addEventListener('click', openAttachDeskModal);
+                document.getElementById('action-btn-attach-lab').addEventListener('click', openAttachLabModal);
                 document.getElementById('action-btn-condition').addEventListener('click', submitChangeCondition);
                 document.getElementById('action-btn-repair').addEventListener('click', openRepairModal);
 
-                document.getElementById('action-btn-manage-comp').addEventListener('click', () => {
-                    Swal.fire('Fitur Dalam Pengembangan',
-                        'Fitur untuk mengelola komponen (attach/detach) sedang dibuat.', 'info');
-                });
+                document.getElementById('action-btn-manage-comp').addEventListener('click', openManageComponentsModal);
                 document.getElementById('action-btn-edit-comp').addEventListener('click', () => {
                     Swal.fire('Fitur Dalam Pengembangan',
                         'Fitur untuk mengubah kondisi komponen sedang dibuat.', 'info');
+                });
+
+                document.getElementById('action-btn-detach-desk').addEventListener('click', async () => {
+                    const result = await Swal.fire({
+                        title: 'Lepas dari Meja?',
+                        text: `Item '${currentItemName}' akan dilepas dari meja.`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Lepas!',
+                        cancelButtonText: 'Batal',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    if (!result.isConfirmed) return;
+
+                    try {
+                        const response = await fetch(`/admin/items/${currentItemId}/detach-desk`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.message || 'Gagal melepas item');
+                        Swal.fire('Berhasil!', data.message, 'success').then(() => location.reload());
+                    } catch (error) {
+                        Swal.fire('Gagal', error.message, 'error');
+                    }
+                });
+
+                document.getElementById('action-btn-detach-lab').addEventListener('click', async () => {
+                    const url = currentItemType === 'item' ?
+                        `/admin/items/${currentItemId}/detach-lab` :
+                        `/admin/components/${currentItemId}/detach-lab`;
+
+                    const result = await Swal.fire({
+                        title: 'Lepas dari Lab?',
+                        text: `${currentItemType === 'item' ? 'Item' : 'Component'} '${currentItemName}' akan dilepas dari lemari lab.`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Lepas!',
+                        cancelButtonText: 'Batal',
+                        confirmButtonColor: '#6366f1'
+                    });
+                    if (!result.isConfirmed) return;
+
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.message || 'Gagal melepas');
+                        Swal.fire('Berhasil!', data.message, 'success').then(() => location.reload());
+                    } catch (error) {
+                        Swal.fire('Gagal', error.message, 'error');
+                    }
+                });
+
+                document.getElementById('action-btn-detach-item').addEventListener('click', async () => {
+                    const result = await Swal.fire({
+                        title: 'Lepas dari Item?',
+                        text: `Component '${currentItemName}' akan dilepas dari item induk.`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Lepas!',
+                        cancelButtonText: 'Batal',
+                        confirmButtonColor: '#a855f7'
+                    });
+                    if (!result.isConfirmed) return;
+
+                    try {
+                        const response = await fetch(`/admin/components/${currentItemId}/detach-item`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.message || 'Gagal melepas component');
+                        Swal.fire('Berhasil!', data.message, 'success').then(() => location.reload());
+                    } catch (error) {
+                        Swal.fire('Gagal', error.message, 'error');
+                    }
                 });
             }
 
             function updateActionModalButtons(type = 'item') {
                 const attachBtn = document.getElementById('action-btn-attach');
+                const attachLabBtn = document.getElementById('action-btn-attach-lab');
                 const manageCompBtn = document.getElementById('action-btn-manage-comp');
                 const editCompBtn = document.getElementById('action-btn-edit-comp');
                 const condBtn = document.getElementById('action-btn-condition');
                 const detailBtn = document.getElementById('action-btn-details');
                 const repairBtn = document.getElementById('action-btn-repair');
+                const detachDeskBtn = document.getElementById('action-btn-detach-desk');
+                const detachLabBtn = document.getElementById('action-btn-detach-lab');
+                const detachItemBtn = document.getElementById('action-btn-detach-item');
 
                 if (!attachBtn) return;
 
                 detailBtn.style.display = 'flex';
                 repairBtn.style.display = 'flex';
+                detachDeskBtn.style.display = 'none';
+                detachLabBtn.style.display = 'none';
+                detachItemBtn.style.display = 'none';
+
+                // Default: tampilkan tombol attach lab
+                attachLabBtn.style.display = 'flex';
 
                 if (currentItemCondition) {
                     condBtn.innerHTML =
@@ -2322,7 +3019,7 @@
                     condBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
                 } else {
                     condBtn.innerHTML =
-                        `<svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="font-semibold">Ubah ke Bagus</span>`;
+                        `<svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="font-semibold">Ubah ke Baik</span>`;
                     condBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
                     condBtn.classList.add('bg-green-500', 'hover:bg-green-600');
                 }
@@ -2332,16 +3029,122 @@
                     manageCompBtn.style.display = 'flex';
                     editCompBtn.style.display = 'none';
                     currentIsComponent = 0;
+
+                    // Logika untuk Item
+                    if (currentDeskId) {
+                        // Item terpasang di desk
+                        attachLabBtn.style.display = 'none';
+                        detachLabBtn.style.display = 'none';
+                        detachDeskBtn.style.display = 'flex';
+                    } else if (currentLabId) {
+                        // Item terpasang di lab (tidak di desk)
+                        attachLabBtn.style.display = 'none';
+                        detachLabBtn.style.display = 'flex';
+                        detachDeskBtn.style.display = 'none';
+                    } else {
+                        // Item belum terpasang
+                        attachLabBtn.style.display = 'flex';
+                        detachLabBtn.style.display = 'none';
+                        detachDeskBtn.style.display = 'none';
+                    }
                 } else {
                     attachBtn.style.display = 'none';
                     manageCompBtn.style.display = 'none';
                     editCompBtn.style.display = 'flex';
                     currentIsComponent = 1;
+
+                    // Logika untuk Component
+                    if (currentItemIdParent) {
+                        // Component terpasang di item
+                        attachLabBtn.style.display = 'none';
+                        detachLabBtn.style.display = 'none';
+                        detachItemBtn.style.display = 'flex';
+                    } else if (currentLabId) {
+                        // Component terpasang di lab (tidak di item)
+                        attachLabBtn.style.display = 'none';
+                        detachLabBtn.style.display = 'flex';
+                        detachItemBtn.style.display = 'none';
+                    } else {
+                        // Component belum terpasang
+                        attachLabBtn.style.display = 'flex';
+                        detachLabBtn.style.display = 'none';
+                        detachItemBtn.style.display = 'none';
+                    }
+                }
+            }
+
+            async function openAttachLabModal() {
+                const result = await Swal.fire({
+                    title: 'Pilih Laboratorium',
+                    html: '<select id="swal-lab-select" class="swal2-input" style="width: 80%; padding:0"><option value="">-- Pilih Lab --</option></select>',
+                    showCancelButton: true,
+                    confirmButtonText: 'Pasang',
+                    cancelButtonText: 'Batal',
+                    didOpen: async () => {
+                        const select = document.getElementById('swal-lab-select');
+                        try {
+                            const response = await fetch("{{ route('admin.labs.list') }}");
+                            const labs = await response.json();
+                            labs.forEach(lab => {
+                                const option = document.createElement('option');
+                                option.value = lab.id;
+                                option.textContent = lab.name;
+                                select.appendChild(option);
+                            });
+                        } catch (error) {
+                            console.error('Error loading labs:', error);
+                        }
+                    },
+                    preConfirm: () => {
+                        const labId = document.getElementById('swal-lab-select').value;
+                        if (!labId) {
+                            Swal.showValidationMessage('Silakan pilih laboratorium');
+                            return false;
+                        }
+                        return labId;
+                    }
+                });
+
+                if (result.isConfirmed && result.value) {
+                    await attachToLab(result.value);
+                }
+            }
+
+            async function attachToLab(labId) {
+                showLoading('Memasang ke Lab...');
+                try {
+                    const url = currentItemType === 'item' ?
+                        `/admin/items/${currentItemId}/attach-lab/${labId}` :
+                        `/admin/components/${currentItemId}/attach-lab/${labId}`;
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Gagal memasang ke lab.');
+
+                    hideLoading();
+                    showToast('Berhasil!', data.message, 'success');
+
+                    document.getElementById('action-modal').classList.add('hidden');
+                    checkModalStateAndToggleBodyOverflow();
+
+                    setTimeout(() => location.reload(), 1000);
+
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Gagal', error.message, 'error');
                 }
             }
 
             async function submitChangeCondition() {
-                const newConditionText = currentItemCondition ? "Rusak" : "Bagus";
+                const newConditionText = currentItemCondition ? "Rusak" : "Baik";
                 const result = await Swal.fire({
                     title: `Ubah Kondisi?`,
                     text: `Anda yakin ingin mengubah kondisi '${currentItemName}' menjadi ${newConditionText}?`,
@@ -2368,7 +3171,7 @@
                         },
                     });
                     const data = await response.json();
-                    
+
                     if (!response.ok) {
                         if (data.has_ongoing_repair) {
                             hideLoading();
@@ -2392,7 +3195,7 @@
                             const badge = row.querySelector('.condition-badge');
                             if (badge) {
                                 if (data.new_condition) {
-                                    badge.textContent = 'Bagus';
+                                    badge.textContent = 'Baik';
                                     badge.className =
                                         'condition-badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800';
                                 } else {
@@ -2446,7 +3249,9 @@
             }
 
             async function showCompleteRepairForm(repairData) {
-                const { value: formValues } = await Swal.fire({
+                const {
+                    value: formValues
+                } = await Swal.fire({
                     title: 'Selesaikan Repair',
                     html: `
                         <div class="text-left space-y-4">
@@ -2455,7 +3260,7 @@
                                 <div class="flex gap-4 justify-center">
                                     <label class="flex items-center cursor-pointer">
                                         <input type="radio" name="swal-is-successful" value="1" class="mr-2" checked>
-                                        <span class="text-sm">Berhasil (Bagus)</span>
+                                        <span class="text-sm">Berhasil (Baik)</span>
                                     </label>
                                     <label class="flex items-center cursor-pointer">
                                         <input type="radio" name="swal-is-successful" value="0" class="mr-2">
@@ -2474,9 +3279,13 @@
                     confirmButtonText: 'Simpan',
                     cancelButtonText: 'Batal',
                     preConfirm: () => {
-                        const isSuccessful = document.querySelector('input[name="swal-is-successful"]:checked').value === '1';
+                        const isSuccessful = document.querySelector('input[name="swal-is-successful"]:checked')
+                            .value === '1';
                         const notes = document.getElementById('swal-repair-notes').value;
-                        return { isSuccessful, notes };
+                        return {
+                            isSuccessful,
+                            notes
+                        };
                     }
                 });
 
@@ -2653,11 +3462,11 @@
                             iconColor = 'text-gray-500';
                             conditionText = 'Kosong';
                             break;
-                        case 'bagus':
+                        case 'Baik':
                         default:
                             bgColorClass = 'bg-emerald-50 border-emerald-300 hover:bg-emerald-100';
                             iconColor = 'text-emerald-600';
-                            conditionText = 'Bagus';
+                            conditionText = 'Baik';
                             break;
                     }
 
@@ -2825,7 +3634,7 @@
                 if (!contentEl) return;
 
                 const conditionText = data.condition ?
-                    '<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800">Bagus</span>' :
+                    '<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800">Baik</span>' :
                     '<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800">Rusak</span>';
 
                 let locationHtml = '';
@@ -2854,11 +3663,11 @@
                     <h4 class="text-md font-semibold text-gray-800 mb-2">Komponen Terpasang (${data.components.length}):</h4>
                     <ul class="list-disc pl-5 space-y-1">
                         ${data.components.map(comp => `
-                                                                                                                                                                                    <li class="text-sm text-gray-600">
-                                                                                                                                                                                        <strong>${comp.name}</strong> (${comp.serial_code})
-                                                                                                                                                                                        <span class="ml-2 px-1.5 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">${comp.type ? comp.type.name : 'N/A'}</span>
-                                                                                                                                                                                    </li>
-                                                                                                                                                                                    `).join('')}
+                                                                                                                                                                                                                    <li class="text-sm text-gray-600">
+                                                                                                                                                                                                                        <strong>${comp.name}</strong> (${comp.serial_code})
+                                                                                                                                                                                                                        <span class="ml-2 px-1.5 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">${comp.type ? comp.type.name : 'N/A'}</span>
+                                                                                                                                                                                                                    </li>
+                                                                                                                                                                                                                    `).join('')}
                     </ul>
                 </div>
             `;
@@ -2897,11 +3706,11 @@
                 <h4 class="text-md font-semibold text-gray-800 mb-2">Spesifikasi:</h4>
                 <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
                     ${data.spec_set_values.map(spec => `
-                                                                                                                                                                        <div class="col-span-1">
-                                                                                                                                                                            <dt class="font-semibold text-gray-800 text-sm">${spec.spec_attributes ? spec.spec_attributes.name : 'N/A'}</dt>
-                                                                                                                                                                            <dd class="text-gray-600 text-sm pl-2">${spec.value}</dd>
-                                                                                                                                                                        </div>
-                                                                                                                                                                        `).join('')}
+                                                                                                                                                                                                        <div class="col-span-1">
+                                                                                                                                                                                                            <dt class="font-semibold text-gray-800 text-sm">${spec.spec_attributes ? spec.spec_attributes.name : 'N/A'}</dt>
+                                                                                                                                                                                                            <dd class="text-gray-600 text-sm pl-2">${spec.value}</dd>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        `).join('')}
                 </dl>
             </div>
         `;
@@ -3002,8 +3811,8 @@
                     }
                 });
 
-                const initialAttrId = '{{ data_get($filters, 'spec_attribute_id') }}';
-                const initialValId = '{{ data_get($filters, 'spec_value_id') }}';
+                const initialAttrId = '';
+                const initialValId = '';
 
                 if (initialAttrId && filterTomSelects.attr) {
                     filterTomSelects.attr.setValue(initialAttrId, true);
@@ -3084,7 +3893,10 @@
 
                     // Style berbeda jika dipilih
                     let bgColorClass = isSelected ?
-                        'bg-indigo-600 border-indigo-700 text-white shadow-lg transform scale-105' : (desk.overall_condition !== 'item_kosong' ? 'bg-red-50 border-red-300 hover:bg-red-100 text-red-800' : 'bg-gray-50 border-gray-300 hover:bg-gray-100 text-gray-800');
+                        'bg-indigo-600 border-indigo-700 text-white shadow-lg transform scale-105' : (desk
+                            .overall_condition !== 'item_kosong' ?
+                            'bg-red-50 border-red-300 hover:bg-red-100 text-red-800' :
+                            'bg-gray-50 border-gray-300 hover:bg-gray-100 text-gray-800');
 
                     let iconColor = isSelected ? 'text-white' : 'text-gray-400';
 

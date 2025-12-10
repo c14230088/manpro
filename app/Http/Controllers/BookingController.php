@@ -454,7 +454,7 @@ class BookingController extends Controller
             'items.*.booking_item_id.uuid' => 'ID Barang atau Lab yang dipinjam tidak valid.',
             'items.*.booking_item_id.exists' => 'Barang atau Lab yang dipinjam yang dipilih tidak ditemukan.',
             'items.*.returned_status.required' => 'Status Kondisi Barang atau Lab yang dikembalikan harus diisi.',
-            'items.*.returned_status.boolean' => 'Status Kondisi Barang atau Lab yang dikembalikan tidak valid, harus berupa Bagus atau Rusak.',
+            'items.*.returned_status.boolean' => 'Status Kondisi Barang atau Lab yang dikembalikan tidak valid, harus berupa Baik atau Rusak.',
             'items.*.returned_detail.max' => 'Detail pengembalian maksimal 750 karakter.',
         ]);
         if ($valid->fails()) {

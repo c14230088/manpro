@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('serial_code');
-            $table->boolean('condition')->comment('0: rusak | 1: bagus');
+            $table->boolean('condition')->comment('0: rusak | 1: baik');
 
             $table->timestamp('produced_at')->nullable(); // kapan dibuatnya item ini.
             $table->uuid('set_id')->nullable(); // items ini punya keluarga (set) mana.
