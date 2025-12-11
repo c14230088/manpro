@@ -1125,7 +1125,7 @@
                         text: 'Booking berhasil diajukan',
                         confirmButtonColor: '#4F46E5'
                     });
-                    window.location.reload();
+                    window.location.href = "{{ route('user.booking.history') }}";
                 } else {
                     throw new Error(data.message || 'Booking gagal');
                 }

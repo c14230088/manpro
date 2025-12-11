@@ -33,7 +33,8 @@ class UnitController extends Controller
 
         $allowed = [
             '@john.petra.ac.id',
-            '@peter.petra.ac.id'
+            '@peter.petra.ac.id',
+            '@petra.ac.id'
         ];
 
         $isAllowed = false;

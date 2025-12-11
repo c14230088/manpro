@@ -28,9 +28,9 @@ class BookingController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => $bookings,
+        return view('user.booking-history', [
+            'title' => 'Riwayat Peminjaman Saya',
+            'bookings' => $bookings
         ]);
     }
 
@@ -75,7 +75,7 @@ class BookingController extends Controller
             'type',
         ]);
         $data['borrower_id'] = Auth::user()->id;
-        $period = Period::getCurrentPeriod()->id;
+        $period = Period::getCurrentPeriod();
         if (!$period) {
             return response()->json([
                 'success' => false,
@@ -219,10 +219,16 @@ class BookingController extends Controller
             'type' => 'required|in:0,1,2',
         ]);
 
+        $period = Period::getCurrentPeriod();
+        if (!$period) {
+            return response()->json(['success' => false, 'message' => 'Periode tidak aktif.'], 404);
+        }
+
         DB::beginTransaction();
         try {
             $booking = Booking::create([
                 'borrower_id' => Auth::user()->id,
+                'period_id' => $period->id,
                 'event_name' => $request->event_name,
                 'event_started_at' => $request->event_started_at,
                 'event_ended_at' => $request->event_ended_at,
@@ -307,10 +313,16 @@ class BookingController extends Controller
             'type' => 'required|in:0,1,2',
         ]);
 
+        $period = Period::getCurrentPeriod();
+        if (!$period) {
+            return response()->json(['success' => false, 'message' => 'Periode tidak aktif.'], 404);
+        }
+
         DB::beginTransaction();
         try {
             $booking = Booking::create([
                 'borrower_id' => Auth::user()->id,
+                'period_id' => $period->id,
                 'event_name' => $request->event_name,
                 'event_started_at' => $request->event_started_at,
                 'event_ended_at' => $request->event_ended_at,
