@@ -89,6 +89,49 @@ class ItemsSeeder extends Seeder
                     ]);
                 }
             }
+
+            // Storage items (not attached to desk, stored in lab)
+            for ($i = 1; $i <= 2; $i++) {
+                Items::create([
+                    'name' => "MONITOR STORAGE {$lab->name} #{$i}",
+                    'serial_code' => "MON-S-" . str_pad($counter++, 4, '0', STR_PAD_LEFT),
+                    'condition' => true,
+                    'produced_at' => now()->subMonths(rand(6, 36)),
+                    'type_id' => $types['MONITOR']->id ?? $types->first()->id,
+                    'unit_id' => $ptikUnit->id,
+                    'lab_id' => $lab->id,
+                ]);
+
+                Items::create([
+                    'name' => "CPU STORAGE {$lab->name} #{$i}",
+                    'serial_code' => "CPU-S-" . str_pad($counter++, 4, '0', STR_PAD_LEFT),
+                    'condition' => true,
+                    'produced_at' => now()->subMonths(rand(6, 36)),
+                    'type_id' => $types['CPU']->id ?? $types->first()->id,
+                    'unit_id' => $ptikUnit->id,
+                    'lab_id' => $lab->id,
+                ]);
+
+                Items::create([
+                    'name' => "KEYBOARD STORAGE {$lab->name} #{$i}",
+                    'serial_code' => "KB-S-" . str_pad($counter++, 4, '0', STR_PAD_LEFT),
+                    'condition' => true,
+                    'produced_at' => now()->subMonths(rand(6, 36)),
+                    'type_id' => $types['KEYBOARD']->id ?? $types->first()->id,
+                    'unit_id' => $ptikUnit->id,
+                    'lab_id' => $lab->id,
+                ]);
+
+                Items::create([
+                    'name' => "MOUSE STORAGE {$lab->name} #{$i}",
+                    'serial_code' => "MS-S-" . str_pad($counter++, 4, '0', STR_PAD_LEFT),
+                    'condition' => true,
+                    'produced_at' => now()->subMonths(rand(6, 36)),
+                    'type_id' => $types['MOUSE']->id ?? $types->first()->id,
+                    'unit_id' => $ptikUnit->id,
+                    'lab_id' => $lab->id,
+                ]);
+            }
         }
     }
 }

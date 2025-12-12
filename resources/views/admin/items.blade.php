@@ -849,31 +849,41 @@
                                 {{-- ⬇️ BAGIAN ATTACH SEKARANG DI SINI (DALAM BODY) ⬇️ --}}
                                 <div class="bg-blue-50 rounded-xl shadow-sm border border-blue-200 p-6 md:p-8 mt-6">
                                     <div class="flex items-center mb-4">
-                                        <input type="checkbox" id="attach_to_desk_checkbox"
+                                        <input type="checkbox" id="attach_to_lab_checkbox"
                                             class="h-4 w-4 cursor-pointer text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                        <label for="attach_to_desk_checkbox"
+                                        <label for="attach_to_lab_checkbox"
                                             class="ml-2 block cursor-pointer text-sm font-semibold text-gray-700">
-                                            Pasang Set ke Meja Sekarang
+                                            Pasang Set ke Lab
                                         </label>
                                     </div>
-                                    <div id="desk-attachment-section" class="hidden space-y-4">
+                                    <div id="lab-selection-section" class="hidden space-y-4">
                                         <div>
                                             <label for="set-lab-selector"
                                                 class="block text-sm font-semibold text-gray-700 mb-2">Pilih
                                                 Laboratorium</label>
                                             <select id="set-lab-selector" placeholder="Pilih Lab..."></select>
                                         </div>
-                                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                                            <p class="text-sm text-yellow-800">
-                                                <strong>Instruksi:</strong> Pilih 1 meja. Semua item dalam set ini akan dipasang ke
-                                                meja tersebut.
-                                            </p>
-                                            <div id="set-selected-desks-display" class="mt-2 text-sm font-bold text-indigo-600">
-                                                Belum ada meja dipilih.
-                                            </div>
+                                        <div class="flex items-center mt-4">
+                                            <input type="checkbox" id="attach_to_desk_checkbox"
+                                                class="h-4 w-4 cursor-pointer text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                            <label for="attach_to_desk_checkbox"
+                                                class="ml-2 block cursor-pointer text-sm font-semibold text-gray-700">
+                                                Pasang Set ke Meja
+                                            </label>
                                         </div>
-                                        <div id="set-desk-grid-container">
-                                            <div class="text-center py-8 text-gray-500">Pilih lab untuk melihat denah.</div>
+                                        <div id="desk-attachment-section" class="hidden space-y-4">
+                                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                                <p class="text-sm text-yellow-800">
+                                                    <strong>Instruksi:</strong> Pilih 1 meja. Semua item dalam set ini akan dipasang ke
+                                                    meja tersebut.
+                                                </p>
+                                                <div id="set-selected-desks-display" class="mt-2 text-sm font-bold text-indigo-600">
+                                                    Belum ada meja dipilih.
+                                                </div>
+                                            </div>
+                                            <div id="set-desk-grid-container">
+                                                <div class="text-center py-8 text-gray-500">Pilih lab untuk melihat denah.</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1180,14 +1190,31 @@
         @endsection
 
     @section('script')
-        <script>
-            window.attachComponentToItem = attachComponentToItem;
-            window.detachComponentFromItem = detachComponentFromItem;
-        </script>
         {{-- Style untuk TomSelect --}}
         <style>
             .swal2-input {
                 padding: 0 0.75rem !important;
+            }
+
+            /* DataTable Styling */
+            #items-datatable table,
+            #components-datatable table {
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+            }
+
+            #items-datatable table th,
+            #items-datatable table td,
+            #components-datatable table th,
+            #components-datatable table td {
+                border: 1px solid #e5e7eb !important;
+            }
+
+            #items-datatable table thead th,
+            #components-datatable table thead th {
+                background-color: #f9fafb !important;
+                font-weight: 600 !important;
+                border-bottom: 2px solid #d1d5db !important;
             }
 
             .filter-select .ts-control {
@@ -1223,9 +1250,6 @@
         {{-- ========================================================= --}}
         <script>
             document.getElementById('items').classList.add('bg-slate-100');
-
-            initializeManageComponentsModal();
-            initializeClientSideFiltering();
 
             // Data dari Blade
             const allTypes = @json($types);
@@ -1777,36 +1801,39 @@
             }
 
             async function submitCreateSetForm(submitBtn, form) {
-                const attachCheckbox = document.getElementById('attach_to_desk_checkbox');
-                let shouldAttach = false;
+                const attachLabCheckbox = document.getElementById('attach_to_lab_checkbox');
+                const attachDeskCheckbox = document.getElementById('attach_to_desk_checkbox');
 
-                // Validasi Meja jika dicentang
-                if (attachCheckbox.checked) {
-                    if (setSelectedDeskLocations.length !== 1) {
-                        Swal.fire('Validasi Gagal', 'Anda harus memilih TEPAT 1 MEJA untuk memasang set ini.', 'warning');
-                        return;
-                    }
-                    if (!tomSelectSetLab.getValue()) {
-                        Swal.fire('Validasi Gagal', 'Silakan pilih laboratorium terlebih dahulu.', 'warning');
-                        return;
-                    }
-                    shouldAttach = true;
+                if (attachLabCheckbox.checked && !tomSelectSetLab.getValue()) {
+                    Swal.fire('Validasi Gagal', 'Silakan pilih laboratorium terlebih dahulu.', 'warning');
+                    return;
+                }
+                
+                if (attachDeskCheckbox.checked && setSelectedDeskLocations.length !== 1) {
+                    Swal.fire('Validasi Gagal', 'Anda harus memilih TEPAT 1 MEJA untuk memasang set ini.', 'warning');
+                    return;
                 }
 
                 showLoading('Memproses...', 'Sedang membuat Set Item...');
                 submitBtn.disabled = true;
 
-                // 1. SIAPKAN DATA CREATE SET
                 const formData = {
                     set_name: document.getElementById('set_name').value,
                     set_note: document.getElementById('set_note').value,
                     _token: form.querySelector('input[name="_token"]').value,
                     items: [],
-                    // Kita TIDAK mengirim data attach ke endpoint Create, karena kita akan menembak route terpisah
                     set_count: 0
                 };
-
-                // (Logika loop items tetap sama seperti sebelumnya)
+                
+                if (attachLabCheckbox.checked) {
+                    formData.lab_id = tomSelectSetLab.getValue();
+                    if (attachDeskCheckbox.checked) {
+                        formData.attach_to_desk = true;
+                        formData.desk_location = setSelectedDeskLocations[0];
+                    } else {
+                        formData.attach_to_lab = true;
+                    }
+                }
                 setItemTomInstances.forEach(itemInstance => {
                     const itemRow = itemInstance.row;
                     const itemData = {
@@ -1860,10 +1887,7 @@
                 formData.set_count = formData.items.length;
 
                 try {
-                    // ------------------------------------------------------------------
-                    // LANGKAH 1: Request ke Route Create Set
-                    // ------------------------------------------------------------------
-                    const createResponse = await fetch(form.dataset.action, {
+                    const response = await fetch(form.dataset.action, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1873,64 +1897,27 @@
                         body: JSON.stringify(formData)
                     });
 
-                    const createData = await createResponse.json();
+                    const data = await response.json();
 
-                    if (!createResponse.ok) {
-                        throw new Error(createData.message || 'Gagal membuat Set.');
-                    }
-
-                    // Ambil ID Set yang baru dibuat (Pastikan Backend return 'set_id')
-                    const newSetId = createData.set_id;
-
-                    // ------------------------------------------------------------------
-                    // LANGKAH 2: Request ke Route Attach Desks (Jika Dicentang)
-                    // ------------------------------------------------------------------
-                    if (shouldAttach && newSetId) {
-                        // Update loading message
-                        Swal.update({
-                            title: 'Memasang ke Meja...',
-                            text: 'Set berhasil dibuat, sedang memasang ke meja...'
-                        });
-
-                        const attachPayload = {
-                            lab_id: tomSelectSetLab.getValue(),
-                            desk_location: setSelectedDeskLocations[0], // String lokasi (misal "A1")
-                            _token: formData._token
-                        };
-
-                        const attachUrl = `/admin/sets/${newSetId}/attach-desks`; // Route spesifik yg diminta
-
-                        const attachResponse = await fetch(attachUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': formData._token
-                            },
-                            body: JSON.stringify(attachPayload)
-                        });
-
-                        const attachData = await attachResponse.json();
-
-                        if (!attachResponse.ok) {
-                            // Set terbuat, tapi gagal attach. Beri warning.
-                            throw new Error('Set berhasil dibuat, TETAPI gagal dipasang ke meja: ' + (attachData.message ||
-                                'Unknown error'));
+                    if (!response.ok) {
+                        if (response.status === 422) {
+                            throw new Error(data.message || 'Data tidak valid.');
                         }
+                        throw new Error(data.message || 'Terjadi kesalahan.');
                     }
 
                     hideLoading();
                     Swal.fire({
                         icon: 'success',
-                        title: 'Selesai!',
-                        text: 'Set Item berhasil dibuat' + (shouldAttach ? ' dan dipasang ke meja.' : '.'),
+                        title: 'Berhasil!',
+                        text: data.message,
                     }).then(() => {
                         location.reload();
                     });
 
                 } catch (error) {
                     hideLoading();
-                    Swal.fire('Terjadi Kesalahan', error.message, 'error');
+                    Swal.fire('Gagal Membuat Set', error.message, 'error');
                 } finally {
                     submitBtn.disabled = false;
                 }
@@ -1993,13 +1980,36 @@
                     await submitCreateSetForm(this, form);
                 });
 
-                const attachCheckbox = document.getElementById('attach_to_desk_checkbox');
+                const attachLabCheckbox = document.getElementById('attach_to_lab_checkbox');
+                const attachDeskCheckbox = document.getElementById('attach_to_desk_checkbox');
+                const labSection = document.getElementById('lab-selection-section');
                 const deskSection = document.getElementById('desk-attachment-section');
                 const setLabSelectorEl = document.getElementById('set-lab-selector');
-                attachCheckbox.addEventListener('change', function() {
+                
+                attachLabCheckbox.addEventListener('change', function() {
                     if (this.checked) {
-                        deskSection.classList.remove('hidden');
+                        labSection.classList.remove('hidden');
                         loadLabsForSetAttachment();
+                    } else {
+                        labSection.classList.add('hidden');
+                        attachDeskCheckbox.checked = false;
+                        deskSection.classList.add('hidden');
+                        setSelectedDeskLocations = [];
+                        updateSetSelectedDesksDisplay();
+                        if (tomSelectSetLab) tomSelectSetLab.clear();
+                    }
+                });
+                
+                attachDeskCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        const selectedLab = tomSelectSetLab.getValue();
+                        if (!selectedLab) {
+                            Swal.fire('Perhatian', 'Pilih laboratorium terlebih dahulu.', 'warning');
+                            this.checked = false;
+                            return;
+                        }
+                        deskSection.classList.remove('hidden');
+                        fetchDeskMapForSet(selectedLab);
                     } else {
                         deskSection.classList.add('hidden');
                         setSelectedDeskLocations = [];
@@ -2014,7 +2024,9 @@
                         if (labId) {
                             setSelectedDeskLocations = [];
                             updateSetSelectedDesksDisplay();
-                            fetchDeskMapForSet(labId);
+                            if (attachDeskCheckbox.checked) {
+                                fetchDeskMapForSet(labId);
+                            }
                         }
                     }
                 });
@@ -2187,9 +2199,15 @@
 
             async function submitCreateSetForm(submitBtn, form) {
                 const attachCheckbox = document.getElementById('attach_to_desk_checkbox');
+                const attachLabCheckbox = document.getElementById('attach_to_lab_checkbox');
 
                 if (attachCheckbox.checked && setSelectedDeskLocations.length !== 1) {
                     Swal.fire('Error', 'Anda harus memilih 1 meja untuk memasang set.', 'error');
+                    return;
+                }
+                
+                if (attachLabCheckbox.checked && !tomSelectSetLab.getValue()) {
+                    Swal.fire('Error', 'Pilih laboratorium untuk menyimpan set.', 'error');
                     return;
                 }
 
@@ -2208,6 +2226,9 @@
                     formData.attach_to_desk = true;
                     formData.lab_id = tomSelectSetLab.getValue();
                     formData.desk_location = setSelectedDeskLocations[0];
+                } else if (attachLabCheckbox.checked) {
+                    formData.attach_to_lab = true;
+                    formData.lab_id = tomSelectSetLab.getValue();
                 }
 
                 setItemTomInstances.forEach(itemInstance => {
@@ -2687,7 +2708,7 @@
 
                 // 1. Inisialisasi TomSelect Dasar
                 ['lab', 'type', 'status', 'condition'].forEach(key => {
-                    if (els[key]) {
+                    if (els[key] && !els[key].tomselect) {
                         tomSelects[key] = new TomSelect(els[key], {
                             plugins: ['clear_button'],
                             onChange: filterTable // Panggil filter setiap kali berubah
@@ -2696,7 +2717,7 @@
                 });
 
                 // 2. Inisialisasi TomSelect untuk Spesifikasi (Dependent Dropdown)
-                if (els.specVal) {
+                if (els.specVal && !els.specVal.tomselect) {
                     tomSelects.specVal = new TomSelect(els.specVal, {
                         plugins: ['clear_button'],
                         onChange: filterTable
@@ -2704,7 +2725,7 @@
                     tomSelects.specVal.disable(); // Disable value dulu sebelum attribute dipilih
                 }
 
-                if (els.specAttr) {
+                if (els.specAttr && !els.specAttr.tomselect) {
                     tomSelects.specAttr = new TomSelect(els.specAttr, {
                         plugins: ['clear_button'],
                         onChange: function(attrId) {
@@ -3909,7 +3930,7 @@
                             `<span class="text-xs text-indigo-100 mt-1 inline-block select-none font-semibold">Terpilih</span>`;
                     } else {
                         // Tampilkan kondisi meja jika tidak dipilih
-                        let condText = (desk.overall_condition === 'item_kosong') ? 'Kosong' : 'Terisi';
+                        let condText = (desk.overall_condition === 'item_kosong') ? 'Kosong' : 'Terisi Lengkap';
                         html += `<span class="text-xs text-gray-500 mt-1 inline-block select-none">${condText}</span>`;
                     }
 
@@ -3987,12 +4008,15 @@
 
                 try {
                     let itemDataTable = new te.Datatable(document.getElementById('items-datatable'), {
-                        search: true,
-                        bordered: true,
+                        hover: true,
                         striped: true,
+                        bordered: true,
+                        borderless: false,
+                        borderColor: 'border-gray-300',
                         noFoundMessage: 'Tidak ada Item yang tercatat di Inventaris.',
                         loading: false,
                         fixedHeader: true,
+                        maxHeight: 600,
                         pagination: true,
                         entries: 10,
                         entriesOptions: [5, 10, 25, 50, 100],
@@ -4002,9 +4026,12 @@
                         hover: true,
                         striped: true,
                         bordered: true,
+                        borderless: false,
+                        borderColor: 'border-gray-300',
                         noFoundMessage: 'Tidak ada Component yang tercatat di Inventaris.',
                         loading: false,
                         fixedHeader: true,
+                        maxHeight: 600,
                         pagination: true,
                         entries: 10,
                         entriesOptions: [5, 10, 25, 50, 100],
@@ -4072,6 +4099,10 @@
                         document.body.style.overflow = 'hidden';
                     });
                 }
+
+                // Initialize functions
+                initializeManageComponentsModal();
+                initializeClientSideFiltering();
             });
         </script>
     @endsection

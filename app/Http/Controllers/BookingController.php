@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Labs;
+use App\Models\Items;
 use App\Models\Period;
 use App\Models\Booking;
-use App\Models\Items;
-use Illuminate\Auth\Events\Login;
+use App\Models\Components;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,19 @@ class BookingController extends Controller
 
     public function getBookingDetails($id)
     {
-        $booking = Booking::with(['borrower', 'supervisor', 'approver', 'period', 'bookings_items.bookable'])->find($id);
+        $booking = Booking::with([
+            'borrower',
+            'supervisor',
+            'approver',
+            'period',
+            'bookings_items.bookable' => function ($morphTo) {
+                $morphTo->morphWith([
+                    Items::class => ['type', 'desk.lab', 'lab', 'specSetValues.specAttributes', 'components.type', 'components.specSetValues.specAttribute'],
+                    Components::class => ['type', 'item.desk.lab', 'lab', 'specSetValues.specAttributes'],
+                    Labs::class => []
+                ]);
+            }
+        ])->find($id);
         if (!$booking) {
             return response()->json([
                 'success' => false,
@@ -59,6 +72,9 @@ class BookingController extends Controller
             return $this->storeItemsBooking($request);
         }
 
+        $period = $this->validatePeriod();
+        if (!$period['success']) return $period['response'];
+
         $data = $request->only([
             'bookable_type',
             'bookable_id',
@@ -75,49 +91,19 @@ class BookingController extends Controller
             'type',
         ]);
         $data['borrower_id'] = Auth::user()->id;
-        $period = Period::getCurrentPeriod();
-        if (!$period) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tidak ada periode yang aktif, Mohon hubungi Admin.',
-            ], 404);
-        }
-        $data['period_id'] = $period->id;
+        $data['period_id'] = $period['data']->id;
+
         $valid = Validator::make($data, [
             'bookable_type' => 'required|in:item,component,lab',
             'bookable_id' => [
                 'required',
                 'uuid',
                 function ($attribute, $value, $fail) use ($data) {
-                    $type = $data['bookable_type'] . 's'; // item, component, lab
-                    $table = strtolower($type);
-
-                    if (!DB::table($table)->where('id', $value)->exists()) {
+                    $type = $data['bookable_type'] . 's';
+                    if (!DB::table(strtolower($type))->where('id', $value)->exists()) {
                         return $fail(ucfirst($type) . ' yang dipilih tidak ditemukan.');
                     }
-
-                    // 2. Cek apakah Barang/Lab SEDANG DIPINJAM di jam tersebut (Overlap Check)
-                    $startRequest = $data['borrowed_at'];
-                    $endRequest   = $data['return_deadline_at'];
-                    $modelType    = 'App\\Models\\' . ucfirst($type); // Sesuaikan dengan format penyimpanan di DB
-
-                    // Query cek tabrakan jadwal
-                    $isBooked = DB::table('bookings_items')
-                        ->join('bookings', 'bookings_items.booking_id', '=', 'bookings.id')
-                        ->where('bookings_items.bookable_type', $modelType)
-                        ->where('bookings_items.bookable_id', $value)
-                        ->where(function ($query) use ($startRequest, $endRequest) {
-                            // Logika Overlap:
-                            // (Start Peminjaman Lama < End Request Baru) AND (End Peminjaman Lama > Start Request Baru)
-                            $query->where('bookings.borrowed_at', '<', $endRequest)
-                                ->where('bookings.return_deadline_at', '>', $startRequest);
-                        })
-                        // PENTING: Filter status. Jangan hitung booking yang sudah ditolak atau sudah dikembalikan.
-                        // Sesuaikan status ini dengan enum/state di aplikasi Anda.
-                        ->whereNotIn('bookings.approved', [false, true])
-                        ->exists();
-
-                    if ($isBooked) {
+                    if ($this->isBookableConflict('App\\Models\\' . ucfirst($type), $value, $data['borrowed_at'], $data['return_deadline_at'])) {
                         $fail('Maaf, ' . ucfirst($type) . ' ini sudah dibooking/sedang dipinjam pada rentang waktu tersebut.');
                     }
                 },
@@ -125,63 +111,31 @@ class BookingController extends Controller
             'event_name' => 'required|string|max:255',
             'event_started_at' => 'required|date|after:now',
             'event_ended_at' => 'required|date|after:event_started_at',
-
             'thesis_title' => 'nullable|string|max:255',
             'supervisor_id' => 'nullable|uuid|exists:users,id',
             'attendee_count' => 'nullable|integer|min:1',
-
             'phone_number' => 'required|string|regex:/^\d{10,20}$/',
             'booking_detail' => 'nullable|string|max:750',
             'borrowed_at' => 'required|date|before:event_ended_at',
             'return_deadline_at' => 'required|date|after:borrowed_at',
             'type' => 'required|in:0,1,2',
-        ], [
-            'bookable_type.required' => 'Tipe peminjaman harus diisi.',
-            'bookable_type.in' => 'Tipe peminjaman yang dipilih tidak valid, harus berupa Item, Component, atau Lab.',
-            'bookable_id.required' => 'Item/Component/Lab yang dipilih harus diisi.',
-            'bookable_id.uuid' => 'ID yang dipilih tidak valid.',
-            'event_name.required' => 'Nama kegiatan harus diisi.',
-            'event_name.max' => 'Nama kegiatan maksimal 255 karakter.',
-            'event_started_at.required' => 'Waktu mulai kegiatan harus diisi.',
-            'event_started_at.date' => 'Waktu mulai kegiatan tidak valid.',
-            'event_started_at.after' => 'Waktu mulai kegiatan harus lebih besar dari waktu sekarang ini.',
-            'event_ended_at.required' => 'Waktu selesai kegiatan harus diisi.',
-            'event_ended_at.date' => 'Waktu selesai kegiatan tidak valid.',
-            'event_ended_at.after' => 'Waktu selesai kegiatan harus lebih besar dari waktu mulai kegiatan.',
-            'thesis_title.max' => 'Judul skripsi maksimal 255 karakter.',
-            'supervisor_id.uuid' => 'ID dosen pembimbing tidak valid.',
-            'supervisor_id.exists' => 'Dosen pembimbing yang dipilih tidak ditemukan.',
-            'attendee_count.integer' => 'Jumlah peserta harus berupa angka.',
-            'attendee_count.min' => 'Jumlah peserta minimal 1 orang.',
-            'phone_number.required' => 'Nomor WhatsApp harus diisi.',
-            'phone_number.regex' => 'Nomor WhatsApp tidak valid, harus berupa angka dengan panjang antara 10 hingga 20 digit.',
-            'booking_detail.max' => 'Detail peminjaman maksimal 750 karakter.',
-            'borrowed_at.required' => 'Waktu mulai peminjaman harus diisi.',
-            'borrowed_at.date' => 'Waktu mulai peminjaman tidak valid.',
-            'borrowed_at.before' => 'Waktu mengambil peminjaman harus sebelum waktu kegiatan berakhir.',
-            'return_deadline_at.required' => 'Batas waktu pengembalian harus diisi.',
-            'return_deadline_at.date' => 'Batas waktu pengembalian tidak valid.',
-            'return_deadline_at.after' => 'Batas waktu pengembalian harus lebih besar dari waktu mengambil peminjaman.',
-            'type.required' => 'Tipe peminjaman harus diisi.',
-            'type.in' => 'Tipe peminjaman yang dipilih tidak valid, harus dipilih antara Onsite, Remote, atau Keluar Lab.',
-        ]);
+        ], $this->getValidationMessages());
 
         if ($valid->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $valid->errors()->first(),
-            ]);
+            return response()->json(['success' => false, 'message' => $valid->errors()->first()]);
         }
+
         try {
             DB::beginTransaction();
             $booking = Booking::create($data);
+
             if ($data['bookable_type'] === 'lab') {
-                $lab = Labs::where('id', $data['bookable_id'])->first();
+                $lab = Labs::find($data['bookable_id']);
                 if ($lab->capacity < $data['attendee_count']) {
-                    throw new \Exception('Kapasitas lab tidak mencukupi untuk jumlah peserta yang diinginkan.');
+                    throw new \Exception('Kapasitas ' . $lab->name . ' tidak mencukupi untuk jumlah peserta yang diinginkan. Maksimal: ' . $lab->capacity . ' Orang.');
                 }
             }
-            // Simpan ke tabel pivot bookings_items
+
             $booking->bookings_items()->create([
                 'bookable_type' => 'App\\Models\\' . ucfirst($data['bookable_type'] . 's'),
                 'bookable_id' => $data['bookable_id'],
@@ -189,65 +143,98 @@ class BookingController extends Controller
             ]);
 
             DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'Permintaan peminjaman berhasil diajukan.',
-            ]);
+            return response()->json(['success' => true, 'message' => 'Permintaan peminjaman berhasil diajukan.']);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating booking: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat mengajukan permintaan peminjaman. Silakan coba lagi.',
-            ]);
+            return response()->json(['success' => false, 'message' => $e->getMessage() ?? 'Terjadi kesalahan saat mengajukan permintaan peminjaman. Silakan coba lagi.']);
         }
     }
 
     private function storeSetBooking(Request $request)
     {
-        $request->validate([
+        $valid = Validator::make($request->all(), [
             'sets' => 'required|array|min:1',
             'sets.*.lab_id' => 'required|uuid|exists:labs,id',
             'sets.*.quantity' => 'required|integer|min:1',
+
             'event_name' => 'required|string|max:255',
             'event_started_at' => 'required|date|after:now',
             'event_ended_at' => 'required|date|after:event_started_at',
+
             'phone_number' => 'required|string',
             'borrowed_at' => 'required|date',
             'return_deadline_at' => 'required|date|after:borrowed_at',
+
             'type' => 'required|in:0,1,2',
+        ], [
+
+            // --- SETS ---
+            'sets.required' => 'Minimal satu set harus dipilih.',
+            'sets.array' => 'Format set tidak valid.',
+            'sets.min' => 'Minimal harus memilih satu set.',
+
+            'sets.*.lab_id.required' => 'Lab untuk setiap set harus diisi.',
+            'sets.*.lab_id.uuid' => 'ID lab tidak valid.',
+            'sets.*.lab_id.exists' => 'Lab yang dipilih tidak ditemukan.',
+
+            'sets.*.quantity.required' => 'Jumlah set harus diisi.',
+            'sets.*.quantity.integer' => 'Jumlah set harus berupa angka.',
+            'sets.*.quantity.min' => 'Jumlah set tidak boleh kurang dari 1.',
+
+            // --- EVENT INFO ---
+            'event_name.required' => 'Nama event wajib diisi.',
+            'event_name.string' => 'Nama event tidak valid.',
+            'event_name.max' => 'Nama event tidak boleh lebih dari 255 karakter.',
+
+            'event_started_at.required' => 'Waktu mulai event wajib diisi.',
+            'event_started_at.date' => 'Format waktu mulai event tidak valid.',
+            'event_started_at.after' => 'Waktu mulai event harus lebih dari waktu sekarang.',
+
+            'event_ended_at.required' => 'Waktu selesai event wajib diisi.',
+            'event_ended_at.date' => 'Format waktu selesai event tidak valid.',
+            'event_ended_at.after' => 'Waktu selesai event harus setelah waktu mulai.',
+
+            // --- PHONE ---
+            'phone_number.required' => 'Nomor telepon wajib diisi.',
+            'phone_number.string' => 'Format nomor telepon tidak valid.',
+
+            // --- BORROW DETAIL ---
+            'borrowed_at.required' => 'Tanggal peminjaman wajib diisi.',
+            'borrowed_at.date' => 'Format tanggal peminjaman tidak valid.',
+
+            'return_deadline_at.required' => 'Deadline pengembalian wajib diisi.',
+            'return_deadline_at.date' => 'Format deadline pengembalian tidak valid.',
+            'return_deadline_at.after' => 'Deadline pengembalian harus setelah tanggal peminjaman.',
+
+            // --- TYPE ---
+            'type.required' => 'Tipe peminjaman wajib dipilih.',
+            'type.in' => 'Tipe peminjaman tidak valid.',
         ]);
 
-        $period = Period::getCurrentPeriod();
-        if (!$period) {
-            return response()->json(['success' => false, 'message' => 'Periode tidak aktif.'], 404);
+
+        if ($valid->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $valid->errors()->first(),
+            ]);
         }
+
+        $period = $this->validatePeriod();
+        if (!$period['success']) return $period['response'];
 
         DB::beginTransaction();
         try {
-            $booking = Booking::create([
-                'borrower_id' => Auth::user()->id,
-                'period_id' => $period->id,
-                'event_name' => $request->event_name,
-                'event_started_at' => $request->event_started_at,
-                'event_ended_at' => $request->event_ended_at,
-                'phone_number' => $request->phone_number,
-                'borrowed_at' => $request->borrowed_at,
-                'return_deadline_at' => $request->return_deadline_at,
-                'booking_detail' => $request->booking_detail,
-                'thesis_title' => $request->thesis_title,
-                'supervisor_id' => $request->supervisor_id,
-                'attendee_count' => $request->attendee_count,
-            ]);
+            $booking = $this->createBooking($request, $period['data']->id);
 
-            $requiredTypes = ['Monitor', 'Mouse', 'Keyboard', 'CPU'];
+            $requiredTypes = ['MONITOR', 'MOUSE', 'KEYBOARD', 'CPU'];
 
             foreach ($request->sets as $setRequest) {
                 $lab = Labs::find($setRequest['lab_id']);
-                $desks = $lab->desks()->with(['items.type', 'items.repairs'])->get();
+                $availableSets = [];
 
-                $availableDesks = [];
+                // Check desks
+                $desks = $lab->desks()->with(['items.type', 'items.repairs'])->get();
                 foreach ($desks as $desk) {
                     $items = $desk->items;
                     if ($items->count() < 4) continue;
@@ -258,30 +245,67 @@ class BookingController extends Controller
                     if (!$items->every(fn($i) => $i->condition == 1)) continue;
                     if ($items->some(fn($i) => $i->repairs->isNotEmpty())) continue;
 
-                    $hasConflict = $items->some(function ($item) use ($request) {
-                        return DB::table('bookings_items')
-                            ->join('bookings', 'bookings_items.booking_id', '=', 'bookings.id')
-                            ->where('bookings_items.bookable_type', 'App\\Models\\Items')
-                            ->where('bookings_items.bookable_id', $item->id)
-                            ->where('bookings.borrowed_at', '<', $request->return_deadline_at)
-                            ->where('bookings.return_deadline_at', '>', $request->borrowed_at)
-                            ->where('bookings.approved', true)
-                            ->exists();
-                    });
+                    $hasConflict = $items->some(fn($item) => $this->isBookableConflict('App\\Models\\Items', $item->id, $request->borrowed_at, $request->return_deadline_at, true));
 
                     if (!$hasConflict) {
-                        $availableDesks[] = $desk;
+                        $availableSets[] = ['type' => 'desk', 'items' => $items];
                     }
 
-                    if (count($availableDesks) >= $setRequest['quantity']) break;
+                    if (count($availableSets) >= $setRequest['quantity']) break;
                 }
 
-                if (count($availableDesks) < $setRequest['quantity']) {
-                    throw new \Exception("Lab {$lab->name} tidak memiliki {$setRequest['quantity']} set lengkap yang tersedia.");
+                // Check lab storage if not enough
+                if (count($availableSets) < $setRequest['quantity']) {
+                    $storageItems = $lab->items()->with(['type', 'repairs'])
+                        ->whereIn('type_id', function ($q) use ($requiredTypes) {
+                            $q->select('id')->from('types')->whereIn('name', $requiredTypes);
+                        })
+                        ->where('condition', 1)
+                        ->whereDoesntHave('repairs')
+                        ->get();
+
+                    $grouped = $storageItems->groupBy('type.name');
+                    $typeCounts = [];
+
+                    foreach ($requiredTypes as $type) {
+                        $availableCount = 0;
+                        if (isset($grouped[$type])) {
+                            foreach ($grouped[$type] as $item) {
+                                if (!$this->isBookableConflict('App\\Models\\Items', $item->id, $request->borrowed_at, $request->return_deadline_at, true)) {
+                                    $availableCount++;
+                                }
+                            }
+                        }
+                        $typeCounts[$type] = $availableCount;
+                    }
+
+                    $maxStorageSets = empty($typeCounts) ? 0 : min($typeCounts);
+                    $needed = min($maxStorageSets, $setRequest['quantity'] - count($availableSets));
+
+                    $usedIds = [];
+                    for ($i = 0; $i < $needed; $i++) {
+                        $setItems = collect();
+                        foreach ($requiredTypes as $type) {
+                            foreach ($grouped[$type] as $item) {
+                                if (!in_array($item->id, $usedIds) && !$this->isBookableConflict('App\\Models\\Items', $item->id, $request->borrowed_at, $request->return_deadline_at, true)) {
+                                    $setItems->push($item);
+                                    $usedIds[] = $item->id;
+                                    break;
+                                }
+                            }
+                        }
+                        if ($setItems->count() === 4) {
+                            $availableSets[] = ['type' => 'storage', 'items' => $setItems];
+                        }
+                    }
                 }
 
-                foreach (array_slice($availableDesks, 0, $setRequest['quantity']) as $desk) {
-                    foreach ($desk->items as $item) {
+                if (count($availableSets) < $setRequest['quantity']) {
+                    throw new \Exception("{$lab->name} tidak memiliki {$setRequest['quantity']} set PC Lengkap. Tersedia: " . count($availableSets) . " set.");
+                }
+
+                foreach (array_slice($availableSets, 0, $setRequest['quantity']) as $set) {
+                    foreach ($set['items'] as $item) {
                         $booking->bookings_items()->create([
                             'bookable_type' => 'App\\Models\\Items',
                             'bookable_id' => $item->id,
@@ -302,8 +326,10 @@ class BookingController extends Controller
     private function storeItemsBooking(Request $request)
     {
         $request->validate([
-            'items' => 'required|array|min:1',
+            'items' => 'nullable|array',
             'items.*' => 'required|uuid|exists:items,id',
+            'components' => 'nullable|array',
+            'components.*' => 'required|uuid|exists:components,id',
             'event_name' => 'required|string|max:255',
             'event_started_at' => 'required|date|after:now',
             'event_ended_at' => 'required|date|after:event_started_at',
@@ -313,57 +339,59 @@ class BookingController extends Controller
             'type' => 'required|in:0,1,2',
         ]);
 
-        $period = Period::getCurrentPeriod();
-        if (!$period) {
-            return response()->json(['success' => false, 'message' => 'Periode tidak aktif.'], 404);
+        if (empty($request->items) && empty($request->components)) {
+            return response()->json(['success' => false, 'message' => 'Minimal harus ada 1 item atau component yang dipilih.'], 422);
         }
+
+        $period = $this->validatePeriod();
+        if (!$period['success']) return $period['response'];
 
         DB::beginTransaction();
         try {
-            $booking = Booking::create([
-                'borrower_id' => Auth::user()->id,
-                'period_id' => $period->id,
-                'event_name' => $request->event_name,
-                'event_started_at' => $request->event_started_at,
-                'event_ended_at' => $request->event_ended_at,
-                'phone_number' => $request->phone_number,
-                'borrowed_at' => $request->borrowed_at,
-                'return_deadline_at' => $request->return_deadline_at,
-                'booking_detail' => $request->booking_detail,
-                'thesis_title' => $request->thesis_title,
-                'supervisor_id' => $request->supervisor_id,
-                'attendee_count' => $request->attendee_count,
-            ]);
+            $booking = $this->createBooking($request, $period['data']->id);
 
-            foreach ($request->items as $itemId) {
-                $item = Items::find($itemId);
+            if (!empty($request->items)) {
+                foreach ($request->items as $itemId) {
+                    $item = Items::find($itemId);
 
-                if ($item->condition != 1) {
-                    throw new \Exception("Item {$item->name} tidak dalam kondisi baik.");
+                    if ($item->condition != 1) {
+                        throw new \Exception("Item {$item->name} tidak dalam kondisi baik.");
+                    }
+
+                    if ($item->repairs->isNotEmpty()) {
+                        throw new \Exception("Item {$item->name} sedang dalam perbaikan.");
+                    }
+
+                    if ($this->isBookableConflict('App\\Models\\Items', $itemId, $request->borrowed_at, $request->return_deadline_at, true)) {
+                        throw new \Exception("Item {$item->name} sudah dibooking pada waktu tersebut.");
+                    }
+
+                    $booking->bookings_items()->create([
+                        'bookable_type' => 'App\\Models\\Items',
+                        'bookable_id' => $itemId,
+                        'type' => $request->type
+                    ]);
                 }
+            }
 
-                if ($item->repairs->isNotEmpty()) {
-                    throw new \Exception("Item {$item->name} sedang dalam perbaikan.");
+            if (!empty($request->components)) {
+                foreach ($request->components as $componentId) {
+                    $component = \App\Models\Components::find($componentId);
+
+                    if ($component->condition != 1) {
+                        throw new \Exception("Component {$component->name} tidak dalam kondisi baik.");
+                    }
+
+                    if ($this->isBookableConflict('App\\Models\\Components', $componentId, $request->borrowed_at, $request->return_deadline_at, true)) {
+                        throw new \Exception("Component {$component->name} sudah dibooking pada waktu tersebut.");
+                    }
+
+                    $booking->bookings_items()->create([
+                        'bookable_type' => 'App\\Models\\Components',
+                        'bookable_id' => $componentId,
+                        'type' => $request->type
+                    ]);
                 }
-
-                $isBooked = DB::table('bookings_items')
-                    ->join('bookings', 'bookings_items.booking_id', '=', 'bookings.id')
-                    ->where('bookings_items.bookable_type', 'App\\Models\\Items')
-                    ->where('bookings_items.bookable_id', $itemId)
-                    ->where('bookings.borrowed_at', '<', $request->return_deadline_at)
-                    ->where('bookings.return_deadline_at', '>', $request->borrowed_at)
-                    ->where('bookings.approved', true)
-                    ->exists();
-
-                if ($isBooked) {
-                    throw new \Exception("Item {$item->name} sudah dibooking pada waktu tersebut.");
-                }
-
-                $booking->bookings_items()->create([
-                    'bookable_type' => 'App\\Models\\Items',
-                    'bookable_id' => $itemId,
-                    'type' => $request->type
-                ]);
             }
 
             DB::commit();
@@ -529,5 +557,87 @@ class BookingController extends Controller
             ->get();
 
         return view('admin.bookings', compact('bookings'));
+    }
+
+    private function validatePeriod()
+    {
+        $period = Period::getCurrentPeriod();
+        if (!$period) {
+            return [
+                'success' => false,
+                'response' => response()->json(['success' => false, 'message' => 'Tidak ada periode yang aktif, Mohon hubungi Admin.'], 404)
+            ];
+        }
+        return ['success' => true, 'data' => $period];
+    }
+
+    private function createBooking(Request $request, $periodId)
+    {
+        return Booking::create([
+            'borrower_id' => Auth::user()->id,
+            'period_id' => $periodId,
+            'event_name' => $request->event_name,
+            'event_started_at' => $request->event_started_at,
+            'event_ended_at' => $request->event_ended_at,
+            'phone_number' => $request->phone_number,
+            'borrowed_at' => $request->borrowed_at,
+            'return_deadline_at' => $request->return_deadline_at,
+            'booking_detail' => $request->booking_detail,
+            'thesis_title' => $request->thesis_title,
+            'supervisor_id' => $request->supervisor_id,
+            'attendee_count' => $request->attendee_count,
+        ]);
+    }
+
+    private function isBookableConflict($modelType, $bookableId, $borrowedAt, $returnDeadlineAt, $onlyApproved = false)
+    {
+        $query = DB::table('bookings_items')
+            ->join('bookings', 'bookings_items.booking_id', '=', 'bookings.id')
+            ->where('bookings_items.bookable_type', $modelType)
+            ->where('bookings_items.bookable_id', $bookableId)
+            ->where('bookings.borrowed_at', '<', $returnDeadlineAt)
+            ->where('bookings.return_deadline_at', '>', $borrowedAt);
+
+        if ($onlyApproved) {
+            $query->where('bookings.approved', true);
+        } else {
+            $query->whereNotIn('bookings.approved', [false, true]);
+        }
+
+        return $query->exists();
+    }
+
+    private function getValidationMessages()
+    {
+        return [
+            'bookable_type.required' => 'Tipe peminjaman harus diisi.',
+            'bookable_type.in' => 'Tipe peminjaman yang dipilih tidak valid, harus berupa Item, Component, atau Lab.',
+            'bookable_id.required' => 'Item/Component/Lab yang dipilih harus diisi.',
+            'bookable_id.uuid' => 'ID yang dipilih tidak valid.',
+            'event_name.required' => 'Nama kegiatan harus diisi.',
+            'event_name.max' => 'Nama kegiatan maksimal 255 karakter.',
+            'event_started_at.required' => 'Waktu mulai kegiatan harus diisi.',
+            'event_started_at.date' => 'Waktu mulai kegiatan tidak valid.',
+            'event_started_at.after' => 'Waktu mulai kegiatan harus lebih besar dari waktu sekarang ini.',
+            'event_ended_at.required' => 'Waktu selesai kegiatan harus diisi.',
+            'event_ended_at.date' => 'Waktu selesai kegiatan tidak valid.',
+            'event_ended_at.after' => 'Waktu selesai kegiatan harus lebih besar dari waktu mulai kegiatan.',
+            'thesis_title.max' => 'Judul skripsi maksimal 255 karakter.',
+            'supervisor_id.uuid' => 'ID dosen pembimbing tidak valid.',
+            'supervisor_id.exists' => 'Dosen pembimbing yang dipilih tidak ditemukan.',
+            'attendee_count.integer' => 'Jumlah peserta harus berupa angka.',
+            'attendee_count.min' => 'Jumlah peserta minimal 1 orang.',
+            'phone_number.required' => 'Nomor WhatsApp harus diisi.',
+            'phone_number.regex' => 'Nomor WhatsApp tidak valid, harus berupa angka dengan panjang antara 10 hingga 20 digit.',
+            'booking_detail.max' => 'Detail peminjaman maksimal 750 karakter.',
+            'borrowed_at.required' => 'Waktu mulai peminjaman harus diisi.',
+            'borrowed_at.date' => 'Waktu mulai peminjaman tidak valid.',
+            'borrowed_at.before' => 'Waktu mengambil peminjaman harus sebelum waktu kegiatan berakhir.',
+            'return_deadline_at.required' => 'Batas waktu pengembalian harus diisi.',
+            'return_deadline_at.date' => 'Batas waktu pengembalian tidak valid.',
+            'return_deadline_at.after' => 'Batas waktu pengembalian harus lebih besar dari waktu mengambil peminjaman.',
+            'type.required' => 'Tipe peminjaman harus diisi.',
+            'type.in' => 'Tipe peminjaman yang dipilih tidak valid, harus dipilih antara Onsite, Remote, atau Keluar Lab.',
+        ];
     }
 }

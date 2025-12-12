@@ -394,6 +394,9 @@
 
             window.hideLayoutModal = () => {
                 if (layoutModal) {
+                    if (typeof destroyModalLenis === 'function') {
+                        destroyModalLenis();
+                    }
                     layoutModal.classList.add('hidden');
                     document.body.style.overflow = '';
                 }

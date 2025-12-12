@@ -182,7 +182,6 @@
 
 @section('scripts')
 <script>
-    // Simple Navbar Scroll Effect (Ubah shadow saat scroll)
     window.addEventListener('scroll', function() {
         const navbar = document.getElementById('navbar');
         if (window.scrollY > 50) {
@@ -193,5 +192,12 @@
             navbar.classList.remove('shadow-md', 'py-2');
         }
     });
+
+    if (window.location.hash) {
+        setTimeout(() => {
+            const target = document.querySelector(window.location.hash);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
 </script>
 @endsection

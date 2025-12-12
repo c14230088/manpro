@@ -1,18 +1,19 @@
 <?php
 
+use App\Models\Items;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SetController;
 use App\Http\Controllers\LabsController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\BookingController;
-use App\Models\Items;
 use App\Http\Controllers\DesksController;
 use App\Http\Controllers\ItemsController;
-use App\Http\Controllers\RepairController;
-use App\Http\Controllers\ComponentsController;
 use App\Http\Controllers\PeriodController;
-use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RepairController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SoftwareController;
+use App\Http\Controllers\ComponentsController;
+use App\Http\Controllers\PermissionController;
 
 Route::get('/', function () {
     return view('user.landing', ['title' => 'User | Landing Page']);
@@ -98,12 +99,12 @@ Route::middleware(['auth.permission'])->group(function () {
         Route::post('/softwares/{id}/delete', [SoftwareController::class, 'deleteSoftware'])->name('admin.softwares.delete');
 
         // Sets
-        Route::get('/sets', [\App\Http\Controllers\SetController::class, 'index'])->name('admin.sets');
-        Route::get('/sets/{set}/details', [\App\Http\Controllers\SetController::class, 'getSetDetails'])->name('admin.sets.details');
-        Route::post('/sets/{set}/attach-desks', [\App\Http\Controllers\SetController::class, 'attachSetToDesk'])->name('admin.sets.attachDesks');
-        Route::post('/sets/{set}/attach-lab', [\App\Http\Controllers\SetController::class, 'attachSetToLab'])->name('admin.sets.attachLab');
-        Route::post('/sets/{set}/detach-desks', [\App\Http\Controllers\SetController::class, 'detachSetFromDesks'])->name('admin.sets.detachDesks');
-        Route::post('/sets/{set}/detach-labs', [\App\Http\Controllers\SetController::class, 'detachSetFromLabs'])->name('admin.sets.detachLabs');
+        Route::get('/sets', [SetController::class, 'index'])->name('admin.sets');
+        Route::get('/sets/{set}/details', [SetController::class, 'getSetDetails'])->name('admin.sets.details');
+        Route::post('/sets/{set}/attach-desks', [SetController::class, 'attachSetToDesk'])->name('admin.sets.attachDesks');
+        Route::post('/sets/{set}/attach-lab', [SetController::class, 'attachSetToLab'])->name('admin.sets.attachLab');
+        Route::post('/sets/{set}/detach-desks', [SetController::class, 'detachSetFromDesks'])->name('admin.sets.detachDesks');
+        Route::post('/sets/{set}/detach-labs', [SetController::class, 'detachSetFromLabs'])->name('admin.sets.detachLabs');
 
         // RBAC
         // Permissions

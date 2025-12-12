@@ -16,8 +16,8 @@
         </a>
 
         <div class="hidden md:flex items-center space-x-8 font-medium text-sm">
-            <a href="#about" class="text-petra-darkgray hover:text-petra-blue transition-colors relative after:absolute after:bottom-[-5px] after:left-0 after:h-[2px] after:w-0 after:bg-petra-yellow after:transition-all hover:after:w-full">TENTANG</a>
-            <a href="#services" class="text-petra-darkgray hover:text-petra-blue transition-colors relative after:absolute after:bottom-[-5px] after:left-0 after:h-[2px] after:w-0 after:bg-petra-yellow after:transition-all hover:after:w-full">LAYANAN</a>
+            <a href="{{ route('user.landing') }}#about" class="text-petra-darkgray hover:text-petra-blue transition-colors relative after:absolute after:bottom-[-5px] after:left-0 after:h-[2px] after:w-0 after:bg-petra-yellow after:transition-all hover:after:w-full">TENTANG</a>
+            <a href="{{ route('user.landing') }}#services" class="text-petra-darkgray hover:text-petra-blue transition-colors relative after:absolute after:bottom-[-5px] after:left-0 after:h-[2px] after:w-0 after:bg-petra-yellow after:transition-all hover:after:w-full">LAYANAN</a>
 
             @guest
             <a href="{{ route('user.login') }}"
@@ -69,8 +69,8 @@
 
     <div id="mobile-menu" class="hidden md:hidden relative bg-white border-b border-gray-200 shadow-lg animate-fade-in-down">
         <div class="flex flex-col p-4 space-y-3 font-medium">
-            <a href="#about" class="text-petra-darkgray hover:text-petra-blue py-2 border-b border-gray-50">TENTANG</a>
-            <a href="#services" class="text-petra-darkgray hover:text-petra-blue py-2 border-b border-gray-50">LAYANAN</a>
+            <a href="{{ route('user.landing') }}#about" class="text-petra-darkgray hover:text-petra-blue py-2 border-b border-gray-50">TENTANG</a>
+            <a href="{{ route('user.landing') }}#services" class="text-petra-darkgray hover:text-petra-blue py-2 border-b border-gray-50">LAYANAN</a>
 
             @guest
             <a href="{{ route('user.login') }}" class="mt-2 w-full text-center px-5 py-3 rounded text-sm font-bold bg-petra-blue text-white hover:bg-petra-yellow hover:text-petra-blue transition-all shadow-sm">

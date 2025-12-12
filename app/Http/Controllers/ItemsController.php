@@ -52,7 +52,7 @@ class ItemsController extends Controller
 
     public function createItemSet(Request $request)
     {
-        $data = $request->only(['set_name', 'set_note', 'items', 'attach_to_desk', 'lab_id', 'desk_locations']);
+        $data = $request->only(['set_name', 'set_note', 'items', 'attach_to_desk', 'attach_to_lab', 'lab_id', 'desk_location']);
         $valid = Validator::make($data, [
             'set_name' => 'required|string|max:255',
             'set_note' => 'nullable|string',
@@ -61,11 +61,11 @@ class ItemsController extends Controller
             'items.*' => 'required|array',
 
             'attach_to_desk' => 'nullable|boolean',
+            'attach_to_lab' => 'nullable|boolean',
 
-            'lab_id' => 'required_if:attach_to_desk,true|uuid|exists:labs,id',
+            'lab_id' => 'required_if:attach_to_desk,true|required_if:attach_to_lab,true|uuid|exists:labs,id',
 
-            'desk_locations' => 'required_if:attach_to_desk,true|array|size:4',
-            'desk_locations.*' => 'required_if:attach_to_desk,true|string',
+            'desk_location' => 'required_if:attach_to_desk,true|string',
         ], [
             'set_name.required' => 'Nama Set wajib diisi.',
 
@@ -73,10 +73,9 @@ class ItemsController extends Controller
             'items.array' => 'Data item harus berupa array.',
             'items.size' => 'Set harus terdiri dari 4 item.',
 
-            'lab_id.required_if' => 'Lab harus dipilih jika ingin memasang set ke meja.',
+            'lab_id.required_if' => 'Lab harus dipilih.',
 
-            'desk_locations.required_if' => 'Lokasi meja harus dipilih.',
-            'desk_locations.size' => 'Harus memilih 4 lokasi meja untuk 4 item.',
+            'desk_location.required_if' => 'Lokasi meja harus dipilih.',
         ]);
 
         if ($valid->fails()) {
@@ -124,24 +123,32 @@ class ItemsController extends Controller
             }
 
             if ($request->filled('attach_to_desk') && $request->attach_to_desk) {
-                $deskLocations = $request->desk_locations;
+                $deskLocation = $request->desk_location;
                 $labId = $request->lab_id;
 
-                foreach ($createdItems as $index => $itemData) {
-                    $deskLocation = $deskLocations[$index];
+                $desk = DB::table('desks')
+                    ->where('lab_id', $labId)
+                    ->where('location', $deskLocation)
+                    ->first();
 
-                    $desk = DB::table('desks')
-                        ->where('lab_id', $labId)
-                        ->where('location', $deskLocation)
-                        ->first();
+                if (!$desk) {
+                    throw new \Exception("Meja {$deskLocation} tidak ditemukan di lab ini.");
+                }
 
-                    if (!$desk) {
-                        throw new \Exception("Meja {$deskLocation} tidak ditemukan di lab ini.");
-                    }
-
+                foreach ($createdItems as $itemData) {
                     $item = Items::find($itemData['id']);
                     if ($item) {
                         $item->desk_id = $desk->id;
+                        $item->save();
+                    }
+                }
+            } elseif ($request->filled('attach_to_lab') && $request->attach_to_lab) {
+                $labId = $request->lab_id;
+
+                foreach ($createdItems as $itemData) {
+                    $item = Items::find($itemData['id']);
+                    if ($item) {
+                        $item->lab_id = $labId;
                         $item->save();
                     }
                 }

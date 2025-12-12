@@ -315,26 +315,33 @@
                         {{-- Bagian Pasang ke Meja --}}
                         <div class="bg-blue-50 rounded-xl shadow-sm border border-blue-200 p-6">
                             <div class="flex items-center mb-4">
-                                <input type="checkbox" id="attach_to_desk_checkbox"
+                                <input type="checkbox" id="attach_to_lab_checkbox"
                                     class="h-4 w-4 cursor-pointer text-indigo-600 border-gray-300 rounded">
-                                <label for="attach_to_desk_checkbox"
-                                    class="ml-2 block cursor-pointer text-sm font-semibold text-gray-700">Pasang Set ke
-                                    Meja Sekarang</label>
+                                <label for="attach_to_lab_checkbox"
+                                    class="ml-2 block cursor-pointer text-sm font-semibold text-gray-700">Pasang Set ke Lab</label>
                             </div>
-                            <div id="desk-attachment-section" class="hidden space-y-4">
+                            <div id="lab-selection-section" class="hidden space-y-4">
                                 <div>
                                     <label for="set-lab-selector"
                                         class="block text-sm font-semibold text-gray-700 mb-2">Pilih Laboratorium</label>
                                     <select id="set-lab-selector" placeholder="Pilih Lab..."></select>
                                 </div>
-                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                                    <p class="text-sm text-yellow-800"><strong>Instruksi:</strong> Pilih 1 meja untuk
-                                        memasang semua item dalam set ini.</p>
-                                    <div id="set-selected-desks-display" class="mt-2 text-sm font-bold text-indigo-600">
-                                        Belum ada meja dipilih.</div>
+                                <div class="flex items-center mt-4">
+                                    <input type="checkbox" id="attach_to_desk_checkbox"
+                                        class="h-4 w-4 cursor-pointer text-indigo-600 border-gray-300 rounded">
+                                    <label for="attach_to_desk_checkbox"
+                                        class="ml-2 block cursor-pointer text-sm font-semibold text-gray-700">Pasang Set ke Meja</label>
                                 </div>
-                                <div id="set-desk-grid-container">
-                                    <div class="text-center py-8 text-gray-500">Pilih lab untuk melihat denah.</div>
+                                <div id="desk-attachment-section" class="hidden space-y-4">
+                                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                        <p class="text-sm text-yellow-800"><strong>Instruksi:</strong> Pilih 1 meja untuk
+                                            memasang semua item dalam set ini.</p>
+                                        <div id="set-selected-desks-display" class="mt-2 text-sm font-bold text-indigo-600">
+                                            Belum ada meja dipilih.</div>
+                                    </div>
+                                    <div id="set-desk-grid-container">
+                                        <div class="text-center py-8 text-gray-500">Pilih lab untuk melihat denah.</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -782,7 +789,7 @@
                         <svg class="w-8 h-8 mx-auto ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     </div>
                     <span class="font-bold text-lg text-gray-800 block select-none">${desk.location}</span>
-                    ${(hasRequiredType && !isSelected) ? '<span class="text-xs text-red-800 mt-1 inline-block select-none font-semibold">Sudah Terisi</span>' : ''}
+                    ${(hasRequiredType && !isSelected) ? '<span class="text-xs text-red-800 mt-1 inline-block select-none font-semibold">Sudah Terisi Lengkap</span>' : ''}
                     ${isSelected ? '<span class="text-sm text-indigo-700 mt-1 inline-block select-none font-bold uppercase">Terpilih</span>' : ''}
                 </div>
             </div>`;
@@ -805,8 +812,8 @@
                     // Logika Konfirmasi
                     if (hasRequired) {
                         const result = await Swal.fire({
-                            title: 'Meja Sudah Terisi',
-                            text: 'Meja ini sudah memiliki item. Yakin ingin menimpa/menambah di sini?',
+                            title: 'Meja Sudah Terisi Lengkap',
+                            text: 'Meja ini sudah memiliki semua set PC Lengkap. Yakin ingin menimpa/menambah di sini?',
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonText: 'Ya, Lanjutkan',
@@ -903,7 +910,9 @@
             const overlay = document.getElementById('create-set-modal-overlay');
             const openBtn = document.getElementById('open-create-set-modal-btn');
             const itemsContainer = document.getElementById('set-items-container');
-            const attachCheckbox = document.getElementById('attach_to_desk_checkbox');
+            const attachLabCheckbox = document.getElementById('attach_to_lab_checkbox');
+            const attachDeskCheckbox = document.getElementById('attach_to_desk_checkbox');
+            const labSection = document.getElementById('lab-selection-section');
             const deskSection = document.getElementById('desk-attachment-section');
             const setLabSelectorEl = document.getElementById('set-lab-selector');
             const prefilledTypes = ['Monitor', 'Mouse', 'CPU', 'Keyboard'];
@@ -942,10 +951,31 @@
             submitBtn.addEventListener('click', async function() {
                 await submitCreateSetForm(this, form);
             });
-            attachCheckbox.addEventListener('change', function() {
+            
+            attachLabCheckbox.addEventListener('change', function() {
                 if (this.checked) {
-                    deskSection.classList.remove('hidden');
+                    labSection.classList.remove('hidden');
                     loadLabsForSetAttachment();
+                } else {
+                    labSection.classList.add('hidden');
+                    attachDeskCheckbox.checked = false;
+                    deskSection.classList.add('hidden');
+                    setSelectedDeskLocations = [];
+                    updateSetSelectedDesksDisplay();
+                    if (tomSelectSetLab) tomSelectSetLab.clear();
+                }
+            });
+            
+            attachDeskCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    const selectedLab = tomSelectSetLab.getValue();
+                    if (!selectedLab) {
+                        Swal.fire('Perhatian', 'Pilih laboratorium terlebih dahulu.', 'warning');
+                        this.checked = false;
+                        return;
+                    }
+                    deskSection.classList.remove('hidden');
+                    fetchDeskMapForSet(selectedLab);
                 } else {
                     deskSection.classList.add('hidden');
                     setSelectedDeskLocations = [];
@@ -959,7 +989,9 @@
                     if (labId) {
                         setSelectedDeskLocations = [];
                         updateSetSelectedDesksDisplay();
-                        fetchDeskMapForSet(labId);
+                        if (attachDeskCheckbox.checked) {
+                            fetchDeskMapForSet(labId);
+                        }
                     }
                 }
             });
@@ -1187,8 +1219,15 @@
             return type ? type.id : null;
         }
         async function submitCreateSetForm(submitBtn, form) {
-            const attachCheckbox = document.getElementById('attach_to_desk_checkbox');
-            if (attachCheckbox.checked && setSelectedDeskLocations.length !== 1) {
+            const attachLabCheckbox = document.getElementById('attach_to_lab_checkbox');
+            const attachDeskCheckbox = document.getElementById('attach_to_desk_checkbox');
+            
+            if (attachLabCheckbox.checked && !tomSelectSetLab.getValue()) {
+                Swal.fire('Error', 'Pilih laboratorium terlebih dahulu.', 'error');
+                return;
+            }
+            
+            if (attachDeskCheckbox.checked && setSelectedDeskLocations.length !== 1) {
                 Swal.fire('Error', 'Anda harus memilih 1 meja untuk memasang set.', 'error');
                 return;
             }
@@ -1200,10 +1239,14 @@
                 _token: form.querySelector('input[name="_token"]').value,
                 items: []
             };
-            if (attachCheckbox.checked) {
-                formData.attach_to_desk = true;
+            if (attachLabCheckbox.checked) {
                 formData.lab_id = tomSelectSetLab.getValue();
-                formData.desk_location = setSelectedDeskLocations[0];
+                if (attachDeskCheckbox.checked) {
+                    formData.attach_to_desk = true;
+                    formData.desk_location = setSelectedDeskLocations[0];
+                } else {
+                    formData.attach_to_lab = true;
+                }
             }
             setItemTomInstances.forEach(itemInstance => {
                 const itemRow = itemInstance.row;
@@ -1350,7 +1393,7 @@
                 html +=
                     `<div data-desk-location="${desk.location}" data-has-required="${hasRequiredType}" style="grid-area: ${row} / ${col};" class="set-desk-item transition-all duration-200 flex flex-col items-center justify-center p-3 border-2 rounded-lg min-h-24 ${bgColorClass} ${cursorClass}">
                 <span class="font-bold text-lg block select-none">${desk.location}</span>
-                ${(hasRequiredType && !isSelected) ? '<span class="text-xs text-red-800 mt-1 inline-block select-none font-semibold">Sudah Terisi</span>' : ''}
+                ${(hasRequiredType && !isSelected) ? '<span class="text-xs text-red-800 mt-1 inline-block select-none font-semibold">Sudah Terisi Lengkap</span>' : ''}
                 ${isSelected ? '<span class="text-xs text-indigo-700 mt-1 inline-block select-none font-bold uppercase">Terpilih</span>' : ''}
             </div>`;
             });
@@ -1370,8 +1413,8 @@
 
                     if (hasRequired) {
                         const result = await Swal.fire({
-                            title: 'Meja Sudah Terisi',
-                            text: 'Meja ini sudah memiliki item. Yakin ingin melanjutkan?',
+                            title: 'Meja Sudah Terisi Lengkap',
+                            text: 'Meja ini sudah memiliki semua set PC Lengkap. Yakin ingin melanjutkan?',
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonText: 'Ya, Lanjutkan',
