@@ -14,6 +14,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SoftwareController;
 use App\Http\Controllers\ComponentsController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\HistoryController;
 
 Route::get('/', function () {
     return view('user.landing', ['title' => 'User | Landing Page']);
@@ -68,7 +69,7 @@ Route::middleware(['auth.permission'])->group(function () {
         Route::post('/components/{component}/attach-lab/{lab}', [ComponentsController::class, 'attachToLab'])->name('admin.components.attachToLab');
         Route::post('/components/{component}/detach-lab', [ComponentsController::class, 'detachFromLab'])->name('admin.components.detachFromLab');
         Route::post('/components/{component}/complete-repair', [ComponentsController::class, 'completeRepairFromComponent'])->name('admin.components.completeRepair');
-        
+
         // Manage components
         Route::get('/items/{item}/available-components', [ItemsController::class, 'getAvailableComponents'])->name('admin.items.availableComponents');
         Route::post('/items/{item}/attach-component/{component}', [ItemsController::class, 'attachComponent'])->name('admin.items.attachComponent');
@@ -79,7 +80,7 @@ Route::middleware(['auth.permission'])->group(function () {
         Route::get('/repairs/view', [RepairController::class, 'viewRepairs'])->name('admin.repairs');
         Route::patch('/repairs/{repair}/status', [RepairController::class, 'updateRepairStatus'])->name('admin.repairs.updateStatus');
         Route::post('/item/items/repair', [RepairController::class, 'applyRepair'])->name('admin.items.repair');
-        
+
         // booking
         Route::get('/bookings', [BookingController::class, 'bookings'])->name('admin.bookings');
         Route::get('/bookings/{booking}/details', [BookingController::class, 'getBookingDetails'])->name('admin.bookings.details');
@@ -106,6 +107,10 @@ Route::middleware(['auth.permission'])->group(function () {
         Route::post('/sets/{set}/detach-desks', [SetController::class, 'detachSetFromDesks'])->name('admin.sets.detachDesks');
         Route::post('/sets/{set}/detach-labs', [SetController::class, 'detachSetFromLabs'])->name('admin.sets.detachLabs');
 
+        // History
+        Route::get('/history/labs', [HistoryController::class, 'historylabs'])->name('admin.historylabs');
+
+
         // RBAC
         // Permissions
         Route::get('/permissions', [PermissionController::class, 'permissions'])->name('admin.permissions');
@@ -114,7 +119,7 @@ Route::middleware(['auth.permission'])->group(function () {
         // Roles
         Route::get('/roles', [PermissionController::class, 'roles'])->name('admin.roles');
         Route::post('/roles/update', [PermissionController::class, 'updateUserRoles'])->name('admin.roles.update');
-        
+
         // Units
         Route::post('/units/create', [PermissionController::class, 'createUnit'])->name('admin.units.create');
 
