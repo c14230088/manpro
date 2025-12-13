@@ -12,6 +12,8 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        // Permission sudah di-seed di UnitSeeder
+        // Seeder ini bisa digunakan untuk menambahkan permission tambahan jika diperlukan
+        $this->command->info('Permissions are seeded in UnitSeeder. This seeder is for additional permissions only.');
     }
 }

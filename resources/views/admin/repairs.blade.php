@@ -424,10 +424,6 @@
     </style>
 
     <script>
-        try {
-            document.getElementById('repairs').classList.add('bg-slate-100');
-        } catch (e) {}
-
         let tomSelects = {};
         let tomSelectStatusModal;
         let dataTableInstance;
@@ -446,6 +442,7 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             document.getElementById('repairs').classList.add('bg-slate-100');
+            document.getElementById('repairs').classList.add('active');
 
             // --- 1. INIT FILTER ---
             tomSelects.status = new TomSelect('#filter_repair_status', {

@@ -510,6 +510,7 @@
 
     <script>
         document.getElementById('sets').classList.add('bg-slate-100');
+        document.getElementById('sets').classList.add('active');
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         let currentSetId = null;
         let currentSetName = null;

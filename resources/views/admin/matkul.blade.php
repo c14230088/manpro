@@ -1,0 +1,385 @@
+@extends('layouts.admin')
+
+@section('title', 'Manajemen Mata Kuliah')
+
+@section('body')
+    <div class="flex flex-col md:flex-row w-full py-4 shadow-md items-center justify-center mb-5 px-6 md:px-4">
+        <h1 class="text-center text-4xl uppercase font-bold mb-2 md:mb-0">Daftar Mata Kuliah</h1>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 pb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Filter & Pencarian</h2>
+                <button id="btn-add-matkul" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                    + Tambah Matkul
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="filter_sks" class="block text-sm font-semibold text-gray-700 mb-2">SKS</label>
+                    <select id="filter_sks" class="filter-input" placeholder="Semua SKS...">
+                        <option value="">Semua SKS</option>
+                        <option value="2">2 SKS</option>
+                        <option value="3">3 SKS</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filter_access" class="block text-sm font-semibold text-gray-700 mb-2">Akses File</label>
+                    <select id="filter_access" class="filter-input" placeholder="Semua...">
+                        <option value="">Semua</option>
+                        <option value="1">Terbuka</option>
+                        <option value="0">Tertutup</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6">
+                <div class="relative flex w-full">
+                    <input id="datatable-search-input" type="search"
+                        class="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.6rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none"
+                        placeholder="Cari kode atau nama matkul..." />
+                    <button
+                        class="relative z-[2] flex items-center rounded-r bg-primary px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-primary-800 active:shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                            <path fill-rule="evenodd"
+                                d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                <button id="reset-filter-btn"
+                    class="px-6 py-2 bg-gray-200 w-full sm:w-auto text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition-colors">
+                    Reset Filter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 pb-12">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800">Daftar Mata Kuliah</h2>
+            </div>
+            <div class="p-6">
+                <div class="overflow-x-auto">
+                    <table id="matkul-table" class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Kode</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama Mata Kuliah</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    SKS</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Akses File</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Root Folder</th>
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach ($matkuls as $matkul)
+                                <tr class="matkul-row" data-sks="{{ $matkul->sks }}"
+                                    data-access="{{ $matkul->open_file_access ? '1' : '0' }}"
+                                    data-search="{{ strtolower($matkul->kode . ' ' . $matkul->nama) }}">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-bold text-gray-900">{{ $matkul->kode }}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900">{{ $matkul->nama }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            {{ $matkul->sks }} SKS
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $matkul->open_file_access ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            {{ $matkul->open_file_access ? 'Terbuka' : 'Tertutup' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($matkul->rootFolder)
+                                            <a href="{{ route('admin.repository', ['folder' => $matkul->rootFolder->id]) }}" 
+                                               class="text-xs text-indigo-600 hover:text-indigo-800 font-mono underline flex items-center gap-1"
+                                               onclick="showLoading('Navigating...')">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
+                                                </svg>
+                                                {{ $matkul->rootFolder->full_path }}
+                                            </a>
+                                        @else
+                                            <div class="text-xs text-gray-500 font-mono">-</div>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <button
+                                            class="btn-modules px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600 text-xs font-semibold rounded-md mr-2"
+                                            data-id="{{ $matkul->id }}" data-nama="{{ $matkul->nama }}">
+                                            Modules
+                                        </button>
+                                        <button
+                                            class="btn-edit px-3 py-1.5 bg-yellow-500 text-white hover:bg-yellow-600 text-xs font-semibold rounded-md mr-2"
+                                            data-id="{{ $matkul->id }}" data-kode="{{ $matkul->kode }}"
+                                            data-nama="{{ $matkul->nama }}" data-sks="{{ $matkul->sks }}"
+                                            data-access="{{ $matkul->open_file_access ? '1' : '0' }}">
+                                            Edit
+                                        </button>
+                                        <button
+                                            class="btn-delete px-3 py-1.5 bg-red-600 text-white hover:bg-red-700 text-xs font-semibold rounded-md"
+                                            data-id="{{ $matkul->id }}" data-kode="{{ $matkul->kode }}">
+                                            Hapus
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Add/Edit --}}
+    <div id="matkul-modal" class="hidden" role="dialog">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[3000]"></div>
+        <div id="modal-overlay" class="fixed inset-0 flex items-center justify-center p-4 z-[3001]">
+            <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md">
+                <div class="flex justify-between items-center p-4 border-b border-gray-200 rounded-t bg-gray-50">
+                    <h3 id="modal-title" class="text-lg font-semibold text-gray-900">Tambah Mata Kuliah</h3>
+                    <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="matkul-form" class="p-6 space-y-4">
+                    @csrf
+                    <input type="hidden" id="matkul-id">
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Kode Matkul</label>
+                        <input type="text" id="matkul-kode" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Mata Kuliah</label>
+                        <input type="text" id="matkul-nama" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">SKS</label>
+                        <select id="matkul-sks" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                            <option value="2">2 SKS</option>
+                            <option value="3">3 SKS</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="matkul-access"
+                                class="rounded text-indigo-600 focus:ring-indigo-500">
+                            <span class="ml-2 text-sm text-gray-700">Akses File Terbuka</span>
+                        </label>
+                    </div>
+
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button type="button" id="cancel-modal-btn"
+                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('script')
+    <style>
+        .ts-control {
+            @apply block w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white;
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+        }
+    </style>
+
+    <script>
+        let tomSelects = {};
+        let dataTableInstance;
+        let isEditMode = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            tomSelects.sks = new TomSelect('#filter_sks', {
+                plugins: ['clear_button']
+            });
+            tomSelects.access = new TomSelect('#filter_access', {
+                plugins: ['clear_button']
+            });
+
+            dataTableInstance = new te.Datatable(document.getElementById('matkul-table'), {
+                hover: true,
+                pagination: true,
+                entries: 10,
+                entriesOptions: [5, 10, 25, 50]
+            });
+
+            document.getElementById('datatable-search-input').addEventListener('input', (e) => {
+                dataTableInstance.search(e.target.value);
+            });
+
+            function applyFilter() {
+                const sks = tomSelects.sks.getValue();
+                const access = tomSelects.access.getValue();
+
+                document.querySelectorAll('.matkul-row').forEach(row => {
+                    const matchSks = !sks || row.dataset.sks === sks;
+                    const matchAccess = !access || row.dataset.access === access;
+                    row.style.display = (matchSks && matchAccess) ? '' : 'none';
+                });
+            }
+
+            tomSelects.sks.on('change', applyFilter);
+            tomSelects.access.on('change', applyFilter);
+
+            document.getElementById('reset-filter-btn').addEventListener('click', () => {
+                Object.values(tomSelects).forEach(ts => ts.clear());
+                document.getElementById('datatable-search-input').value = '';
+                dataTableInstance.search('');
+                applyFilter();
+            });
+
+            const modal = document.getElementById('matkul-modal');
+            const closeModal = () => modal.classList.add('hidden');
+
+            document.getElementById('btn-add-matkul').addEventListener('click', () => {
+                isEditMode = false;
+                document.getElementById('modal-title').textContent = 'Tambah Mata Kuliah';
+                document.getElementById('matkul-form').reset();
+                document.getElementById('matkul-id').value = '';
+                modal.classList.remove('hidden');
+            });
+
+            document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+            document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
+            document.getElementById('modal-overlay').addEventListener('click', (e) => {
+                if (e.target.id === 'modal-overlay') closeModal();
+            });
+
+            document.body.addEventListener('click', (e) => {
+                if (e.target.closest('.btn-modules')) {
+                    const btn = e.target.closest('.btn-modules');
+                    showLoading('Loading modules...');
+                    window.location.href = `/admin/matkul/${btn.dataset.id}/modules`;
+                }
+
+                if (e.target.closest('.btn-edit')) {
+                    const btn = e.target.closest('.btn-edit');
+                    isEditMode = true;
+                    document.getElementById('modal-title').textContent = 'Edit Mata Kuliah';
+                    document.getElementById('matkul-id').value = btn.dataset.id;
+                    document.getElementById('matkul-kode').value = btn.dataset.kode;
+                    document.getElementById('matkul-nama').value = btn.dataset.nama;
+                    document.getElementById('matkul-sks').value = btn.dataset.sks;
+                    document.getElementById('matkul-access').checked = btn.dataset.access === '1';
+                    modal.classList.remove('hidden');
+                }
+
+                if (e.target.closest('.btn-delete')) {
+                    const btn = e.target.closest('.btn-delete');
+                    Swal.fire({
+                        title: 'Hapus Matkul?',
+                        text: `Yakin hapus ${btn.dataset.kode}?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            showLoading("Deleting...");
+                            try {
+                                const response = await fetch(
+                                    `/admin/matkul/${btn.dataset.id}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector(
+                                                'meta[name="csrf-token"]').content,
+                                            'Accept': 'application/json'
+                                        }
+                                    });
+                                if (response.ok) {
+                                    Swal.fire('Terhapus!', 'Matkul berhasil dihapus', 'success')
+                                        .then(() => location.reload());
+                                } else {
+                                    throw new Error('Gagal menghapus');
+                                }
+                            } catch (error) {
+                                Swal.fire('Error', error.message, 'error');
+                            }
+                        }
+                    });
+                }
+            });
+
+            document.getElementById('matkul-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const id = document.getElementById('matkul-id').value;
+                const data = {
+                    kode: document.getElementById('matkul-kode').value,
+                    nama: document.getElementById('matkul-nama').value,
+                    sks: document.getElementById('matkul-sks').value,
+                    open_file_access: document.getElementById('matkul-access').checked
+                };
+
+                const url = isEditMode ? `/admin/matkul/${id}` : '/admin/matkul';
+                const method = isEditMode ? 'PUT' : 'POST';
+
+                try {
+                    showLoading(isEditMode ? "Updating..." : "Creating...");
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .content,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        Swal.fire('Berhasil!',
+                                `Matkul berhasil ${isEditMode ? 'diupdate' : 'ditambahkan'}`, 'success')
+                            .then(() => location.reload());
+                    } else {
+                        throw new Error(result.message || 'Gagal menyimpan');
+                    }
+                } catch (error) {
+                    Swal.fire('Error', error.message, 'error');
+                }
+            });
+        });
+    </script>
+@endsection

@@ -18,7 +18,7 @@ class BookingController extends Controller
 {
     public function formBooking()
     {
-        return view('user.booking-new', ['title' => 'User | Form Booking']);
+        return view('user.booking-new', ['title' => 'User | Formulir Peminjaman']);
     }
 
     public function getMyBookings()
@@ -38,9 +38,9 @@ class BookingController extends Controller
     public function getBookingDetails($id)
     {
         $booking = Booking::with([
-            'borrower',
-            'supervisor',
-            'approver',
+            'borrower.unit',
+            'supervisor.unit',
+            'approver.unit',
             'period',
             'bookings_items.bookable' => function ($morphTo) {
                 $morphTo->morphWith([
@@ -484,10 +484,13 @@ class BookingController extends Controller
         $valid = Validator::make($data, [
             'items' => 'required|array|min:1',
             'items.*.booking_item_id' => 'required|uuid|exists:bookings_items,id',
-            'items.*.returned_status' => 'required|boolean',
+            'items.*.returned_status' => isset($data['global_returned_status']) ? 'nullable|boolean' : 'required|boolean',
             'items.*.returned_detail' => 'nullable|string|max:750',
+
+            'global_returned_detail' => 'nullable|string|max:750',  
+            'global_returned_status' => 'nullable|boolean',  
         ], [
-            'items.required' => 'Daftar item yang dikembalikan harus diisi.',
+            'items.required' => 'Daftar item yang dikembalikan harus dipilih minimal 1 barang.',
             'items.array' => 'Format daftar item yang dikembalikan tidak valid.',
             'items.min' => 'Minimal harus ada 1 item yang dikembalikan.',
             'items.*.booking_item_id.required' => 'Barang atau Lab yang dipinjam harus dipilih.',
@@ -496,6 +499,9 @@ class BookingController extends Controller
             'items.*.returned_status.required' => 'Status Kondisi Barang atau Lab yang dikembalikan harus diisi.',
             'items.*.returned_status.boolean' => 'Status Kondisi Barang atau Lab yang dikembalikan tidak valid, harus berupa Baik atau Rusak.',
             'items.*.returned_detail.max' => 'Detail pengembalian maksimal 750 karakter.',
+            
+            'global_returned_detail.max' => 'Detail pengembalian Global maksimal 750 karakter.',
+            'global_returned_status.boolean' => 'Status Kondisi Barang atau Lab Global yang dikembalikan tidak valid, harus berupa Baik atau Rusak.',
         ]);
         if ($valid->fails()) {
             return response()->json([
@@ -526,8 +532,8 @@ class BookingController extends Controller
                     ->where('id', $item['booking_item_id'])
                     ->update([
                         'returned_at' => now(),
-                        'returned_status' => $item['returned_status'] ?? $data['global_returned_status'],
-                        'returned_detail' => $item['returned_detail'] ?? $data['global_returned_detail'],
+                        'returned_status' => $item['returned_status'] ?? ($data['global_returned_status'] ?? true),
+                        'returned_detail' => $item['returned_detail'] ?? ($data['global_returned_detail'] ?? null),
                         'returner_id' => Auth::user()->id,
                         'updated_at' => now(),
                     ]);
@@ -552,11 +558,29 @@ class BookingController extends Controller
 
     public function bookings()
     {
-        $bookings = Booking::with(['borrower', 'supervisor', 'approver', 'period', 'bookings_items.bookable', 'bookings_items.returner'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $bookings = Booking::with([
+            'borrower.unit',
+            'supervisor.unit',
+            'approver.unit',
+            'period',
+            'bookings_items' => function ($query) {
+                $query->with([
+                    'bookable' => function ($query) {
+                        $query->morphWith([
+                            Items::class => ['type'],
+                            Components::class => ['type'],
+                            Labs::class => []
+                        ]);
+                    }
+                ]);
+            }
+        ])->orderBy('created_at', 'desc')->get();
 
-        return view('admin.bookings', compact('bookings'));
+        $years = $bookings->pluck('period.academic_year')->unique()->sort()->values();
+        $approvers = $bookings->whereNotNull('approver')->pluck('approver')->unique('id')->sortBy('name')->values();
+        $units = $bookings->pluck('borrower.unit')->whereNotNull()->unique('id')->sortBy('name')->values();
+
+        return view('admin.bookings', compact('bookings', 'years', 'approvers', 'units'));
     }
 
     private function validatePeriod()

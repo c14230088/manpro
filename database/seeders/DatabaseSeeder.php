@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder
             SoftwareSeeder::class,
             BookingSeeder::class,
             RepairSeeder::class,
+            FilesSeeder::class,
+            MatkulSeeder::class,
         ]);
     }
 }

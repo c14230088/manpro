@@ -11,6 +11,7 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Filter & Pencarian</h2>
 
+            {{-- Filter Inputs --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 filter-select">
                 <div>
                     <label for="filter_status" class="block text-sm font-semibold text-gray-700 mb-2">Status Persetujuan</label>
@@ -23,22 +24,71 @@
                 </div>
 
                 <div>
-                    <label for="filter_period" class="block text-sm font-semibold text-gray-700 mb-2">Periode</label>
-                    <select id="filter_period" class="filter-input" placeholder="Semua Periode...">
-                        <option value="">Semua Periode</option>
-                        <option value="today">Hari Ini</option>
-                        <option value="week">Minggu Ini</option>
-                        <option value="month">Bulan Ini</option>
+                    <label for="filter_year" class="block text-sm font-semibold text-gray-700 mb-2">Tahun Ajaran</label>
+                    <select id="filter_year" class="filter-input" placeholder="Semua Tahun...">
+                        <option value="">Semua Tahun</option>
+                        @foreach($years as $year)
+                        <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div>
-                    <label for="filter_type" class="block text-sm font-semibold text-gray-700 mb-2">Tipe Barang</label>
+                    <label for="filter_semester" class="block text-sm font-semibold text-gray-700 mb-2">Semester</label>
+                    <select id="filter_semester" class="filter-input" placeholder="Semua Semester...">
+                        <option value="">Semua Semester</option>
+                        <option value="GASAL">Gasal</option>
+                        <option value="GENAP">Genap</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filter_type" class="block text-sm font-semibold text-gray-700 mb-2">Jenis Pinjam</label>
                     <select id="filter_type" class="filter-input" placeholder="Semua Tipe...">
                         <option value="">Semua Tipe</option>
                         <option value="Items">Items</option>
                         <option value="Components">Components</option>
                         <option value="Labs">Labs</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filter_return" class="block text-sm font-semibold text-gray-700 mb-2">Status Pengembalian</label>
+                    <select id="filter_return" class="filter-input" placeholder="Semua Status...">
+                        <option value="">Semua Status</option>
+                        <option value="complete">Sudah Lengkap</option>
+                        <option value="complete_damaged">Sudah Lengkap - Ada Rusak</option>
+                        <option value="incomplete">Belum Lengkap</option>
+                        <option value="not_returned">Belum Kembali</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filter_deadline" class="block text-sm font-semibold text-gray-700 mb-2">Jatuh Tempo</label>
+                    <select id="filter_deadline" class="filter-input" placeholder="Semua...">
+                        <option value="">Semua</option>
+                        <option value="overdue">Sudah Jatuh Tempo</option>
+                        <option value="upcoming">Belum Jatuh Tempo</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filter_approver" class="block text-sm font-semibold text-gray-700 mb-2">Disetujui Oleh</label>
+                    <select id="filter_approver" class="filter-input" placeholder="Semua Approver...">
+                        <option value="">Semua Approver</option>
+                        @foreach($approvers as $approver)
+                        <option value="{{ $approver->id }}">{{ $approver->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filter_unit" class="block text-sm font-semibold text-gray-700 mb-2">Unit Peminjam</label>
+                    <select id="filter_unit" class="filter-input" placeholder="Semua Unit...">
+                        <option value="">Semua Unit</option>
+                        @foreach($units as $unit)
+                        <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -67,7 +117,8 @@
                 <h2 class="text-xl font-semibold text-gray-800">Daftar Bookings</h2>
             </div>
             <div class="p-6">
-                <div class="overflow-x-auto">
+                {{-- Container Table --}}
+                <div class="overflow-x-auto w-full">
                     <table id="bookings-table" class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -85,33 +136,41 @@
                             @php
                                 $statusValue = is_null($booking->approved) ? 'pending' : ($booking->approved ? 'approved' : 'rejected');
                                 $types = $booking->bookings_items->pluck('bookable_type')->map(fn($t) => class_basename($t))->unique()->implode(',');
+                                $totalItems = $booking->bookings_items->count();
+                                $returnedItems = $booking->bookings_items->where('returned_at', '!=', null)->count();
+                                $damagedItems = $booking->bookings_items->where('returned_status', 0)->count();
+                                $returnStatus = $returnedItems == 0 ? 'not_returned' : ($returnedItems == $totalItems ? ($damagedItems > 0 ? 'complete_damaged' : 'complete') : 'incomplete');
+                                $now = \Carbon\Carbon::now('Asia/Jakarta');
+                                $deadline = \Carbon\Carbon::parse($booking->return_deadline_at, 'Asia/Jakarta');
+                                $deadlineStatus = $now->gt($deadline) ? 'overdue' : ($now->diffInDays($deadline) <= 3 ? 'upcoming' : 'normal');
                             @endphp
-                            <tr class="booking-row hover:bg-gray-50 transition-colors"
+                            {{-- Atribut data-* digunakan untuk filtering di JS --}}
+                            <tr class="booking-row-data"
                                 data-status="{{ $statusValue }}"
-                                data-date="{{ $booking->borrowed_at }}"
+                                data-year="{{ $booking->period->academic_year ?? '' }}"
+                                data-semester="{{ $booking->period->semester ?? '' }}"
                                 data-types="{{ $types }}"
-                                data-search="{{ strtolower($booking->borrower->name . ' ' . $booking->event_name) }}">
-                                
+                                data-return="{{ $returnStatus }}"
+                                data-deadline="{{ $deadlineStatus }}"
+                                data-approver="{{ $booking->approver->id ?? '' }}"
+                                data-unit="{{ $booking->borrower->unit->id ?? '' }}"
+                                >
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-semibold text-gray-900">{{ $booking->borrower->name ?? '-' }}</div>
                                     <div class="text-xs text-gray-500">{{ $booking->phone_number }}</div>
                                 </td>
-                                
                                 <td class="px-6 py-4">
                                     <div class="text-sm font-medium text-gray-900">{{ $booking->event_name }}</div>
                                     <div class="text-xs text-gray-500">{{ $booking->bookings_items->count() }} item(s)</div>
                                 </td>
-                                
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($booking->borrowed_at)->format('d M Y') }}</div>
                                     <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->borrowed_at)->format('H:i') }}</div>
                                 </td>
-                                
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($booking->return_deadline_at)->format('d M Y') }}</div>
                                     <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->return_deadline_at)->format('H:i') }}</div>
                                 </td>
-                                
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if(is_null($booking->approved))
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
@@ -121,11 +180,9 @@
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Ditolak</span>
                                     @endif
                                 </td>
-                                
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ $booking->approver->name ?? '-' }}</div>
                                 </td>
-                                
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <button onclick="viewDetail('{{ $booking->id }}')" class="px-3 py-1.5 bg-blue-600 text-white hover:bg-blue-700 text-xs font-semibold rounded-md mr-2">Detail</button>
                                     @if(is_null($booking->approved))
@@ -144,6 +201,7 @@
         </div>
     </div>
 
+    {{-- Modal Detail --}}
     <div id="detail-modal" class="hidden" role="dialog">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[3000]" onclick="closeModal('detail-modal')"></div>
         <div class="fixed inset-0 flex items-center justify-center p-4 z-[3001]" style="pointer-events: none;">
@@ -151,9 +209,7 @@
                 <div class="flex justify-between items-center p-6 border-b">
                     <h3 class="text-xl font-semibold">Detail Booking</h3>
                     <button onclick="closeModal('detail-modal')" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
                 <div id="detail-content" class="p-6"></div>
@@ -161,6 +217,7 @@
         </div>
     </div>
 
+    {{-- Modal Return --}}
     <div id="return-modal" class="hidden" role="dialog">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[3000]" onclick="closeModal('return-modal')"></div>
         <div class="fixed inset-0 flex items-center justify-center p-4 z-[3001]" style="pointer-events: none;">
@@ -168,9 +225,7 @@
                 <div class="flex justify-between items-center p-6 border-b">
                     <h3 class="text-xl font-semibold">Catat Pengembalian</h3>
                     <button onclick="closeModal('return-modal')" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
                 <div id="return-content" class="p-6"></div>
@@ -186,18 +241,100 @@
         padding-top: 0.6rem;
         padding-bottom: 0.6rem;
     }
+
+    /* --- NUCLEAR CSS FIX UNTUK PAGINATION --- */
+    /* Kita gunakan !important untuk menimpa style inline dari library TE */
+    
+    /* 1. Kontainer Utama Pagination */
+    div[data-te-datatable-pagination-ref] {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important; /* Paksa satu baris */
+        width: 100% !important;
+        padding: 1rem 1.5rem !important;
+        background-color: white !important;
+        border-top: 1px solid #e5e7eb !important;
+        min-height: 60px !important;
+    }
+
+    /* 2. Sisi Kiri (Rows per page + Dropdown) */
+    div[data-te-datatable-pagination-ref] > div:first-child {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 1rem !important;
+        margin: 0 !important;
+    }
+
+    /* 3. Sisi Kanan (Text "1-10 of 100" + Panah) */
+    div[data-te-datatable-pagination-ref] > div:last-child {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 1rem !important;
+        margin: 0 !important;
+    }
+
+    /* 4. Fix untuk Dropdown "Rows per page" agar tidak tumpuk */
+    div[data-te-datatable-select-wrapper-ref] {
+        display: inline-block !important;
+        margin: 0 !important;
+        width: auto !important;
+        min-width: 70px !important; /* Beri lebar minimum */
+    }
+    
+    /* 5. Input Select itu sendiri */
+    div[data-te-datatable-select-wrapper-ref] input {
+        padding-right: 2rem !important; /* Ruang untuk panah dropdown */
+        width: auto !important;
+    }
+
+    /* 6. Pastikan Text tidak turun ke bawah */
+    div[data-te-datatable-pagination-ref] span {
+        white-space: nowrap !important;
+    }
+
+    /* 7. Pastikan tabel selebar mungkin */
+    #bookings-table {
+        width: 100% !important;
+    }
 </style>
 
 <script>
 document.getElementById('bookings').classList.add('bg-slate-100');
+document.getElementById('bookings').classList.add('active');
 
 let tomSelects = {};
 let dataTableInstance;
+let allTableData = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     tomSelects.status = new TomSelect('#filter_status', { plugins: ['clear_button'] });
-    tomSelects.period = new TomSelect('#filter_period', { plugins: ['clear_button'] });
+    tomSelects.year = new TomSelect('#filter_year', { plugins: ['clear_button'] });
+    tomSelects.semester = new TomSelect('#filter_semester', { plugins: ['clear_button'] });
     tomSelects.type = new TomSelect('#filter_type', { plugins: ['clear_button'] });
+    tomSelects.return = new TomSelect('#filter_return', { plugins: ['clear_button'] });
+    tomSelects.deadline = new TomSelect('#filter_deadline', { plugins: ['clear_button'] });
+    tomSelects.approver = new TomSelect('#filter_approver', { plugins: ['clear_button'] });
+    tomSelects.unit = new TomSelect('#filter_unit', { plugins: ['clear_button'] });
+
+    const originalRows = document.querySelectorAll('#bookings-table tbody tr');
+    originalRows.forEach(row => {
+        const cells = Array.from(row.children).map(cell => cell.innerHTML);
+        allTableData.push({
+            status: row.dataset.status,
+            year: row.dataset.year,
+            semester: row.dataset.semester,
+            types: row.dataset.types,
+            returnStatus: row.dataset.return,
+            deadline: row.dataset.deadline,
+            approver: row.dataset.approver,
+            unit: row.dataset.unit,
+            rowData: cells 
+        });
+    });
 
     try {
         const tableEl = document.getElementById('bookings-table');
@@ -210,58 +347,89 @@ document.addEventListener('DOMContentLoaded', function() {
             noFoundMessage: 'Tidak ada booking ditemukan.',
         });
 
+        // Patch JS juga untuk memastikan style applied setelah render
+        setTimeout(fixPaginationLayout, 100);
+
         document.getElementById('search-input').addEventListener('input', (e) => {
             dataTableInstance.search(e.target.value);
-            applyFilters();
+            applyFilters(); 
+            setTimeout(fixPaginationLayout, 100);
         });
+        
+        tableEl.addEventListener('click', () => setTimeout(fixPaginationLayout, 100));
+
     } catch (e) {
         console.warn("DataTable init failed", e);
     }
 
-    [tomSelects.status, tomSelects.period, tomSelects.type].forEach(ts => {
-        ts.on('change', applyFilters);
+    Object.values(tomSelects).forEach(ts => {
+        ts.on('change', () => {
+            applyFilters();
+            setTimeout(fixPaginationLayout, 100);
+        });
     });
 
     document.getElementById('reset-filter-btn').addEventListener('click', () => {
         Object.values(tomSelects).forEach(ts => ts.clear());
         document.getElementById('search-input').value = '';
-        if (dataTableInstance) dataTableInstance.search('');
-        applyFilters();
+        dataTableInstance.update({
+            rows: allTableData.map(item => item.rowData)
+        }, { loading: false });
+        setTimeout(fixPaginationLayout, 100);
     });
 });
 
 function applyFilters() {
-    const status = tomSelects.status.getValue();
-    const period = tomSelects.period.getValue();
-    const type = tomSelects.type.getValue();
-    
-    const rows = document.querySelectorAll('.booking-row');
-    
-    rows.forEach(row => {
-        let show = true;
+    const filters = {
+        status: tomSelects.status.getValue(),
+        year: tomSelects.year.getValue(),
+        semester: tomSelects.semester.getValue(),
+        type: tomSelects.type.getValue(),
+        returnStatus: tomSelects.return.getValue(),
+        deadline: tomSelects.deadline.getValue(),
+        approver: tomSelects.approver.getValue(),
+        unit: tomSelects.unit.getValue(),
+    };
+
+    const filteredData = allTableData.filter(item => {
+        if (filters.status && item.status !== filters.status) return false;
+        if (filters.year && item.year !== filters.year) return false;
+        if (filters.semester && item.semester !== filters.semester) return false;
+        if (filters.type && !item.types.includes(filters.type)) return false;
+        if (filters.returnStatus && item.returnStatus !== filters.returnStatus) return false;
+        if (filters.deadline && item.deadline !== filters.deadline) return false;
+        if (filters.approver && item.approver !== filters.approver) return false;
+        if (filters.unit && item.unit !== filters.unit) return false;
+        return true;
+    });
+
+    dataTableInstance.update({
+        rows: filteredData.map(item => item.rowData)
+    }, { loading: false });
+
+    const searchValue = document.getElementById('search-input').value;
+    if(searchValue) {
+        dataTableInstance.search(searchValue);
+    }
+}
+
+// Fungsi JS tambahan untuk 'memaksa' layout jika CSS saja tidak mempan
+function fixPaginationLayout() {
+    const paginations = document.querySelectorAll('[data-te-datatable-pagination-ref]');
+    paginations.forEach(p => {
+        p.style.setProperty('display', 'flex', 'important');
+        p.style.setProperty('flex-direction', 'row', 'important');
+        p.style.setProperty('justify-content', 'space-between', 'important');
+        p.style.setProperty('width', '100%', 'important');
+        p.style.setProperty('flex-wrap', 'nowrap', 'important');
         
-        if (status && row.dataset.status !== status) show = false;
-        
-        if (show && period) {
-            const date = new Date(row.dataset.date);
-            const now = new Date();
-            
-            if (period === 'today') {
-                show = date.toDateString() === now.toDateString();
-            } else if (period === 'week') {
-                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                show = date >= weekAgo;
-            } else if (period === 'month') {
-                show = date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-            }
-        }
-        
-        if (show && type) {
-            const types = row.dataset.types;
-            show = types && types.includes(type);
-        }
-        
-        row.style.display = show ? '' : 'none';
+        Array.from(p.children).forEach(child => {
+            child.style.setProperty('display', 'flex', 'important');
+            child.style.setProperty('flex-direction', 'row', 'important');
+            child.style.setProperty('align-items', 'center', 'important');
+            child.style.setProperty('gap', '10px', 'important');
+            child.style.setProperty('margin', '0', 'important');
+        });
     });
 }
 
@@ -273,22 +441,21 @@ function viewDetail(bookingId) {
         .then(response => {
             if(response.success) {
                 const booking = response.data;
-                console.log(booking);
                 
                 let html = `
                     <div class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
-                            <div><p class="text-sm text-gray-500">Peminjam</p><p class="font-medium">${booking.borrower?.name || '-'}</p></div>
+                            <div><p class="text-sm text-gray-500">Peminjam</p><p class="font-medium">${booking.borrower?.name || '-'}</p><p class="text-xs text-gray-500">${booking.borrower?.unit?.name || ''}</p></div>
                             <div><p class="text-sm text-gray-500">Nomor Telepon</p><p class="font-medium">${booking.phone_number || '-'}</p></div>
                             <div><p class="text-sm text-gray-500">Nama Event</p><p class="font-medium">${booking.event_name}</p></div>
                             <div><p class="text-sm text-gray-500">Jumlah Peserta</p><p class="font-medium">${booking.attendee_count || '-'}</p></div>
                             <div><p class="text-sm text-gray-500">Waktu Event</p><p class="font-medium">${formatDate(booking.event_started_at)} - ${formatDate(booking.event_ended_at)}</p></div>
                             <div><p class="text-sm text-gray-500">Waktu Pinjam</p><p class="font-medium">${formatDate(booking.borrowed_at)} - ${formatDate(booking.return_deadline_at)}</p></div>
                             ${booking.thesis_title ? `<div class="col-span-2"><p class="text-sm text-gray-500">Judul Skripsi</p><p class="font-medium">${booking.thesis_title}</p></div>` : ''}
-                            ${booking.supervisor ? `<div><p class="text-sm text-gray-500">Dosen Pembimbing</p><p class="font-medium">${booking.supervisor.name}</p></div>` : ''}
+                            ${booking.supervisor ? `<div><p class="text-sm text-gray-500">Dosen Pembimbing</p><p class="font-medium">${booking.supervisor.name}</p><p class="text-xs text-gray-500">${booking.supervisor.unit?.name || ''}</p></div>` : ''}
                             ${booking.booking_detail ? `<div class="col-span-2"><p class="text-sm text-gray-500">Detail</p><p class="font-medium">${booking.booking_detail}</p></div>` : ''}
                             <div><p class="text-sm text-gray-500">Status</p><p class="font-medium">${booking.approved === null ? 'Pending' : (booking.approved ? 'Disetujui' : 'Ditolak')}</p></div>
-                            ${booking.approver ? `<div><p class="text-sm text-gray-500">Disetujui Oleh</p><p class="font-medium">${booking.approver.name}</p></div>` : ''}
+                            ${booking.approver ? `<div><p class="text-sm text-gray-500">Disetujui Oleh</p><p class="font-medium">${booking.approver.name}</p><p class="text-xs text-gray-500">${booking.approver.unit?.name || ''}</p></div>` : ''}
                         </div>
                         
                         ${(() => {
@@ -425,7 +592,7 @@ function viewDetail(bookingId) {
                                     
                                     const returnStatus = item.returned_at ? 
                                         `<span class="px-2 py-1 text-xs rounded-full ${item.returned_status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${item.returned_status ? 'Baik' : 'Rusak'}</span>` : 
-                                        '<span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Belum Kembali</span>';
+                                        `<span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Belum Kembali</span>`;
                                     
                                     return `
                                         <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-gradient-to-br from-white to-gray-50">
@@ -599,11 +766,6 @@ function returnItems(bookingId) {
                         const status = document.getElementById(`status_${itemId}`).value;
                         const detail = document.getElementById(`detail_${itemId}`).value;
                         
-                        if(!status && !document.getElementById('globalStatus').value) {
-                            showToast('Error', 'Pilih status untuk setiap item', 'error');
-                            return;
-                        }
-                        
                         selectedItems.push({
                             booking_item_id: itemId,
                             returned_status: status || undefined,
@@ -615,6 +777,24 @@ function returnItems(bookingId) {
                         showToast('Error', 'Pilih minimal 1 barang', 'error');
                         return;
                     }
+
+                    // --- VALIDASI DIPERBAIKI ---
+                    let hasError = false;
+                    const globalStatus = document.getElementById('globalStatus').value;
+
+                    for(const item of selectedItems) {
+                        // Jika status item kosong DAN status global juga kosong -> Error
+                        if (!item.returned_status && !globalStatus) {
+                            hasError = true;
+                            break; // Stop loop jika ketemu error
+                        }
+                    }
+
+                    if (hasError) {
+                        showToast('Error', 'Pilih status untuk setiap item', 'error');
+                        return; // Stop submit!
+                    }
+                    // --------------------------
                     
                     const data = {
                         items: selectedItems,

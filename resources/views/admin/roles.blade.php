@@ -533,6 +533,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('roles').classList.add('bg-slate-100');
+            document.getElementById('roles').classList.add('active');
 
             renderLeftPanel();
 

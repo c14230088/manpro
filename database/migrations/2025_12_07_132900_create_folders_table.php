@@ -13,19 +13,17 @@ return new class extends Migration
     {
         Schema::create('folders', function (Blueprint $table) {
             $table->uuid('id')->primary();
-
             $table->string('name');
             $table->uuid('parent_id')->nullable();
-            $table->foreign('parent_id')->references('id')->on('folders')->nullOnDelete();
+            $table->foreign('parent_id')->references('id')->on('folders')->onDelete('cascade');
+            
+            $table->uuid('creator_id')->nullable();
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('set null');
 
             $table->string('full_path')->unique();
-            $table->boolean('open_public')->default(false);
-
-            $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
-
-            $table->unique(['name', 'parent_id']);
-            $table->softDeletes();
+            $table->boolean('is_root')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

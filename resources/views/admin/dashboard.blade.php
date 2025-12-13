@@ -18,5 +18,6 @@
 @section('script')
 <script>
     document.getElementById('overview').classList.add('bg-slate-100')
+    document.getElementById('overview').classList.add('active')
 </script>
 @endsection

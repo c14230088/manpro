@@ -319,6 +319,7 @@
 
     <script>
         document.getElementById('labs').classList.add('bg-slate-100');
+        document.getElementById('labs').classList.add('active');
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         // --- DATA STORE UNTUK DETAIL MODAL ---

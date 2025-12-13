@@ -23,8 +23,8 @@ class RepairSeeder extends Seeder
             return;
         }
 
-        // Create repair records for broken items
-        foreach ($brokenItems->take(20) as $item) {
+        // Create repair records for broken items - increase to 50
+        foreach ($brokenItems->take(50) as $item) {
             $reportedAt = now()->subDays(rand(1, 30));
             $reporter = $users->random();
             
@@ -47,8 +47,8 @@ class RepairSeeder extends Seeder
             ]);
         }
 
-        // Create repair records for broken components
-        foreach ($brokenComponents->take(20) as $component) {
+        // Create repair records for broken components - increase to 50
+        foreach ($brokenComponents->take(50) as $component) {
             $reportedAt = now()->subDays(rand(1, 30));
             $reporter = $users->random();
             

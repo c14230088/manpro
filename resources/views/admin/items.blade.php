@@ -1250,6 +1250,7 @@
         {{-- ========================================================= --}}
         <script>
             document.getElementById('items').classList.add('bg-slate-100');
+            document.getElementById('items').classList.add('active');
 
             // Data dari Blade
             const allTypes = @json($types);

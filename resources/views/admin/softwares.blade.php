@@ -446,6 +446,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('softwares').classList.add('bg-slate-100');
+            document.getElementById('softwares').classList.add('active');
 
             // 1. DataTables Init 
             table = $('#softwareTable').DataTable({

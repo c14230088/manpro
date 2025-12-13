@@ -485,6 +485,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('permissions').classList.add('bg-slate-100');
+            document.getElementById('permissions').classList.add('active');
 
             // Setup TomSelect
             const tomSelectConfig = {

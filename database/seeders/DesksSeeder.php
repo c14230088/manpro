@@ -24,6 +24,7 @@ class DesksSeeder extends Seeder
         $labSC = $labs->where('name', 'Lab Sistem Cerdas')->first();
         $labMM = $labs->where('name', 'Lab Multimedia')->first();
         $labVR = $labs->where('name', 'Lab Virtual Reality')->first();
+        $labMobdeb = $labs->where('name', 'Lab Mobile Development')->first();
 
         // if (!$labPemrograman || !$labJaringan) {
         //     $this->command->error('Pastikan LabSeeder sudah dijalankan terlebih dahulu!');
@@ -344,6 +345,61 @@ class DesksSeeder extends Seeder
             ['location' => 'G1'],
             ['location' => 'G8'],
 
+        ];
+
+        $desksMobdev = [
+
+            ['location' => 'A5'],
+
+            ['location' => 'B1'],
+            ['location' => 'B2'],
+            ['location' => 'B3'],
+
+            ['location' => 'B5'],
+            ['location' => 'B6'],
+            ['location' => 'B7'],
+            ['location' => 'B8'],
+
+            ['location' => 'C1'],
+            ['location' => 'C2'],
+            ['location' => 'C3'],
+
+            ['location' => 'C5'],
+            ['location' => 'C6'],
+            ['location' => 'C7'],
+            ['location' => 'C8'],
+
+            ['location' => 'D1'],
+            ['location' => 'D2'],
+            ['location' => 'D3'],
+
+            ['location' => 'D5'],
+            ['location' => 'D6'],
+            ['location' => 'D7'],
+            ['location' => 'D8'],
+            
+            ['location' => 'E2'],
+            ['location' => 'E3'],
+
+            ['location' => 'E5'],
+            ['location' => 'E6'],
+            ['location' => 'E7'],
+            
+            ['location' => 'F1'],
+            ['location' => 'F2'],
+            ['location' => 'F3'],
+
+            ['location' => 'F5'],
+            ['location' => 'F6'],
+            ['location' => 'F7'],
+            
+            ['location' => 'G1'],
+            ['location' => 'G2'],
+            ['location' => 'G3'],
+
+            ['location' => 'G5'],
+            ['location' => 'G6'],
+            ['location' => 'G7'],
         ];
 
 

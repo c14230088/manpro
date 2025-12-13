@@ -25,7 +25,7 @@ Route::get('/auth/google/callback', [UnitController::class, 'routeAdmin'])->name
 Route::get('/logout', [UnitController::class, 'logout'])->name('user.logout');
 
 Route::middleware(['auth.permission'])->group(function () {
-    Route::get('/booking', function() { return view('user.booking-new'); })->name('user.booking.form');
+    Route::get('/booking', [BookingController::class, 'formBooking'])->name('user.booking.form');
     Route::post('/booking', [BookingController::class, 'storeBooking'])->name('user.booking.request');
     Route::get('/booking/history', [BookingController::class, 'getMyBookings'])->name('user.booking.history');
 
@@ -117,5 +117,30 @@ Route::middleware(['auth.permission'])->group(function () {
         
         // Units
         Route::post('/units/create', [PermissionController::class, 'createUnit'])->name('admin.units.create');
+
+        // Matkul
+        Route::get('/matkul', [\App\Http\Controllers\MatkulController::class, 'index'])->name('admin.matkul');
+        Route::post('/matkul', [\App\Http\Controllers\MatkulController::class, 'store'])->name('admin.matkul.store');
+        Route::put('/matkul/{matkul}', [\App\Http\Controllers\MatkulController::class, 'update'])->name('admin.matkul.update');
+        Route::delete('/matkul/{matkul}', [\App\Http\Controllers\MatkulController::class, 'destroy'])->name('admin.matkul.destroy');
+
+        // Repository
+        Route::get('/repository', [\App\Http\Controllers\RepositoryController::class, 'index'])->name('admin.repository');
+        Route::post('/repository/folder', [\App\Http\Controllers\RepositoryController::class, 'createFolder'])->name('admin.repository.folder.create');
+        Route::post('/repository/upload', [\App\Http\Controllers\RepositoryController::class, 'uploadFile'])->name('admin.repository.upload');
+        Route::put('/repository/folder/{folder}/rename', [\App\Http\Controllers\RepositoryController::class, 'renameFolder'])->name('admin.repository.folder.rename');
+        Route::put('/repository/file/{file}/rename', [\App\Http\Controllers\RepositoryController::class, 'renameFile'])->name('admin.repository.file.rename');
+        Route::delete('/repository/folder/{folder}', [\App\Http\Controllers\RepositoryController::class, 'deleteFolder'])->name('admin.repository.folder.delete');
+        Route::delete('/repository/file/{file}', [\App\Http\Controllers\RepositoryController::class, 'deleteFile'])->name('admin.repository.file.delete');
+        Route::get('/repository/file/{file}/download', [\App\Http\Controllers\RepositoryController::class, 'downloadFile'])->name('admin.repository.file.download');
+        Route::put('/repository/folder/{folder}/move', [\App\Http\Controllers\RepositoryController::class, 'moveFolder'])->name('admin.repository.folder.move');
+        Route::put('/repository/file/{file}/move', [\App\Http\Controllers\RepositoryController::class, 'moveFile'])->name('admin.repository.file.move');
+        Route::get('/repository/folder/{folder}/files', [\App\Http\Controllers\RepositoryController::class, 'getFolderFiles'])->name('admin.repository.folder.files');
+
+        // Modules
+        Route::get('/matkul/{matkul}/modules', [\App\Http\Controllers\MatkulController::class, 'modules'])->name('admin.matkul.modules');
+        Route::post('/matkul/{matkul}/modules', [\App\Http\Controllers\MatkulController::class, 'storeModule'])->name('admin.matkul.modules.store');
+        Route::put('/matkul/{matkul}/modules/{module}', [\App\Http\Controllers\MatkulController::class, 'updateModule'])->name('admin.matkul.modules.update');
+        Route::delete('/matkul/{matkul}/modules/{module}', [\App\Http\Controllers\MatkulController::class, 'destroyModule'])->name('admin.matkul.modules.destroy');
     });
 });

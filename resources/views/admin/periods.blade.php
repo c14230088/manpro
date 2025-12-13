@@ -558,6 +558,7 @@
         }
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('periods').classList.add('bg-slate-100');
+            document.getElementById('periods').classList.add('active');
         });
     </script>
 @endsection

@@ -27,8 +27,8 @@ class BookingSeeder extends Seeder
 
         $bookingsData = [];
         
-        // Create various booking scenarios
-        for ($i = 1; $i <= 50; $i++) {
+        // Create various booking scenarios - increase to 150 bookings
+        for ($i = 1; $i <= 150; $i++) {
             $borrower = $users->random();
             $supervisors = $users->where('email', 'like', '%petra.ac.id')->where('email', 'not like', '%student%');
             $supervisor = $supervisors->isNotEmpty() ? $supervisors->random() : null;
