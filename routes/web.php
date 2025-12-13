@@ -8,13 +8,15 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DesksController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\MatkulController;
 use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\RepairController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\SoftwareController;
 use App\Http\Controllers\ComponentsController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\RepositoryController;
 
 Route::get('/', function () {
     return view('user.landing', ['title' => 'User | Landing Page']);
@@ -124,28 +126,28 @@ Route::middleware(['auth.permission'])->group(function () {
         Route::post('/units/create', [PermissionController::class, 'createUnit'])->name('admin.units.create');
 
         // Matkul
-        Route::get('/matkul', [\App\Http\Controllers\MatkulController::class, 'index'])->name('admin.matkul');
-        Route::post('/matkul', [\App\Http\Controllers\MatkulController::class, 'store'])->name('admin.matkul.store');
-        Route::put('/matkul/{matkul}', [\App\Http\Controllers\MatkulController::class, 'update'])->name('admin.matkul.update');
-        Route::delete('/matkul/{matkul}', [\App\Http\Controllers\MatkulController::class, 'destroy'])->name('admin.matkul.destroy');
+        Route::get('/matkul', [MatkulController::class, 'index'])->name('admin.matkul');
+        Route::post('/matkul', [MatkulController::class, 'store'])->name('admin.matkul.store');
+        Route::put('/matkul/{matkul}', [MatkulController::class, 'update'])->name('admin.matkul.update');
+        Route::delete('/matkul/{matkul}', [MatkulController::class, 'destroy'])->name('admin.matkul.destroy');
 
         // Repository
-        Route::get('/repository', [\App\Http\Controllers\RepositoryController::class, 'index'])->name('admin.repository');
-        Route::post('/repository/folder', [\App\Http\Controllers\RepositoryController::class, 'createFolder'])->name('admin.repository.folder.create');
-        Route::post('/repository/upload', [\App\Http\Controllers\RepositoryController::class, 'uploadFile'])->name('admin.repository.upload');
-        Route::put('/repository/folder/{folder}/rename', [\App\Http\Controllers\RepositoryController::class, 'renameFolder'])->name('admin.repository.folder.rename');
-        Route::put('/repository/file/{file}/rename', [\App\Http\Controllers\RepositoryController::class, 'renameFile'])->name('admin.repository.file.rename');
-        Route::delete('/repository/folder/{folder}', [\App\Http\Controllers\RepositoryController::class, 'deleteFolder'])->name('admin.repository.folder.delete');
-        Route::delete('/repository/file/{file}', [\App\Http\Controllers\RepositoryController::class, 'deleteFile'])->name('admin.repository.file.delete');
-        Route::get('/repository/file/{file}/download', [\App\Http\Controllers\RepositoryController::class, 'downloadFile'])->name('admin.repository.file.download');
-        Route::put('/repository/folder/{folder}/move', [\App\Http\Controllers\RepositoryController::class, 'moveFolder'])->name('admin.repository.folder.move');
-        Route::put('/repository/file/{file}/move', [\App\Http\Controllers\RepositoryController::class, 'moveFile'])->name('admin.repository.file.move');
-        Route::get('/repository/folder/{folder}/files', [\App\Http\Controllers\RepositoryController::class, 'getFolderFiles'])->name('admin.repository.folder.files');
+        Route::get('/repository', [RepositoryController::class, 'index'])->name('admin.repository');
+        Route::post('/repository/folder', [RepositoryController::class, 'createFolder'])->name('admin.repository.folder.create');
+        Route::post('/repository/upload', [RepositoryController::class, 'uploadFile'])->name('admin.repository.upload');
+        Route::put('/repository/folder/{folder}/rename', [RepositoryController::class, 'renameFolder'])->name('admin.repository.folder.rename');
+        Route::put('/repository/file/{file}/rename', [RepositoryController::class, 'renameFile'])->name('admin.repository.file.rename');
+        Route::delete('/repository/folder/{folder}', [RepositoryController::class, 'deleteFolder'])->name('admin.repository.folder.delete');
+        Route::delete('/repository/file/{file}', [RepositoryController::class, 'deleteFile'])->name('admin.repository.file.delete');
+        Route::get('/repository/file/{file}/download', [RepositoryController::class, 'downloadFile'])->name('admin.repository.file.download');
+        Route::put('/repository/folder/{folder}/move', [RepositoryController::class, 'moveFolder'])->name('admin.repository.folder.move');
+        Route::put('/repository/file/{file}/move', [RepositoryController::class, 'moveFile'])->name('admin.repository.file.move');
+        Route::get('/repository/folder/{folder}/files', [RepositoryController::class, 'getFolderFiles'])->name('admin.repository.folder.files');
 
         // Modules
-        Route::get('/matkul/{matkul}/modules', [\App\Http\Controllers\MatkulController::class, 'modules'])->name('admin.matkul.modules');
-        Route::post('/matkul/{matkul}/modules', [\App\Http\Controllers\MatkulController::class, 'storeModule'])->name('admin.matkul.modules.store');
-        Route::put('/matkul/{matkul}/modules/{module}', [\App\Http\Controllers\MatkulController::class, 'updateModule'])->name('admin.matkul.modules.update');
-        Route::delete('/matkul/{matkul}/modules/{module}', [\App\Http\Controllers\MatkulController::class, 'destroyModule'])->name('admin.matkul.modules.destroy');
+        Route::get('/matkul/{matkul}/modules', [MatkulController::class, 'modules'])->name('admin.matkul.modules');
+        Route::post('/matkul/{matkul}/modules', [MatkulController::class, 'storeModule'])->name('admin.matkul.modules.store');
+        Route::put('/matkul/{matkul}/modules/{module}', [MatkulController::class, 'updateModule'])->name('admin.matkul.modules.update');
+        Route::delete('/matkul/{matkul}/modules/{module}', [MatkulController::class, 'destroyModule'])->name('admin.matkul.modules.destroy');
     });
 });
