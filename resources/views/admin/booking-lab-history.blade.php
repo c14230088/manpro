@@ -141,12 +141,33 @@
                 </div>
 
                 <div class="md:col-span-4">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Status</label>
+                    <select id="filter_status" class="w-full rounded-lg border-gray-300 focus:border-petra-blue focus:ring text-sm">
+                        <option value="">Semua Status</option>
+                        <option value="approved">Disetujui (Active)</option>
+                        <option value="rejected">Ditolak</option>
+                        <option value="completed">Selesai (Returned)</option>
+                        <option value="overdue">Terlambat</option>
+                        <option value="pending">Menunggu (Pending)</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-3">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Periode Akademik</label>
                     <select id="filter_period" class="w-full rounded-lg border-gray-300 focus:border-petra-blue focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm">
                         <option value="">Semua Periode</option>
                         @foreach($periods as $period)
-                        <option value="{{ $period->id }}">{{ $period->academic_year }}</option>
+                        <option value="{{ $period->id }}">{{ $period->academic_year }} - {{ $period->semester }}</option>
                         @endforeach
+                    </select>
+                </div>
+
+                <div class="md:col-span-3">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Konteks Tanggal</label>
+                    <select id="filter_date_type" class="w-full rounded-lg border-gray-300 focus:border-petra-blue focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm bg-gray-50">
+                        <option value="borrow_date">Tgl. Pinjam (Start)</option>
+                        <option value="due_date">Tgl. Tenggat (Due)</option>
+                        <option value="return_date">Tgl. Kembali (End)</option>
                     </select>
                 </div>
 
@@ -160,20 +181,8 @@
                     <input type="date" id="filter_date_end" class="w-full rounded-lg border-gray-300 focus:border-petra-blue focus:ring text-sm">
                 </div>
 
-                <div class="md:col-span-3">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Status</label>
-                    <select id="filter_status" class="w-full rounded-lg border-gray-300 focus:border-petra-blue focus:ring text-sm">
-                        <option value="">Semua Status</option>
-                        <option value="approved">Disetujui (Active)</option>
-                        <option value="rejected">Ditolak</option>
-                        <option value="completed">Selesai (Returned)</option>
-                        <option value="overdue">Terlambat</option>
-                        <option value="pending">Menunggu (Pending)</option>
-                    </select>
-                </div>
-
-                <div class="md:col-span-3 flex items-end">
-                    <button type="button" id="btn-reset" class="w-full bg-gray-100 border border-gray-300 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 hover:text-gray-800 transition shadow-sm font-medium text-sm flex items-center justify-center gap-2 h-[42px]">
+                <div class="md:col-span-12 flex justify-end mt-2">
+                    <button type="button" id="btn-reset" class="bg-gray-100 border border-gray-300 text-gray-600 px-6 py-2 rounded-lg hover:bg-gray-200 hover:text-gray-800 transition shadow-sm font-medium text-sm flex items-center justify-center gap-2">
                         <i class="fa-solid fa-rotate-left"></i> Reset Filter
                     </button>
                 </div>
@@ -194,11 +203,12 @@
         const container = document.getElementById('history-data');
         const loadingIndicator = document.getElementById('loading-indicator');
         const searchInput = document.getElementById('filter_search');
-        
+
         const filters = {
             search: searchInput,
             lab_id: document.getElementById('filter_lab'),
             period_id: document.getElementById('filter_period'),
+            date_type: document.getElementById('filter_date_type'),
             date_start: document.getElementById('filter_date_start'),
             date_end: document.getElementById('filter_date_end'),
             status: document.getElementById('filter_status')
@@ -213,9 +223,9 @@
             let fetchUrl = url || "{{ route('admin.historylabs') }}";
 
             const params = new URLSearchParams();
-            
+
             const currentUrlObj = new URL(fetchUrl, window.location.origin);
-            
+
             for (const key in filters) {
                 if (filters[key].value) {
                     currentUrlObj.searchParams.set(key, filters[key].value);
@@ -223,25 +233,25 @@
             }
 
             fetch(currentUrlObj.toString(), {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                container.innerHTML = data.html;
-                
-                updateStats(data.stats);
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    container.innerHTML = data.html;
 
-                container.style.opacity = '1';
-                loadingIndicator.classList.add('hidden');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                loadingIndicator.classList.add('hidden');
-                container.style.opacity = '1';
-                alert('Gagal memuat data. Silakan coba lagi.');
-            });
+                    updateStats(data.stats);
+
+                    container.style.opacity = '1';
+                    loadingIndicator.classList.add('hidden');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loadingIndicator.classList.add('hidden');
+                    container.style.opacity = '1';
+                    alert('Gagal memuat data. Silakan coba lagi.');
+                });
         }
 
         function updateStats(stats) {
@@ -250,18 +260,18 @@
             const elTopCount = document.getElementById('stat-top-lab-count');
             const elFilterLabel = document.getElementById('stat-filter-label');
 
-            if(elTotal) elTotal.textContent = stats.total_bookings;
-            
-            if(elTopName) {
+            if (elTotal) elTotal.textContent = stats.total_bookings;
+
+            if (elTopName) {
                 elTopName.textContent = stats.top_lab_name;
                 elTopName.title = stats.top_lab_name;
             }
-            
-            if(elTopCount) elTopCount.textContent = stats.top_lab_count;
 
-            if(elFilterLabel) {
+            if (elTopCount) elTopCount.textContent = stats.top_lab_count;
+
+            if (elFilterLabel) {
                 elFilterLabel.textContent = stats.is_filtered ? 'Filter Aktif' : 'Semua Waktu';
-                if(stats.is_filtered) {
+                if (stats.is_filtered) {
                     elFilterLabel.classList.add('text-petra-blue');
                     elFilterLabel.classList.remove('text-gray-800');
                 } else {
@@ -272,7 +282,7 @@
         }
 
 
-        ['lab_id', 'period_id', 'date_start', 'date_end', 'status'].forEach(key => {
+        ['lab_id', 'period_id', 'date_start', 'date_end', 'status', 'date_type'].forEach(key => {
             filters[key].addEventListener('change', () => fetchHistory());
         });
 
@@ -280,13 +290,13 @@
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 fetchHistory();
-            }, 500); 
+            }, 500);
         });
 
         container.addEventListener('click', function(e) {
-            const link = e.target.closest('.pagination a, a.page-link'); 
-            
-            if (e.target.closest('nav a')) { 
+            const link = e.target.closest('.pagination a, a.page-link');
+
+            if (e.target.closest('nav a')) {
                 e.preventDefault();
                 const href = e.target.closest('nav a').getAttribute('href');
                 if (href) {
