@@ -111,6 +111,7 @@ Route::middleware(['auth.permission'])->group(function () {
 
         // History
         Route::get('/history/labs', [HistoryController::class, 'historylabs'])->name('admin.historylabs');
+        Route::get('/history/inventaris', [HistoryController::class, 'historyinventaris'])->name('admin.historyinventaris');
 
 
         // RBAC

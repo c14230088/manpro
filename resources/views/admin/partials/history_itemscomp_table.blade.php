@@ -5,67 +5,112 @@
                 <tr class="border-b border-gray-200">
                     <th class="px-6 py-4 text-left whitespace-nowrap">Timestamp</th>
                     <th class="px-6 py-4 text-left whitespace-nowrap">Data Peminjam</th>
-                    <th class="px-6 py-4 text-left whitespace-nowrap">Lab & Periode</th>
+                    <th class="px-6 py-4 text-left whitespace-nowrap">Detail Barang</th>
                     <th class="px-6 py-4 text-left whitespace-nowrap">Tujuan</th>
                     <th class="px-6 py-4 text-left whitespace-nowrap">Booking Details</th>
                     <th class="px-6 py-4 text-left whitespace-nowrap">Approved By</th>
-                    <th class="px-6 py-4 text-left whitespace-nowrap">Returned Details</th>
-                    <th class="px-6 py-4 text-center whitespace-nowrap">Status</th>
-                    <!-- <th class="px-6 py-4 text-center whitespace-nowrap">Aksi</th> -->
+                    <th class="px-6 py-4 text-left whitespace-nowrap">Returned Date</th>
+                    <th class="px-6 py-4 text-left whitespace-nowrap">Status Pinjam</th>
+                    <th class="px-6 py-4 text-center whitespace-nowrap">Kondisi Akhir</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @forelse($histories as $history)
                 <tr class="hover:bg-gray-50 transition-colors">
+
+                    {{-- -timestamp --}}
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900">
-                            {{ $history->created_at->format('d M Y') }}
+                            {{-- Mengambil dari kolom yang kita select alias tadi --}}
+                            {{ \Carbon\Carbon::parse($history->booking_created_at)->format('d M Y') }}
                         </div>
                         <div class="text-xs text-gray-500">
-                            {{ $history->created_at->format('H:i') }} WIB
+                            {{ \Carbon\Carbon::parse($history->booking_created_at)->format('H:i') }} WIB
                         </div>
                     </td>
-
+                    {{-- -pemimhjam --}}
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
                             <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-petra-blue font-bold text-xs mr-3">
-                                {{ substr($history->borrower->name ?? '?', 0, 2) }}
+                                {{-- Akses: Item -> Booking -> Borrower -> Name --}}
+                                {{ substr($history->booking->borrower->name ?? '?', 0, 2) }}
                             </div>
                             <div>
                                 <div class="text-sm font-bold text-gray-800">
-                                    {{ $history->borrower->name ?? 'User Terhapus' }}
+                                    {{ $history->booking->borrower->name ?? 'User Terhapus' }}
                                 </div>
                                 <div class="text-xs text-gray-500">
-                                    {{ $history->borrower->email ?? '-' }}
+                                    {{ $history->booking->borrower->email ?? '-' }}
                                 </div>
                             </div>
                         </div>
                     </td>
 
+                    {{--item dipinjam --}}
+
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex flex-col gap-1">
-                            <div class="text-sm font-bold text-petra-blue flex items-center gap-1">
-                                <i class="fa-solid fa-desktop text-xs opacity-50"></i>
-                                {{ $history->lab_name ?? 'Unknown Lab' }}
+                        <div class="text-sm font-medium text-gray-900">
+                            @if($history->bookable)
+                            <button type="button"
+                                class="hover:text-petra-blue hover:underline text-left focus:outline-none font-bold btn-detail-trigger"
+                                data-id="{{ $history->bookable_id }}"
+                                data-type="{{ $history->bookable_type }}">
+                                {{ $history->bookable->name }}
+                            </button>
+                            @else
+                            <span class="text-red-500 italic">Item Terhapus</span>
+                            @endif
+                        </div>
+                        @if(str_contains($history->bookable_type, 'Component'))
+                        <span class="text-xs text-amber-600 bg-amber-50 px-2 rounded border border-amber-100">Komponen</span>
+                        @else
+                        <span class="text-xs text-blue-600 bg-blue-50 px-2 rounded border border-blue-100">Item</span>
+                        @endif
+
+                        <div class="text-xs text-gray-500 mt-2 flex flex-col gap-0.5">
+                            @php
+                            $labName = 'Unknown Lab';
+                            $deskName = null;
+                            $bookable = $history->bookable;
+
+                            // Logika Penentuan Lokasi (Cek Lab langsung dulu, baru cek via Meja)
+                            if ($bookable instanceof \App\Models\Items) {
+                            $labName = $bookable->desk->lab->name ?? 'Unknown Lab';
+                            $deskName = $bookable->desk->location ?? null;
+                            }
+                            elseif ($bookable instanceof \App\Models\Components) {
+                            $labName = $bookable->item->lab->name ?? $bookable->item->desk->lab->name ?? 'Unknown Lab';
+                            $deskName = $bookable->item->desk->location ?? null;
+                            }
+                            @endphp
+
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-medium text-gray-600">
+                                    {{ $labName }}
+                                    @if($deskName)
+                                    <span class="text-gray-300 mx-1">•</span> {{ $deskName }}
+                                    @endif
+                                </span>
                             </div>
                         </div>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 mt-2">
-                            <i class="fa-solid fa-calendar-week mr-1.5 text-gray-400"></i>
-                            {{ $history->period->academic_year ?? '-' }} - {{ $history->period->semester ?? '-' }}
-                        </span>
+
                     </td>
 
+                    {{-- tujuan --}}
                     <td class="px-6 py-4">
-                        <div class="text-sm text-gray-800 font-medium truncate w-32" title="{{ $history->event_name }}">
-                            {{ $history->event_name ?? '-' }}
+                        <div class="flex flex-col gap-1 w-48">
+                            <div class="text-sm font-medium text-gray-900 truncate" title="{{ $history->booking->event_name }}">
+                                {{ $history->booking->event_name ?? '-' }}
+                            </div>
                         </div>
                     </td>
 
+                    {{-- booking details --}}
                     <td class="px-6 py-4">
                         <div class="flex flex-col gap-1 w-48">
                             <div class="text-xs text-gray-500 mb-1">Jadwal:</div>
                             <div class="text-sm font-bold text-gray-700">
-                                {{ \Carbon\Carbon::parse($history->borrowed_at)->format('d M H:i') }}
+                                {{ \Carbon\Carbon::parse($history->plan_borrowed_at)->format('d M H:i') }}
                             </div>
                             <div class="text-xs text-gray-400">
                                 s.d. {{ \Carbon\Carbon::parse($history->return_deadline_at)->format('d M H:i') }}
@@ -73,6 +118,7 @@
                         </div>
                     </td>
 
+                    {{-- approved by --}}
                     <td class="px-6 py-4 whitespace-nowrap">
                         @if($history->approver)
                         <div class="text-sm font-medium text-gray-800">
@@ -88,6 +134,7 @@
                         @endif
                     </td>
 
+                    {{-- -returned date --}}
                     <td class="px-6 py-4 whitespace-nowrap">
                         @if($history->returned_at)
                         <div class="flex flex-col">
@@ -99,9 +146,12 @@
                             </div>
                         </div>
                         @else
-                        <div class="text-sm text-gray-400 text-center">-</div>
+                        <div class="text-center"> <span class="text-gray-400 text-xs italic text-center"> - </span>
+                        </div>
                         @endif
                     </td>
+
+                    {{-- -status sekarang --}}
 
                     <td class="px-6 py-4 text-center whitespace-nowrap">
                         @php
@@ -134,11 +184,17 @@
                         </span>
                     </td>
 
-                    <!-- <td class="px-6 py-4 text-center whitespace-nowrap">
-                        <button class="text-gray-400 hover:text-petra-blue transition" title="Lihat Detail">
-                            <i class="fa-solid fa-circle-info text-lg"></i>
-                        </button>
-                    </td> -->
+                    {{-- -kondisi akhir --}}
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @if($history->returned_status === 0)
+                        <span class="text-red-500 text-xs font-bold">Rusak</span>
+                        @elseif($history->returned_status === 1)
+                        <span class="text-blue-600 text-xs font-bold">Normal</span>
+                        @else
+                        <div class="text-center"> <span class="text-gray-400 text-xs italic text-center"> - </span>
+                        </div> @endif
+                    </td>
+
                 </tr>
                 @empty
                 <tr>
