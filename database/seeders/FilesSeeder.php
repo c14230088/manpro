@@ -38,8 +38,6 @@ class FilesSeeder extends Seeder
             ['name' => 'Videos', 'full_path' => '/Videos'],
             ['name' => 'Reports', 'full_path' => '/Reports'],
             ['name' => 'Manuals', 'full_path' => '/Manuals'],
-            ['name' => 'Matkuls', 'full_path' => '/Matkuls'],
-            ['name' => 'Modules', 'full_path' => '/Modules'],
         ];
 
         $createdFolders = [];
