@@ -75,7 +75,7 @@
 
                             // Logika Penentuan Lokasi (Cek Lab langsung dulu, baru cek via Meja)
                             if ($bookable instanceof \App\Models\Items) {
-                            $labName = $bookable->desk->lab->name ?? 'Unknown Lab';
+                            $labName = $bookable->lab->name ?? $bookable->desk->lab->name ?? 'Unknown Lab';
                             $deskName = $bookable->desk->location ?? null;
                             }
                             elseif ($bookable instanceof \App\Models\Components) {
