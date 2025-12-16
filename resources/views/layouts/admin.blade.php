@@ -85,7 +85,7 @@
         
         a:hover svg, a.active svg { animation: iconGlow 2s ease-in-out infinite; }
         
-        #labs:hover svg, #labs.active svg { color: #3b82f6; }
+        /* #labs:hover svg, #labs.active svg { color: #3b82f6; }
         #items:hover svg, #items.active svg { color: #8b5cf6; }
         #sets:hover svg, #sets.active svg { color: #10b981; }
         #softwares:hover svg, #softwares.active svg { color: #b3621a; }
@@ -97,7 +97,21 @@
         #matkul:hover svg, #matkul.active svg { color: #06b6d4; }
         #report_repairs:hover svg, #report_repairs.active svg { color: #84cc16; }
         #repository:hover svg, #repository.active svg { color: #f59e0b; }
-        #report_bookings:hover svg, #report_bookings.active svg { color: #a855f7; }
+        #report_bookings:hover svg, #report_bookings.active svg { color: #a855f7; } */
+
+        #sidenav-8 #labs:hover svg, #sidenav-8 #labs.active svg { color: #3b82f6; }
+        #sidenav-8 #items:hover svg, #sidenav-8 #items.active svg { color: #8b5cf6; }
+        #sidenav-8 #sets:hover svg, #sidenav-8 #sets.active svg { color: #10b981; }
+        #sidenav-8 #softwares:hover svg, #sidenav-8 #softwares.active svg { color: #b3621a; }
+        #sidenav-8 #repairs:hover svg, #sidenav-8 #repairs.active svg { color: #ef4444; }
+        #sidenav-8 #bookings:hover svg, #sidenav-8 #bookings.active svg { color: #ec4899; }
+        #sidenav-8 #roles:hover svg, #sidenav-8 #roles.active svg { color: #14b8a6; }
+        #sidenav-8 #permissions:hover svg, #sidenav-8 #permissions.active svg { color: #6366f1; }
+        #sidenav-8 #periods:hover svg, #sidenav-8 #periods.active svg { color: #f97316; }
+        #sidenav-8 #matkul:hover svg, #sidenav-8 #matkul.active svg { color: #06b6d4; }
+        #sidenav-8 #report_repairs:hover svg, #sidenav-8 #report_repairs.active svg { color: #84cc16; }
+        #sidenav-8 #repository:hover svg, #sidenav-8 #repository.active svg { color: #f59e0b; }
+        #sidenav-8 #report_bookings:hover svg, #sidenav-8 #report_bookings.active svg { color: #a855f7; }
 
         .ts-control {
             display: block;

@@ -226,7 +226,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @foreach ($softwares as $software)
-                            <tr class="hover:bg-gray-50 transition-colors group">
+                            <tr class="hover:bg-gray-50 transition-colors">
 
                                 {{-- Name & Desc --}}
                                 <td class="px-6 py-4">
