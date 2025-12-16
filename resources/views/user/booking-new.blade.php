@@ -393,6 +393,12 @@
                                     <select id="lab-select" class="form-input w-full">
                                         <option value="">-- Pilih Lab --</option>
                                     </select>
+                                    
+                                    <small id="lab-capacity-info" class="hidden text-gray-500 mt-2 block transition-all duration-300">
+                                    <i class="fa-solid fa-users text-petra-blue mr-1"></i> 
+                                        Kapasitas Maksimal: <span id="capacity-value" class="font-bold text-gray-800">0</span> orang
+                                    </small>
+
                                 </div>
 
                                 <!-- Jumlah Peserta -->
@@ -402,6 +408,9 @@
                                     </label>
                                     <input type="number" id="attendee_count" min="1" placeholder="Contoh: 20"
                                         class="form-input w-full">
+                                        <p id="capacity-error-msg" class="hidden text-xs text-red-500 mt-1">
+                                            Jumlah peserta melebihi kapasitas lab!
+                                        </p>
                                 </div>
                             </div>
 
@@ -1101,6 +1110,40 @@
 
             window.addEventListener('resize', syncListHeight);
 
+            // TAMBAHKAN INI: Listener saat Lab dipilih
+            const labSelect = document.getElementById('lab-select');
+            if (labSelect) {
+                labSelect.addEventListener('change', function() {
+                    const labId = this.value;
+                    const lab = allLabs.find(l => l.id == labId);
+                    const capacityInfo = document.getElementById('lab-capacity-info');
+                    const capacityValue = document.getElementById('capacity-value');
+                    const attendeeInput = document.getElementById('attendee_count');
+
+                    if (lab && lab.capacity) {
+                        // Update UI Kapasitas
+                        capacityValue.textContent = lab.capacity;
+                        capacityInfo.classList.remove('hidden');
+                        
+                        // Set atribut max pada input number agar browser juga membatasi (native)
+                        attendeeInput.max = lab.capacity; 
+                        
+                        // Validasi ulang attendee_count jika user sudah terlanjur mengisi angka
+                        validateField({ target: attendeeInput });
+                    } else {
+                        capacityInfo.classList.add('hidden');
+                        attendeeInput.removeAttribute('max');
+                    }
+                });
+            }
+
+            // TAMBAHKAN: Daftarkan attendee_count agar divalidasi saat mengetik (input) dan saat keluar (blur)
+            const attendeeInput = document.getElementById('attendee_count');
+            if (attendeeInput) {
+                attendeeInput.addEventListener('input', validateField); // Real-time check
+                attendeeInput.addEventListener('blur', validateField);
+            }
+
             ['event_name', 'phone_number', 'borrowed_at', 'return_deadline_at'].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
@@ -1128,15 +1171,36 @@
                     const borrowedAt = document.getElementById('borrowed_at').value;
                     isValid = value && borrowedAt && new Date(value) > new Date(borrowedAt);
                     break;
+                case 'attendee_count':
+                    const count = parseInt(value);
+                    const labId = document.getElementById('lab-select').value;
+                    const selectedLab = allLabs.find(l => l.id == labId);
+                    const errorMsg = document.getElementById('capacity-error-msg');
+                    
+                    // Default valid jika > 0
+                    isValid = count > 0;
+
+                    // Jika lab sudah dipilih, cek apakah melebihi kapasitas
+                    if (isValid && selectedLab && selectedLab.capacity) {
+                        if (count > selectedLab.capacity) {
+                            isValid = false; // Jadi tidak valid karena over capacity
+                            if(errorMsg) errorMsg.classList.remove('hidden'); // Munculkan pesan error teks
+                        } else {
+                            if(errorMsg) errorMsg.classList.add('hidden'); // Sembunyikan pesan error
+                        }
+                    } else {
+                        // Sembunyikan pesan error jika lab belum dipilih atau input kosong
+                        if(errorMsg) errorMsg.classList.add('hidden');
+                    }
+                    break;
             }
 
-            if (value === '') {
+            if (value === '' && field.id !== 'attendee_count') { // Khusus attendee count biarkan merah jika kosong
                 field.classList.remove('border-red-500', 'border-green-500');
             } else {
                 field.classList.remove('border-red-500', 'border-green-500');
                 field.classList.add(isValid ? 'border-green-500' : 'border-red-500');
             }
-
             return isValid;
         }
 

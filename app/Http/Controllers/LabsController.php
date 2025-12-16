@@ -31,7 +31,8 @@ class LabsController extends Controller
                     'pc'       => $lab->qty_pc ?? 20,
                     'keyboard' => $lab->qty_keyboard ?? 20,
                     'mouse'    => $lab->qty_mouse ?? 20,
-                ]
+                ], 
+                'capacity' => $lab->capacity ?? 0
             ];
         });
 
