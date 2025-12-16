@@ -91,8 +91,8 @@
         #softwares:hover svg, #softwares.active svg { color: #b3621a; }
         #repairs:hover svg, #repairs.active svg { color: #ef4444; }
         #bookings:hover svg, #bookings.active svg { color: #ec4899; }
-        #roles:hover svg, #roles.active svg { color: #6366f1; }
-        #permissions:hover svg, #permissions.active svg { color: #14b8a6; }
+        #roles:hover svg, #roles.active svg { color: #14b8a6; }
+        #permissions:hover svg, #permissions.active svg { color: #6366f1; }
         #periods:hover svg, #periods.active svg { color: #f97316; }
         #matkul:hover svg, #matkul.active svg { color: #06b6d4; }
         #report_repairs:hover svg, #report_repairs.active svg { color: #84cc16; }
