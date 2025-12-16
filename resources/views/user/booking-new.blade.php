@@ -319,8 +319,11 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                                         Nama Kegiatan <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" id="event_name" required placeholder="Contoh: Praktikum Jarkom"
-                                        class="form-input w-full">
+                                    <input type="text" id="event_name" required placeholder="Contoh: Praktikum Jarkom" class="form-input w-full">
+                                    <p id="error-event_name" class="hidden text-xs text-red-500 mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation"></i> <span></span>
+                                    </p>
+                                    
                                 </div>
 
                                 <!-- Tanggal Mulai -->
@@ -329,6 +332,9 @@
                                         Mulai Pinjam <span class="text-red-500">*</span>
                                     </label>
                                     <input type="datetime-local" id="borrowed_at" required class="form-input w-full">
+                                    <p id="error-borrowed_at" class="hidden text-xs text-red-500 mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation"></i> <span></span>
+                                    </p>
                                 </div>
 
                                 <!-- Nomor WhatsApp -->
@@ -336,8 +342,10 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                                         No. WhatsApp <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="tel" id="phone_number" required pattern="^\d{10,20}$"
-                                        placeholder="08123456789" class="form-input w-full">
+                                    <input type="tel" id="phone_number" required pattern="^\d{10,20}$" placeholder="08123456789" class="form-input w-full">
+                                    <p id="error-phone_number" class="hidden text-xs text-red-500 mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation"></i> <span></span>
+                                    </p>
                                 </div>
                             </div>
 
@@ -361,6 +369,9 @@
                                         Selesai Pinjam <span class="text-red-500">*</span>
                                     </label>
                                     <input type="datetime-local" id="return_deadline_at" required class="form-input w-full">
+                                    <p id="error-return_deadline_at" class="hidden text-xs text-red-500 mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation"></i> <span></span>
+                                    </p>
                                 </div>
 
                                 <!-- Detail Akademik (Opsional) -->
@@ -1107,6 +1118,13 @@
             document.getElementById('browse-items-btn')?.addEventListener('click', browseItems);
             document.getElementById('clear-cart-btn')?.addEventListener('click', clearCart);
             document.getElementById('submit-btn')?.addEventListener('click', submitBooking);
+            document.getElementById('borrowed_at').addEventListener('change', function() {
+                // Re-validate return date jika sudah ada isinya
+                const returnInput = document.getElementById('return_deadline_at');
+                if (returnInput.value) {
+                    validateField({ target: returnInput });
+                }
+            });
 
             window.addEventListener('resize', syncListHeight);
 
@@ -1152,55 +1170,142 @@
             });
         }
 
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorEl = document.getElementById(`error-${fieldId}`);
+            
+            if (field) {
+                field.classList.remove('border-green-500', 'border-gray-300');
+                field.classList.add('border-red-500');
+            }
+            
+            if (errorEl) {
+                errorEl.querySelector('span').textContent = message;
+                errorEl.classList.remove('hidden');
+                // Animasi kecil
+                gsap.fromTo(errorEl, {y: -5, opacity: 0}, {y: 0, opacity: 1, duration: 0.2});
+            }
+        }
+
+        function clearError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorEl = document.getElementById(`error-${fieldId}`);
+            
+            if (field) {
+                field.classList.remove('border-red-500');
+                field.classList.add('border-green-500');
+            }
+            
+            if (errorEl) {
+                errorEl.classList.add('hidden');
+            }
+        }
+
         function validateField(e) {
             const field = e.target;
             const value = field.value.trim();
-            let isValid = false;
+            const fieldId = field.id;
+            let errorMessage = "";
+            let isValid = true;
 
-            switch (field.id) {
+            if (value === '' && fieldId !== 'attendee_count') {
+                showError(fieldId, 'Field ini wajib diisi');
+                return false;
+            }
+
+            switch (fieldId) {
                 case 'event_name':
-                    isValid = value.length >= 3 && value.length <= 255;
+                    if (value.length < 3) {
+                        isValid = false;
+                        errorMessage = "Nama kegiatan terlalu pendek (min. 3 karakter)";
+                    } else if (value.length > 255) {
+                        isValid = false;
+                        errorMessage = "Nama kegiatan terlalu panjang (max. 255 karakter)";
+                    }
                     break;
+
                 case 'phone_number':
-                    isValid = /^\d{10,20}$/.test(value);
+                    // Regex sesuai controller: /^\d{10,20}$/
+                    const phoneRegex = /^\d{10,20}$/;
+                    if (!phoneRegex.test(value)) {
+                        isValid = false;
+                        errorMessage = "Nomor WhatsApp harus angka (10-20 digit)";
+                    }
                     break;
+
                 case 'borrowed_at':
-                    isValid = value && new Date(value) > new Date();
+                    const borrowDate = new Date(value);
+                    const now = new Date();
+                    // Beri toleransi waktu sedikit (misal 1 menit) untuk delay input
+                    if (isNaN(borrowDate.getTime())) {
+                        isValid = false;
+                        errorMessage = "Format tanggal tidak valid";
+                    } else if (borrowDate < now) {
+                        isValid = false;
+                        errorMessage = "Waktu mulai tidak boleh di masa lalu";
+                    }
                     break;
+
                 case 'return_deadline_at':
-                    const borrowedAt = document.getElementById('borrowed_at').value;
-                    isValid = value && borrowedAt && new Date(value) > new Date(borrowedAt);
+                    const returnDate = new Date(value);
+                    const borrowInput = document.getElementById('borrowed_at').value;
+                    
+                    if (isNaN(returnDate.getTime())) {
+                        isValid = false;
+                        errorMessage = "Format tanggal tidak valid";
+                    } else if (!borrowInput) {
+                        isValid = false;
+                        errorMessage = "Isi waktu mulai pinjam terlebih dahulu";
+                    } else {
+                        const borrowDateRef = new Date(borrowInput);
+                        if (returnDate <= borrowDateRef) {
+                            isValid = false;
+                            errorMessage = "Waktu selesai harus setelah waktu mulai";
+                        }
+                    }
                     break;
+
                 case 'attendee_count':
+                    // Logika attendee_count yang sudah kita buat sebelumnya
+                    // Integrasikan logic error message di sini juga
                     const count = parseInt(value);
                     const labId = document.getElementById('lab-select').value;
                     const selectedLab = allLabs.find(l => l.id == labId);
-                    const errorMsg = document.getElementById('capacity-error-msg');
-                    
-                    // Default valid jika > 0
-                    isValid = count > 0;
+                    const capErrorMsg = document.getElementById('capacity-error-msg'); // Menggunakan elemen yang sudah ada
 
-                    // Jika lab sudah dipilih, cek apakah melebihi kapasitas
-                    if (isValid && selectedLab && selectedLab.capacity) {
-                        if (count > selectedLab.capacity) {
-                            isValid = false; // Jadi tidak valid karena over capacity
-                            if(errorMsg) errorMsg.classList.remove('hidden'); // Munculkan pesan error teks
-                        } else {
-                            if(errorMsg) errorMsg.classList.add('hidden'); // Sembunyikan pesan error
+                    if (!value || count < 1) {
+                        isValid = false;
+                        // Khusus attendee, kita pakai elemen error yang sudah dibuat sebelumnya atau disatukan
+                        if(capErrorMsg) {
+                            capErrorMsg.textContent = "Jumlah peserta minimal 1";
+                            capErrorMsg.classList.remove('hidden');
                         }
+                        field.classList.add('border-red-500');
+                        return false; 
+                    } else if (selectedLab && selectedLab.capacity && count > selectedLab.capacity) {
+                        isValid = false;
+                        if(capErrorMsg) {
+                            capErrorMsg.textContent = `Melebihi kapasitas lab (${selectedLab.capacity} orang)`;
+                            capErrorMsg.classList.remove('hidden');
+                        }
+                        field.classList.add('border-red-500');
+                        return false;
                     } else {
-                        // Sembunyikan pesan error jika lab belum dipilih atau input kosong
-                        if(errorMsg) errorMsg.classList.add('hidden');
+                        if(capErrorMsg) capErrorMsg.classList.add('hidden');
+                        field.classList.remove('border-red-500');
+                        field.classList.add('border-green-500');
+                        return true;
                     }
                     break;
             }
 
-            if (value === '' && field.id !== 'attendee_count') { // Khusus attendee count biarkan merah jika kosong
-                field.classList.remove('border-red-500', 'border-green-500');
+            // Terapkan hasil validasi
+            if (isValid) {
+                clearError(fieldId);
             } else {
-                field.classList.remove('border-red-500', 'border-green-500');
-                field.classList.add(isValid ? 'border-green-500' : 'border-red-500');
+                showError(fieldId, errorMessage);
             }
+
             return isValid;
         }
 
