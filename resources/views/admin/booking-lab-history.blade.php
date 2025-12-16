@@ -61,9 +61,6 @@
                         Sesuai filter terpilih
                     </p>
                 </div>
-                <div class="p-3 bg-blue-50 rounded-lg text-petra-blue">
-                    <i class="fa-solid fa-file-invoice text-xl"></i>
-                </div>
             </div>
         </div>
 
@@ -71,15 +68,12 @@
             <div class="flex justify-between items-start z-10 relative">
                 <div class="w-full pr-2">
                     <p class="text-gray-500 text-sm font-medium mb-1">Lab Paling Sering Dipinjam</p>
-                    <h3 id="stat-top-lab-name" class="text-3xl font-bold text-petra-blue truncate" title="{{ $topLabData->lab_name ?? '-' }}">
+                    <h3 id="stat-top-lab-name" class="text-2xl font-bold text-petra-blue truncate" title="{{ $topLabData->lab_name ?? '-' }}">
                         {{ $topLabData->lab_name ?? '-' }}
                     </h3>
                     <p class="text-xs text-gray-400 mt-2 font-medium">
                         Dipinjam <span id="stat-top-lab-count">{{ $topLabData->total ?? 0 }}</span> kali
                     </p>
-                </div>
-                <div class="p-3 bg-blue-50 rounded-lg text-petra-blue shrink-0">
-                    <i class="fa-solid fa-flask text-xl"></i>
                 </div>
             </div>
         </div>
@@ -88,19 +82,16 @@
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-gray-500 text-sm font-medium mb-1">Rentang Data</p>
-                    <h3 id="stat-filter-label" class="text-lg font-bold text-gray-800">
+                    <h3 id="stat-filter-label" class="text-lg font-bold text-petra-blue">
                         @if(request('date_start') || request('date_end'))
                         Filter Aktif
                         @else
                         Semua Waktu
                         @endif
                     </h3>
-                    <p class="text-xs text-gray-500 mt-2">
+                    <p class="text-xs text-gray-400 mt-2">
                         Data ditampilkan berdasarkan filter
                     </p>
-                </div>
-                <div class="p-3 bg-yellow-50 rounded-lg text-yellow-600">
-                    <i class="fa-solid fa-calendar-check text-xl"></i>
                 </div>
             </div>
         </div>
