@@ -27,7 +27,7 @@
             @yield('title', 'Lab Infor')
         @endif
     </title>
-    <link rel="icon" href="{{ asset('assets/logo/logo-robot.png') }}" type="image/svg+xml" />
+    <link rel="icon" href="data:,">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet" />
 
     <script>
@@ -674,8 +674,8 @@
         <a class="mb-3 flex flex-col items-center justify-center border-b-2 border-solid border-gray-100 py-6 outline-none"
             href="#" data-te-ripple-init data-te-ripple-color="primary">
             <div class="flex items-center justify-center space-x-3 mb-3">
-                <img src="{{ asset('assets/logo/logo-robot.png') }}" class="h-8" alt="infor" loading="lazy" />
-                <div class="border-l-2 border-gray-300 h-8"></div>
+                <!-- <img src="{{ asset('assets/logo/logo-robot.png') }}" class="h-8" alt="infor" loading="lazy" /> -->
+                <!-- <div class="border-l-2 border-gray-300 h-8"></div> -->
                 <img src="{{ asset('assets/logo/logo-piciu.png') }}" class="h-8" alt="pcu" loading="lazy" />
             </div>
             <span class="text-center font-bold">Laboratorium Informatika <br>2025/2026</span>
