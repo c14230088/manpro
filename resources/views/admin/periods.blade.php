@@ -51,19 +51,18 @@
     <div class="min-h-screen flex flex-col pb-10">
 
         {{-- Header Section --}}
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-extrabold text-gray-800 tracking-tight">Academic Periods</h1>
-                <p class="text-gray-500 text-sm mt-1">Manage semesters and academic years.</p>
+        <div class="flex flex-col md:flex-row w-full py-4 shadow-md items-center justify-between mb-5 px-6 md:px-4">
+            <h1 class="text-center md:text-left text-4xl uppercase font-bold mb-2 md:mb-0">Academic Periods</h1>
+
+            <div class="flex gap-2">
+                <button onclick="openCreateModal()"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex items-center gap-2 transition-all shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span>New Period</span>
+                </button>
             </div>
-            <button onclick="openCreateModal()"
-                class="w-full sm:w-auto group flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-indigo-200 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95">
-                <svg class="w-5 h-5 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                <span>New Period</span>
-            </button>
         </div>
 
         {{-- Filter & Search Bar (Sticky & Glassmorphism) --}}
@@ -160,20 +159,19 @@
 
                                     <div class="flex-grow">
                                         <h3 class="text-xl md:text-2xl font-bold text-gray-800 tracking-tight">
-                                            {{ $period->academic_year }}</h3>
+                                            {{ $period->academic_year }}
+                                        </h3>
                                         <p
                                             class="text-sm font-medium uppercase tracking-wider mt-1 {{ $period->active ? 'text-emerald-600' : 'text-gray-500' }}">
                                             Semester {{ $period->semester }}
                                         </p>
                                     </div>
 
-                                    <div
-                                        class="mt-6 pt-4 border-t {{ $period->active ? 'border-emerald-200' : 'border-gray-100' }}">
+                                    <div class="mt-6 pt-4 border-t {{ $period->active ? 'border-emerald-200' : 'border-gray-100' }}">
                                         @if ($period->active)
                                             <button disabled
                                                 class="w-full py-2.5 rounded-lg bg-emerald-50/50 text-emerald-600 font-semibold text-sm flex items-center justify-center gap-2 cursor-default select-none">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M5 13l4 4L19 7"></path>
                                                 </svg>
@@ -184,8 +182,8 @@
                                                 onclick="activatePeriod('{{ $period->id }}', '{{ $period->academic_year }}', '{{ $period->semester }}')"
                                                 class="w-full py-2.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold text-sm hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-300 transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.98]">
                                                 <span>Set as Active</span>
-                                                <svg class="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors"
-                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                                 </svg>
@@ -247,8 +245,8 @@
                             <div class="space-y-5">
                                 {{-- Academic Year Input --}}
                                 <div>
-                                    <label for="academic_year"
-                                        class="block text-sm font-bold text-gray-700 mb-1.5">Academic Year</label>
+                                    <label for="academic_year" class="block text-sm font-bold text-gray-700 mb-1.5">Academic
+                                        Year</label>
                                     <div class="relative">
                                         <input type="text" id="academic_year" name="academic_year"
                                             placeholder="e.g. 2024/2025" maxlength="9"
@@ -277,8 +275,7 @@
                                     <label class="block text-sm font-bold text-gray-700 mb-2">Semester</label>
                                     <div class="grid grid-cols-2 gap-3">
                                         <label class="cursor-pointer relative group">
-                                            <input type="radio" name="semester" value="GASAL" class="peer sr-only"
-                                                checked>
+                                            <input type="radio" name="semester" value="GASAL" class="peer sr-only" checked>
                                             <div
                                                 class="p-3 rounded-xl border-2 border-gray-200 bg-white hover:bg-gray-50 peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50 peer-checked:text-indigo-700 transition-all text-center shadow-sm group-hover:shadow-md">
                                                 <span class="text-sm font-bold">GASAL</span>

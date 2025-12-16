@@ -85,7 +85,7 @@
         }
 
         /* --- TAG SOURCES COLORS --- */
-        
+
         /* Direct Only (Purple) */
         .perm-tag.direct {
             background: #faf5ff;
@@ -99,11 +99,11 @@
             color: #1e40af;
             border-color: #dbeafe;
         }
-        
+
         /* Combined / Both */
         .perm-tag.combined {
             background: #e8e2b2;
-            color: #7d711a;      
+            color: #7d711a;
             border-color: #dfce50;
             font-weight: 600;
         }
@@ -172,35 +172,27 @@
     <div class="flex flex-col h-full min-h-[calc(100vh-100px)]">
 
         {{-- Header & Swap Control --}}
-        <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-800">Roles Assignment</h1>
-                <p class="text-gray-500 text-sm mt-1">Manage Units and User Access Rights</p>
-            </div>
+        <div class="flex flex-col md:flex-row w-full py-4 shadow-md items-center justify-between mb-5 px-6 md:px-4">
+            <h1 class="text-center md:text-left text-4xl uppercase font-bold mb-2 md:mb-0">Roles Assignment</h1>
 
-            <div class="flex gap-3 w-full md:w-auto">
+            <div class="flex flex-col md:flex-row gap-2">
                 {{-- Create Unit Button --}}
                 <button onclick="openCreateUnitModal()"
-                    class="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl shadow-sm hover:bg-emerald-700 transition-all duration-300">
+                    class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex items-center gap-2 transition-all shadow-sm justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                    <span class="text-sm font-semibold">Create Unit</span>
+                    <span>Create Unit</span>
                 </button>
 
                 {{-- Swap Button --}}
                 <button id="swap-mode-btn"
-                    class="group flex items-center gap-3 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-indigo-300 hover:text-indigo-600 transition-all duration-300 w-full md:w-auto justify-center">
-                    <span id="mode-text-left" class="font-bold text-sm text-indigo-600">Assign Users to Unit</span>
-                    <div class="bg-gray-100 p-1.5 rounded-full group-hover:bg-indigo-100 transition-colors">
-                        <svg id="swap-icon"
-                            class="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-transform duration-500"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                        </svg>
-                    </div>
-                    <span id="mode-text-right" class="text-sm text-gray-400 font-medium">Assign Unit to User</span>
+                    class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex items-center gap-2 transition-all shadow-sm justify-center">
+                    <svg id="swap-icon" class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                    <span id="mode-text-display">Switch Mode</span>
                 </button>
             </div>
         </div>
@@ -299,8 +291,8 @@
                         <div class="flex justify-between items-start">
                             <div class="flex items-center gap-3">
                                 <div class="bg-indigo-100 p-2 rounded-lg">
-                                    <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="2" stroke="currentColor">
+                                    <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                        stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
                                     </svg>
@@ -313,8 +305,7 @@
                             </div>
                             <button type="button" onclick="closePermModal()"
                                 class="text-gray-400 hover:text-gray-500 transition-colors">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
@@ -386,8 +377,7 @@
                     </div>
 
                     {{-- Modal Footer --}}
-                    <div
-                        class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-100 shrink-0">
+                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-100 shrink-0">
                         <button type="button" onclick="closePermModal()"
                             class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Close</button>
                     </div>
@@ -397,27 +387,36 @@
     </div>
 
     {{-- Create Unit Modal --}}
-    <div id="create-unit-modal" class="fixed inset-0 z-[2000] hidden" aria-labelledby="create-unit-title" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-gray-900 bg-opacity-60 transition-opacity backdrop-blur-sm" onclick="closeCreateUnitModal()"></div>
+    <div id="create-unit-modal" class="fixed inset-0 z-[2000] hidden" aria-labelledby="create-unit-title" role="dialog"
+        aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-60 transition-opacity backdrop-blur-sm"
+            onclick="closeCreateUnitModal()"></div>
         <div class="fixed inset-0 z-10 overflow-y-auto pointer-events-none">
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                <div class="pointer-events-auto relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-200">
+                <div
+                    class="pointer-events-auto relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-200">
                     <form id="create-unit-form" onsubmit="submitCreateUnit(event)">
                         <div class="bg-white px-4 py-4 sm:px-6 border-b border-gray-100">
                             <div class="flex justify-between items-start">
                                 <div class="flex items-center gap-3">
                                     <div class="bg-emerald-100 p-2 rounded-lg">
-                                        <svg class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        <svg class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="2" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                            </path>
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 class="text-lg font-bold leading-6 text-gray-900" id="create-unit-title">Create New Unit</h3>
+                                        <h3 class="text-lg font-bold leading-6 text-gray-900" id="create-unit-title">Create
+                                            New Unit</h3>
                                         <p class="text-xs text-gray-500">Add a new organizational unit</p>
                                     </div>
                                 </div>
-                                <button type="button" onclick="closeCreateUnitModal()" class="text-gray-400 hover:text-gray-500 transition-colors">
-                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <button type="button" onclick="closeCreateUnitModal()"
+                                    class="text-gray-400 hover:text-gray-500 transition-colors">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                        stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
@@ -427,13 +426,15 @@
                         <div class="bg-white px-4 py-5 sm:p-6">
                             <div class="space-y-4">
                                 <div>
-                                    <label for="unit-name" class="block text-sm font-semibold text-gray-700 mb-2">Unit Name <span class="text-red-500">*</span></label>
+                                    <label for="unit-name" class="block text-sm font-semibold text-gray-700 mb-2">Unit Name
+                                        <span class="text-red-500">*</span></label>
                                     <input type="text" id="unit-name" name="name" required maxlength="255"
                                         class="block w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg bg-white focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                         placeholder="e.g., IT Department">
                                 </div>
                                 <div>
-                                    <label for="unit-description" class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                                    <label for="unit-description"
+                                        class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
                                     <textarea id="unit-description" name="description" rows="3" maxlength="500"
                                         class="block w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg bg-white focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                         placeholder="Brief description of the unit"></textarea>
@@ -441,7 +442,8 @@
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-100 gap-3">
+                        <div
+                            class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-100 gap-3">
                             <button type="submit"
                                 class="inline-flex w-full justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 sm:w-auto transition-colors">
                                 Create Unit
@@ -679,22 +681,22 @@
                 }
 
                 div.innerHTML = `
-                    <div class="flex items-center w-full min-w-0">
-                        ${iconHtml}
-                        <div class="flex-1 min-w-0 mr-2">
-                            <p class="text-sm font-semibold text-gray-800 truncate group-hover:text-indigo-700 transition-colors" data-tooltip="${item.name}">${item.name}</p>
-                            <p class="text-xs text-gray-500 truncate" data-tooltip="${subText}">${subText}</p>
+                        <div class="flex items-center w-full min-w-0">
+                            ${iconHtml}
+                            <div class="flex-1 min-w-0 mr-2">
+                                <p class="text-sm font-semibold text-gray-800 truncate group-hover:text-indigo-700 transition-colors" data-tooltip="${item.name}">${item.name}</p>
+                                <p class="text-xs text-gray-500 truncate" data-tooltip="${subText}">${subText}</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end mt-1 sm:mt-0 ml-auto pl-[3.25rem] sm:pl-0">
-                        ${badgeHtml}
-                        <button onclick="event.stopPropagation(); showPermissions('${item.id}', '${state.mode === 'UNIT_TO_USER' ? 'UNIT' : 'USER'}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gray-100 text-gray-600 border border-gray-200 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-all text-xs font-medium shrink-0 shadow-sm" data-tooltip="View Permission Details">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"></path></svg>
-                            <span>Perms</span>
-                        </button>
-                    </div>
-                `;
+
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end mt-1 sm:mt-0 ml-auto pl-[3.25rem] sm:pl-0">
+                            ${badgeHtml}
+                            <button onclick="event.stopPropagation(); showPermissions('${item.id}', '${state.mode === 'UNIT_TO_USER' ? 'UNIT' : 'USER'}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gray-100 text-gray-600 border border-gray-200 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-all text-xs font-medium shrink-0 shadow-sm" data-tooltip="View Permission Details">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"></path></svg>
+                                <span>Perms</span>
+                            </button>
+                        </div>
+                    `;
                 els.leftList.appendChild(div);
             });
         }
@@ -757,32 +759,32 @@
                 }
 
                 card.innerHTML = `
-                    <div class="flex items-center flex-1 min-w-0 gap-3">
-                        ${iconHtml}
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold text-gray-800 truncate" data-tooltip="${targetItem.name}">${targetItem.name}</p>
-                            ${state.mode === 'UNIT_TO_USER' ? `<p class="text-[11px] text-gray-500 truncate" data-tooltip="${targetItem.email}">${targetItem.email}</p>` : ''}
+                        <div class="flex items-center flex-1 min-w-0 gap-3">
+                            ${iconHtml}
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-gray-800 truncate" data-tooltip="${targetItem.name}">${targetItem.name}</p>
+                                ${state.mode === 'UNIT_TO_USER' ? `<p class="text-[11px] text-gray-500 truncate" data-tooltip="${targetItem.email}">${targetItem.email}</p>` : ''}
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-t-0 border-gray-100 pt-2 sm:pt-0">
-                        <button onclick="showPermissions('${targetItem.id}', '${state.mode === 'UNIT_TO_USER' ? 'USER' : 'UNIT'}')" 
-                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-gray-200 text-gray-600 hover:text-indigo-600 hover:border-indigo-300 shadow-sm transition-all text-xs font-medium"
-                            data-tooltip="View Assigned Permissions">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"></path></svg>
-                            View
-                        </button>
+                        <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-t-0 border-gray-100 pt-2 sm:pt-0">
+                            <button onclick="showPermissions('${targetItem.id}', '${state.mode === 'UNIT_TO_USER' ? 'USER' : 'UNIT'}')" 
+                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-gray-200 text-gray-600 hover:text-indigo-600 hover:border-indigo-300 shadow-sm transition-all text-xs font-medium"
+                                data-tooltip="View Assigned Permissions">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"></path></svg>
+                                View
+                            </button>
 
-                        <div class="relative inline-block w-10 align-middle select-none h-5 shrink-0">
-                            <input type="checkbox" id="toggle-${targetItem.id}" 
-                                class="toggle-checkbox block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 top-0" 
-                                ${isChecked ? 'checked' : ''}
-                                onchange="handleToggle('${targetItem.id}', this)"
-                            />
-                            <label for="toggle-${targetItem.id}" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300"></label>
+                            <div class="relative inline-block w-10 align-middle select-none h-5 shrink-0">
+                                <input type="checkbox" id="toggle-${targetItem.id}" 
+                                    class="toggle-checkbox block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 top-0" 
+                                    ${isChecked ? 'checked' : ''}
+                                    onchange="handleToggle('${targetItem.id}', this)"
+                                />
+                                <label for="toggle-${targetItem.id}" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300"></label>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
                 els.rightList.appendChild(card);
             });
         }
@@ -951,14 +953,14 @@
             let html = '';
             for (const [groupName, perms] of Object.entries(groups)) {
                 html += `
-                    <div class="border border-gray-200 rounded-lg mb-2">
-                        <button onclick="toggleAccordion(this)" class="group-header w-full flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100 transition-colors" aria-expanded="true">
-                            <span class="text-xs font-bold uppercase text-gray-600 tracking-wider">${groupName} <span class="text-gray-400 font-normal ml-1">(${perms.length})</span></span>
-                            <svg class="accordion-icon w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div class="accordion-content bg-white">
-                            <div class="p-3 flex flex-wrap gap-2">
-                `;
+                        <div class="border border-gray-200 rounded-lg mb-2">
+                            <button onclick="toggleAccordion(this)" class="group-header w-full flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100 transition-colors" aria-expanded="true">
+                                <span class="text-xs font-bold uppercase text-gray-600 tracking-wider">${groupName} <span class="text-gray-400 font-normal ml-1">(${perms.length})</span></span>
+                                <svg class="accordion-icon w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="accordion-content bg-white">
+                                <div class="p-3 flex flex-wrap gap-2">
+                    `;
 
                 perms.forEach(p => {
                     let badgeClass = '';
@@ -982,22 +984,22 @@
                     let actionColorClass = actionColors[actionLower] || actionColors['default'];
 
                     html += `
-                        <div class="perm-tag ${badgeClass}" data-tooltip='${tooltip}'>
-                            <span class="font-medium">${p.name}</span>
-                            <span class="text-[9px] uppercase border px-1 rounded ml-1 ${actionColorClass}">${p.action}</span>
-                        </div>
-                    `;
+                            <div class="perm-tag ${badgeClass}" data-tooltip='${tooltip}'>
+                                <span class="font-medium">${p.name}</span>
+                                <span class="text-[9px] uppercase border px-1 rounded ml-1 ${actionColorClass}">${p.action}</span>
+                            </div>
+                        `;
                 });
 
                 html += `   </div>
-                        </div>
-                    </div>`;
+                            </div>
+                        </div>`;
             }
             els.modalContent.innerHTML = html;
         }
 
         // --- ACCORDION LOGIC ---
-        window.toggleAccordion = function(btn) {
+        window.toggleAccordion = function (btn) {
             const content = btn.nextElementSibling;
             const isExpanded = btn.getAttribute('aria-expanded') === 'true';
 
@@ -1069,10 +1071,10 @@
                 if (result.success) {
                     showToast('Success', result.message, 'success');
                     closeCreateUnitModal();
-                    
+
                     // Add new unit to unitsData
                     unitsData.push(result.unit);
-                    
+
                     // Re-render if in UNIT_TO_USER mode
                     if (state.mode === 'UNIT_TO_USER') {
                         renderLeftPanel();

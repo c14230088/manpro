@@ -52,9 +52,12 @@
             background-color: white;
             border: 1px solid #e5e7eb;
             padding: 6px;
-            z-index: 9999 !important; /* Force paling atas */
-            max-height: 250px; /* Batasi tinggi dropdown */
-            overflow-y: auto; /* Scroll jika item banyak */
+            z-index: 9999 !important;
+            /* Force paling atas */
+            max-height: 250px;
+            /* Batasi tinggi dropdown */
+            overflow-y: auto;
+            /* Scroll jika item banyak */
         }
 
         .ts-dropdown .option {
@@ -153,21 +156,20 @@
     <div class="min-h-screen flex flex-col pb-10" id="softwares">
 
         {{-- Header Section --}}
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 fade-in-up">
-            <div>
-                <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">Softwares and Operating System</h1>
-                <p class="text-gray-500 text-sm mt-1">Manage Applications and Operating Systems distribution across labs.</p>
-            </div>
+        <div class="flex flex-col md:flex-row w-full py-4 shadow-md items-center justify-between mb-5 px-6 md:px-4">
+            <h1 class="text-center md:text-left text-4xl uppercase font-bold mb-2 md:mb-0">Softwares & OS</h1>
 
-            <button onclick="openModal('create')"
-                class="group flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-indigo-200 transition-all duration-300 transform hover:-translate-y-0.5">
-                <svg class="w-5 h-5 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                <span>Add Software</span>
-            </button>
+            <div class="flex gap-2">
+                <button onclick="openModal('create')"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex items-center gap-2 transition-all shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span>Add Software</span>
+                </button>
+            </div>
         </div>
+
 
         {{-- Main Content Card --}}
         <div class="bg-white rounded-2xl p-0 border border-gray-200 shadow-sm overflow-hidden fade-in-up"
@@ -292,8 +294,7 @@
                                         <button onclick='openModal("edit", @json($software))'
                                             class="p-2 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-200 transition-colors"
                                             title="Edit">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                                 </path>
@@ -302,8 +303,7 @@
                                         <button onclick="deleteSoftware('{{ $software->id }}', '{{ $software->name }}')"
                                             class="p-2 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-200 transition-colors"
                                             title="Delete">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
                                                 </path>
@@ -337,17 +337,17 @@
         {{-- Backdrop --}}
         <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop"
             onclick="closeModal()"></div>
-        
+
         {{-- Wrapper with Scroll --}}
         <div class="fixed inset-0 overflow-y-auto pointer-events-none">
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                
+
                 {{-- Panel: overflow-visible penting agar dropdown bisa keluar --}}
                 <div class="pointer-events-auto relative transform rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95 border border-gray-100 overflow-visible"
                     id="modal-panel">
 
                     <form id="software-form" onsubmit="submitSoftware(event)">
-                        
+
                         {{-- Header (Rounded Top) --}}
                         <div class="bg-white p-6 rounded-t-2xl">
                             <div class="flex items-center justify-between mb-6">
@@ -380,14 +380,16 @@
                                 {{-- Name & Version --}}
                                 <div class="grid grid-cols-3 gap-4">
                                     <div class="col-span-2">
-                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Name
+                                        <label
+                                            class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Name
                                             <span class="text-rose-500">*</span></label>
                                         <input type="text" name="name" id="name" required
                                             class="block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm py-2.5 transition-shadow"
                                             placeholder="e.g. Adobe Photoshop">
                                     </div>
                                     <div class="col-span-1">
-                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Version</label>
+                                        <label
+                                            class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Version</label>
                                         <input type="text" name="version" id="version"
                                             class="block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm py-2.5 transition-shadow"
                                             placeholder="v2024">
@@ -396,7 +398,8 @@
 
                                 {{-- Description --}}
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Description</label>
+                                    <label
+                                        class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Description</label>
                                     <textarea name="description" id="description" rows="2"
                                         class="block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm transition-shadow resize-none"
                                         placeholder="Brief description..."></textarea>
@@ -404,10 +407,13 @@
 
                                 {{-- Labs Input (TomSelect) --}}
                                 <div class="relative">
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Assigned Labs</label>
+                                    <label
+                                        class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Assigned
+                                        Labs</label>
                                     {{-- Wrapper Z-Index agar Select muncul di atas elemen lain --}}
-                                    <div class="relative z-20"> 
-                                        <select id="lab_ids" name="lab_ids[]" multiple placeholder="Select labs..." autocomplete="off">
+                                    <div class="relative z-20">
+                                        <select id="lab_ids" name="lab_ids[]" multiple placeholder="Select labs..."
+                                            autocomplete="off">
                                             @foreach ($labs as $lab)
                                                 <option value="{{ $lab->id }}">{{ $lab->name }}</option>
                                             @endforeach
@@ -418,7 +424,8 @@
                         </div>
 
                         {{-- Footer (Rounded Bottom) --}}
-                        <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-2 border-t border-gray-100 rounded-b-2xl">
+                        <div
+                            class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-2 border-t border-gray-100 rounded-b-2xl">
                             <button type="submit" id="submit-btn"
                                 class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-indigo-700 sm:w-auto transition-all">
                                 <span>Save Changes</span>
@@ -444,7 +451,7 @@
         const form = document.getElementById('software-form');
         let currentMode = 'create';
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('softwares').classList.add('bg-slate-100');
             document.getElementById('softwares').classList.add('active');
 
@@ -472,12 +479,12 @@
             });
 
             // 2. Custom Search Binding
-            $('#customSearch').on('keyup', function() {
+            $('#customSearch').on('keyup', function () {
                 table.search(this.value).draw();
             });
 
             // 3. Custom Filter Binding (Column 2 = Assigned Labs)
-            $('#labFilter').on('change', function() {
+            $('#labFilter').on('change', function () {
                 table.column(2).search(this.value).draw();
             });
 
@@ -490,10 +497,10 @@
                 searchField: 'text',
                 placeholder: 'Select labs...',
                 render: {
-                    item: function(data, escape) {
+                    item: function (data, escape) {
                         return '<div class="item">' + escape(data.text) + '</div>';
                     },
-                    option: function(data, escape) {
+                    option: function (data, escape) {
                         return '<div class="option hover:bg-indigo-50 cursor-pointer">' + escape(data
                             .text) + '</div>';
                     }
