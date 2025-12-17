@@ -47,10 +47,6 @@
                             <i class="fa-solid fa-clock-rotate-left w-5 mr-2 text-center text-petra-blue"></i>Riwayat Saya
                         </a>
 
-                        <a href="#" class="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-petra-blue transition-colors">
-                            <i class="fa-solid fa-book w-5 mr-2 text-center text-petra-blue"></i>Lihat Modul
-                        </a>
-
                         <div class="border-t border-gray-100 mt-1"></div>
 
                         <a href="{{ route('user.logout') }}" class="block px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors">
