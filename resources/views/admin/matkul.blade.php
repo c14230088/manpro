@@ -64,7 +64,7 @@
                 <h2 class="text-xl font-semibold text-gray-800">Daftar Mata Kuliah</h2>
             </div>
             <div class="p-6">
-                <div class="overflow-x-auto">
+                <div id="matkul-datatable-wrapper" class="overflow-x-auto">
                     <table id="matkul-table" class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -223,6 +223,41 @@
             padding-top: 0.6rem;
             padding-bottom: 0.6rem;
         }
+
+        #matkul-datatable-wrapper,
+        #matkul-table {
+            width: 100% !important;
+        }
+
+        #matkul-table + div,
+        [data-te-datatable-pagination-ref] {
+            width: 100% !important;
+        }
+        /* FIX 1: Paksa wrapper internal TE untuk lebar 100% */
+    div[data-te-datatable-inner-ref] {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* FIX 2: Paksa tabel itu sendiri untuk lebar 100% */
+    table[data-te-datatable-ref],
+    #matkul-table { /* Tambahkan ID table kamu disini */
+        width: 100% !important;
+        max-width: 100% !important;
+        display: table !important; /* Mencegah display: block yang kadang dipasang library */
+    }
+
+    /* FIX 3: Pastikan container utama juga full width */
+    #matkul-datatable-wrapper,
+    #matkul-table {
+        width: 100% !important;
+        display: block !important;
+    }
+
+    /* FIX 4: Pagination container agar sejajar */
+    div[data-te-datatable-pagination-ref] {
+        width: 100% !important;
+    }
     </style>
 
     <script>

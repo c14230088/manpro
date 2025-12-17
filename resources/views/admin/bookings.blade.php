@@ -118,7 +118,7 @@
             </div>
             <div class="p-6">
                 {{-- Container Table --}}
-                <div class="overflow-x-auto w-full">
+                <div id="bookings-datatable-wrapper" class="overflow-x-auto w-full">
                     <table id="bookings-table" class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -296,8 +296,38 @@
         white-space: nowrap !important;
     }
 
-    /* 7. Pastikan tabel selebar mungkin */
+    #bookings-datatable-wrapper,
     #bookings-table {
+        width: 100% !important;
+    }
+
+    #bookings-table + div,
+    [data-te-datatable-pagination-ref] {
+        width: 100% !important;
+    }
+    /* FIX 1: Paksa wrapper internal TE untuk lebar 100% */
+    div[data-te-datatable-inner-ref] {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* FIX 2: Paksa tabel itu sendiri untuk lebar 100% */
+    table[data-te-datatable-ref],
+    #bookings-table { /* Tambahkan ID table kamu disini */
+        width: 100% !important;
+        max-width: 100% !important;
+        display: table !important; /* Mencegah display: block yang kadang dipasang library */
+    }
+
+    /* FIX 3: Pastikan container utama juga full width */
+    #bookings-datatable-wrapper,
+    #bookings-table {
+        width: 100% !important;
+        display: block !important;
+    }
+
+    /* FIX 4: Pagination container agar sejajar */
+    div[data-te-datatable-pagination-ref] {
         width: 100% !important;
     }
 </style>
