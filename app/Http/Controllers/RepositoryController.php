@@ -198,12 +198,32 @@ class RepositoryController extends Controller
 
     public function moveFolder(Request $request, Folders $folder)
     {
+        if ($folder->is_root) {
+            $matkul = Matkul::where('root_folder_id', $folder->id)->first();
+            if ($matkul) {
+                return response()->json(['success' => false, 'message' => 'Cannot move Matkul root folder.'], 403);
+            }
+        }
+
+        $protectedFolders = Folders::whereIn('name', ['Matkuls', 'Modules'])
+            ->whereHas('parent', fn($q) => $q->whereNull('parent_id'))
+            ->pluck('id');
+        
+        if ($protectedFolders->contains($folder->id)) {
+            return response()->json(['success' => false, 'message' => 'Cannot move protected system folder.'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'parent_id' => 'required|exists:folders,id'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
+        }
+
+        $rootFolder = Folders::whereNull('parent_id')->first();
+        if ($protectedFolders->contains($folder->id) && $request->parent_id != $rootFolder->id) {
+            return response()->json(['success' => false, 'message' => 'Protected folders can only be in root directory.'], 403);
         }
 
         $exists = Folders::where('parent_id', $request->parent_id)
@@ -245,6 +265,11 @@ class RepositoryController extends Controller
     public function downloadFile(Files $file)
     {
         $path = storage_path('app/public/repository/' . $file->stored_name);
+        
+        if (!file_exists($path)) {
+            return response()->json(['success' => false, 'message' => 'File not found'], 404);
+        }
+        
         return response()->download($path, $file->original_name);
     }
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\SoftwareController;
 use App\Http\Controllers\ComponentsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RepositoryController;
+use App\Http\Controllers\ModuleController;
 
 Route::get('/', function () {
     return view('user.landing', ['title' => 'User | Landing Page']);
@@ -146,7 +147,9 @@ Route::middleware(['auth.permission'])->group(function () {
         Route::get('/repository/folder/{folder}/files', [RepositoryController::class, 'getFolderFiles'])->name('admin.repository.folder.files');
 
         // Modules
+        Route::get('/modules', [MatkulController::class, 'allModules'])->name('admin.modules');
         Route::get('/matkul/{matkul}/modules', [MatkulController::class, 'modules'])->name('admin.matkul.modules');
+        Route::get('/matkul/{matkul}/modules/{module}/details', [MatkulController::class, 'getModuleDetails'])->name('admin.matkul.modules.details');
         Route::post('/matkul/{matkul}/modules', [MatkulController::class, 'storeModule'])->name('admin.matkul.modules.store');
         Route::put('/matkul/{matkul}/modules/{module}', [MatkulController::class, 'updateModule'])->name('admin.matkul.modules.update');
         Route::delete('/matkul/{matkul}/modules/{module}', [MatkulController::class, 'destroyModule'])->name('admin.matkul.modules.destroy');

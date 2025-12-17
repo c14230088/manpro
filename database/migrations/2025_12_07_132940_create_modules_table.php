@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('workload_hours')->nullable();
             $table->timestamp('last_edited_at')->nullable();
             $table->foreignUuid('last_edited_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignUuid('deleted_by')->nullable()->constrained('users')->nullOnDelete();
             $table->boolean('active')->default(true);
             $table->timestamps();
             $table->softDeletes();

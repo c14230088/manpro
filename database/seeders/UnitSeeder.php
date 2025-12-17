@@ -79,6 +79,35 @@ class UnitSeeder extends Seeder
             'Access Management' => [
                 ['name' => 'View Permissions', 'route' => 'admin.permissions', 'action' => 'GET'],
                 ['name' => 'Update User Permissions', 'route' => 'admin.permissions.update', 'action' => 'POST'],
+                ['name' => 'View Roles', 'route' => 'admin.roles', 'action' => 'GET'],
+                ['name' => 'Update User Roles', 'route' => 'admin.roles.update', 'action' => 'POST'],
+                ['name' => 'Create Unit', 'route' => 'admin.units.create', 'action' => 'POST'],
+            ],
+            'Matkul Management' => [
+                ['name' => 'View Matkul', 'route' => 'admin.matkul', 'action' => 'GET'],
+                ['name' => 'Create Matkul', 'route' => 'admin.matkul.store', 'action' => 'POST'],
+                ['name' => 'Update Matkul', 'route' => 'admin.matkul.update', 'action' => 'PUT'],
+                ['name' => 'Delete Matkul', 'route' => 'admin.matkul.destroy', 'action' => 'DELETE'],
+            ],
+            'Repository Management' => [
+                ['name' => 'View Repository', 'route' => 'admin.repository', 'action' => 'GET'],
+                ['name' => 'Create Folder', 'route' => 'admin.repository.folder.create', 'action' => 'POST'],
+                ['name' => 'Upload File', 'route' => 'admin.repository.upload', 'action' => 'POST'],
+                ['name' => 'Rename Folder', 'route' => 'admin.repository.folder.rename', 'action' => 'PUT'],
+                ['name' => 'Rename File', 'route' => 'admin.repository.file.rename', 'action' => 'PUT'],
+                ['name' => 'Delete Folder', 'route' => 'admin.repository.folder.delete', 'action' => 'DELETE'],
+                ['name' => 'Delete File', 'route' => 'admin.repository.file.delete', 'action' => 'DELETE'],
+                ['name' => 'Download File', 'route' => 'admin.repository.file.download', 'action' => 'GET'],
+                ['name' => 'Move Folder', 'route' => 'admin.repository.folder.move', 'action' => 'PUT'],
+                ['name' => 'Move File', 'route' => 'admin.repository.file.move', 'action' => 'PUT'],
+                ['name' => 'Get Folder Files', 'route' => 'admin.repository.folder.files', 'action' => 'GET'],
+            ],
+            'Module Management' => [
+                ['name' => 'View All Modules', 'route' => 'admin.modules', 'action' => 'GET'],
+                ['name' => 'View Matkul Modules', 'route' => 'admin.matkul.modules', 'action' => 'GET'],
+                ['name' => 'Create Module', 'route' => 'admin.matkul.modules.store', 'action' => 'POST'],
+                ['name' => 'Update Module', 'route' => 'admin.matkul.modules.update', 'action' => 'PUT'],
+                ['name' => 'Delete Module', 'route' => 'admin.matkul.modules.destroy', 'action' => 'DELETE'],
             ],
         ];
 

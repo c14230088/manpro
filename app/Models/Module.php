@@ -10,7 +10,7 @@ class Module extends Model
 {
     use HasUuids, SoftDeletes;
 
-    protected $fillable = ['file_id', 'matkul_id', 'author_id', 'workload_hours', 'last_edited_at', 'last_edited_by', 'active'];
+    protected $fillable = ['file_id', 'matkul_id', 'author_id', 'workload_hours', 'last_edited_at', 'last_edited_by', 'active', 'deleted_by'];
 
     protected $casts = [
         'active' => 'boolean',
@@ -35,5 +35,9 @@ class Module extends Model
     public function lastEditor()
     {
         return $this->belongsTo(User::class, 'last_edited_by');
+    }
+    public function deletor()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 }

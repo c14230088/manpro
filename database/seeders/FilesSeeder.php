@@ -31,6 +31,14 @@ class FilesSeeder extends Seeder
             'creator_id' => null,
         ]);
 
+        $modulesFolder = Folders::create([
+            'name' => 'Modules',
+            'parent_id' => $rootFolder->id,
+            'full_path' => '/Modules',
+            'is_root' => false,
+            'creator_id' => null
+        ]);
+
         // Create folders under root
         $folders = [
             ['name' => 'Documents', 'full_path' => '/Documents'],
@@ -60,7 +68,7 @@ class FilesSeeder extends Seeder
                 'is_root' => false,
                 'creator_id' => $adminUser->id,
             ]);
-            
+
             Folders::create([
                 'name' => 'Equipment Specs',
                 'full_path' => '/Documents/Equipment Specs',
@@ -78,7 +86,7 @@ class FilesSeeder extends Seeder
                 'is_root' => false,
                 'creator_id' => $adminUser->id,
             ]);
-            
+
             Folders::create([
                 'name' => 'Annual',
                 'full_path' => '/Reports/Annual',

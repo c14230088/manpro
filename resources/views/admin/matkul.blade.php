@@ -107,12 +107,14 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($matkul->rootFolder)
-                                            <a href="{{ route('admin.repository', ['folder' => $matkul->rootFolder->id]) }}" 
-                                               class="text-xs text-indigo-600 hover:text-indigo-800 font-mono underline flex items-center gap-1"
-                                               onclick="showLoading('Navigating...')">
+                                        @if ($matkul->rootFolder)
+                                            <a href="{{ route('admin.repository', ['folder' => $matkul->rootFolder->id]) }}"
+                                                class="text-xs text-indigo-600 hover:text-indigo-800 font-mono underline flex items-center gap-1"
+                                                onclick="navigate()">
                                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
+                                                    <path
+                                                        d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z">
+                                                    </path>
                                                 </svg>
                                                 {{ $matkul->rootFolder->full_path }}
                                             </a>
@@ -122,9 +124,10 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <button
-                                            class="btn-modules px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600 text-xs font-semibold rounded-md mr-2"
-                                            data-id="{{ $matkul->id }}" data-nama="{{ $matkul->nama }}">
-                                            Modules
+                                            class="btn-view-modules px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600 text-xs font-semibold rounded-md mr-2"
+                                            data-id="{{ $matkul->id }}" data-nama="{{ $matkul->nama }}"
+                                            data-modules='@json($matkul->modules)'>
+                                            Modules ({{ $matkul->modules->count() }})
                                         </button>
                                         <button
                                             class="btn-edit px-3 py-1.5 bg-yellow-500 text-white hover:bg-yellow-600 text-xs font-semibold rounded-md mr-2"
@@ -157,7 +160,8 @@
                     <h3 id="modal-title" class="text-lg font-semibold text-gray-900">Tambah Mata Kuliah</h3>
                     <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12">
                             </path>
                         </svg>
                     </button>
@@ -226,7 +230,17 @@
         let dataTableInstance;
         let isEditMode = false;
 
+        function navigate() {
+            showLoading('Navigating...');
+            setTimeout(() => {
+                Swal.close();
+            }, 1500);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('matkul').classList.add('bg-slate-100');
+            document.getElementById('matkul').classList.add('active');
+
             tomSelects.sks = new TomSelect('#filter_sks', {
                 plugins: ['clear_button']
             });
@@ -283,11 +297,34 @@
                 if (e.target.id === 'modal-overlay') closeModal();
             });
 
-            document.body.addEventListener('click', (e) => {
-                if (e.target.closest('.btn-modules')) {
-                    const btn = e.target.closest('.btn-modules');
-                    showLoading('Loading modules...');
-                    window.location.href = `/admin/matkul/${btn.dataset.id}/modules`;
+            document.body.addEventListener('click', async (e) => {
+                if (e.target.closest('.btn-view-modules')) {
+                    const btn = e.target.closest('.btn-view-modules');
+                    const matkulId = btn.dataset.id;
+                    const matkulNama = btn.dataset.nama;
+                    const modules = JSON.parse(btn.dataset.modules);
+
+                    if (modules.length === 0) {
+                        try {
+                            showLoading('Loading...');
+                            const response = await fetch(
+                                `/admin/matkul/${matkulId}/modules/deleted/details`);
+                            const data = await response.json();
+                            Swal.close();
+
+                            if (data.success && data.deleted && data.deleted.length > 0) {
+                                showDeletedOnlyModal(matkulNama, data.deleted);
+                            } else {
+                                Swal.fire('Info', 'No modules found for this matkul', 'info');
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            Swal.fire('Error', error.message || 'Failed to load modules', 'error');
+                        }
+                        return;
+                    }
+
+                    showMatkulModulesModal(matkulId, matkulNama, modules);
                 }
 
                 if (e.target.closest('.btn-edit')) {
@@ -327,7 +364,8 @@
                                         }
                                     });
                                 if (response.ok) {
-                                    Swal.fire('Terhapus!', 'Matkul berhasil dihapus', 'success')
+                                    Swal.fire('Terhapus!', 'Matkul berhasil dihapus',
+                                            'success')
                                         .then(() => location.reload());
                                 } else {
                                     throw new Error('Gagal menghapus');
@@ -381,5 +419,211 @@
                 }
             });
         });
+
+        function showDeletedOnlyModal(matkulNama, deletedVersions) {
+            console.log(deletedVersions);
+            
+            const deletedHtml = deletedVersions.map(m => `
+                <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-2 text-sm">
+                    <p><strong>File:</strong> ${m.file.original_name}</p>
+                    <p><strong>Deleted At:</strong> ${new Date(m.deleted_at).toLocaleString('id-ID')}</p>
+                    <p><strong>Deleted By:</strong> ${m.deletor?.name || 'Unknown'}</p>
+                </div>
+            `).join('');
+
+            Swal.fire({
+                title: `Modules - ${matkulNama}`,
+                html: `
+                    <div class="text-left space-y-4">
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <p class="text-sm text-yellow-800">No active modules. Only deleted versions available.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-red-600 mb-2">Deleted Versions</h4>
+                            ${deletedHtml}
+                        </div>
+                    </div>
+                `,
+                width: '700px',
+                showConfirmButton: false,
+                showCloseButton: true
+            });
+        }
+
+        async function showMatkulModulesModal(matkulId, matkulNama, modules) {
+            const activeModule = modules.find(m => m.active);
+
+            if (!activeModule) {
+                return;
+            }
+
+            try {
+                showLoading('Loading details...');
+                const response = await fetch(`/admin/matkul/${matkulId}/modules/${activeModule.id}/details`);
+                const data = await response.json();
+                Swal.close();
+
+                if (!data.success) {
+                    throw new Error('Failed to load details');
+                }
+
+                let olderHtml = '<p class="text-gray-500 text-sm">No older versions</p>';
+                if (data.older.length > 0) {
+                    olderHtml = data.older.map(m => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-3 mb-2 text-sm">
+                            <p><strong>File:</strong> ${m.file.original_name}</p>
+                            <p><strong>Workload:</strong> ${m.workload_hours}h</p>
+                            <p><strong>Last Edited:</strong> ${new Date(m.last_edited_at).toLocaleString('id-ID')}</p>
+                            <a href="/admin/repository/file/${m.file_id}/download" 
+                               class="inline-block mt-2 px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600 text-xs rounded-md"
+                               onclick="showLoading('Downloading...')">Download</a>
+                        </div>
+                    `).join('');
+                }
+
+                let deletedHtml = '<p class="text-gray-500 text-sm">No deleted versions</p>';
+                if (data.deleted.length > 0) {
+                    deletedHtml = data.deleted.map(m => `
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-2 text-sm">
+                            <p><strong>File:</strong> ${m.file.original_name}</p>
+                            <p><strong>Deleted At:</strong> ${new Date(m.deleted_at).toLocaleString('id-ID')}</p>
+                            <p><strong>Deleted By:</strong> ${m.deletor?.name || 'Unknown'}</p>
+                        </div>
+                    `).join('');
+                }
+
+                Swal.fire({
+                    title: `Modules - ${matkulNama}`,
+                    html: `
+                        <div class="text-left space-y-4">
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-green-600 mb-2">Active Module</h4>
+                                <div class="text-sm space-y-1">
+                                    <p><strong>File:</strong> ${data.active.file.original_name}</p>
+                                    <p><strong>Workload:</strong> ${data.active.workload_hours}h</p>
+                                    <p><strong>Author:</strong> ${data.active.author.name}</p>
+                                </div>
+                                <div class="mt-3 flex gap-2">
+                                    <a href="/admin/repository/file/${data.active.file_id}/download" 
+                                       class="px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600 text-xs rounded-md"
+                                       onclick="showLoading('Downloading...')">Download</a>
+                                    <button onclick="editModule('${matkulId}', '${data.active.id}', ${data.active.workload_hours}, ${data.active.active ? 1 : 0})" 
+                                       class="px-3 py-1.5 bg-yellow-500 text-white hover:bg-yellow-600 text-xs rounded-md">Edit</button>
+                                    <button onclick="deleteModule('${matkulId}', '${data.active.id}')" 
+                                       class="px-3 py-1.5 bg-red-600 text-white hover:bg-red-700 text-xs rounded-md">Delete</button>
+                                </div>
+                            </div>
+                            <button onclick="toggleMatkulVersions()" class="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                                Show Older & Deleted Versions
+                            </button>
+                            <div id="matkul-older-versions" class="hidden">
+                                <h4 class="font-semibold text-blue-600 mb-2">Older Versions</h4>
+                                ${olderHtml}
+                            </div>
+                            <div id="matkul-deleted-versions" class="hidden">
+                                <h4 class="font-semibold text-red-600 mb-2">Deleted Versions</h4>
+                                ${deletedHtml}
+                            </div>
+                        </div>
+                    `,
+                    width: '700px',
+                    showConfirmButton: false,
+                    showCloseButton: true
+                });
+            } catch (error) {
+                Swal.fire('Error', error.message, 'error');
+            }
+        }
+
+        function toggleMatkulVersions() {
+            const older = document.getElementById('matkul-older-versions');
+            const deleted = document.getElementById('matkul-deleted-versions');
+            older.classList.toggle('hidden');
+            deleted.classList.toggle('hidden');
+        }
+
+        async function editModule(matkulId, moduleId, workload, active) {
+            const {
+                value: formValues
+            } = await Swal.fire({
+                title: 'Edit Module',
+                html: `
+                    <div class="text-left space-y-3">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Workload (Hours)</label>
+                            <input id="edit-workload" type="number" value="${workload}" min="0" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="flex items-center">
+                                <input id="edit-active" type="checkbox" ${active ? 'checked' : ''} class="rounded">
+                                <span class="ml-2 text-sm">Active</span>
+                            </label>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+                preConfirm: () => {
+                    return {
+                        workload_hours: document.getElementById('edit-workload').value,
+                        active: document.getElementById('edit-active').checked
+                    };
+                }
+            });
+
+            if (formValues) {
+                try {
+                    showLoading('Updating...');
+                    const response = await fetch(`/admin/matkul/${matkulId}/modules/${moduleId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify(formValues)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        Swal.fire('Success!', 'Module updated', 'success').then(() => location.reload());
+                    } else {
+                        throw new Error(result.message || 'Update failed');
+                    }
+                } catch (error) {
+                    Swal.fire('Error', error.message, 'error');
+                }
+            }
+        }
+
+        async function deleteModule(matkulId, moduleId) {
+            const result = await Swal.fire({
+                title: 'Delete Module?',
+                text: 'Are you sure?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete!'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    showLoading('Deleting...');
+                    const response = await fetch(`/admin/matkul/${matkulId}/modules/${moduleId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    });
+
+                    if (response.ok) {
+                        Swal.fire('Deleted!', 'Module deleted', 'success').then(() => location.reload());
+                    } else {
+                        throw new Error('Delete failed');
+                    }
+                } catch (error) {
+                    Swal.fire('Error', error.message, 'error');
+                }
+            }
+        }
     </script>
 @endsection
