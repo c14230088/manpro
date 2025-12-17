@@ -67,7 +67,7 @@
             <div class="flex justify-between items-start z-10 relative">
                 <div class="w-full pr-2">
                     <p class="text-gray-500 text-sm font-medium mb-1">Item Sering Dipinjam</p>
-                    <h3 id="stat-top-item-name" class="text-3xl font-bold text-petra-blue truncate" title="{{ $topItemName ?? '-' }}">
+                    <h3 id="stat-top-item-name" class="text-2xl font-bold text-petra-blue truncate" title="{{ $topItemName ?? '-' }}">
                         {{ $topItemName ?? '-' }}
                     </h3>
                     <p class="text-xs text-gray-400 mt-2 font-medium">
@@ -81,19 +81,16 @@
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-gray-500 text-sm font-medium mb-1">Rentang Data</p>
-                    <h3 id="stat-filter-label" class="text-lg font-bold text-gray-800">
+                    <h3 id="stat-filter-label" class="text-lg font-bold text-petra-blue">
                         @if(request('date_start') || request('date_end'))
                         Filter Aktif
                         @else
                         Semua Waktu
                         @endif
                     </h3>
-                    <p class="text-xs text-gray-500 mt-2">
+                    <p class="text-xs text-gray-400 mt-2">
                         Data ditampilkan berdasarkan filter
                     </p>
-                </div>
-                <div class="p-3 bg-yellow-50 rounded-lg text-yellow-600">
-                    <i class="fa-solid fa-calendar-check text-xl"></i>
                 </div>
             </div>
         </div>

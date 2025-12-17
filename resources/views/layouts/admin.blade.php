@@ -27,7 +27,7 @@
             @yield('title', 'Lab Infor')
         @endif
     </title>
-    <link rel="icon" href="{{ asset('assets/logo/logo-robot.png') }}" type="image/svg+xml" />
+    <link rel="icon" href="data:,">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet" />
 
     <script>
@@ -85,20 +85,34 @@
         
         a:hover svg, a.active svg { animation: iconGlow 2s ease-in-out infinite; }
         
-        #labs:hover svg, #labs.active svg { color: #3b82f6; }
+        /* #labs:hover svg, #labs.active svg { color: #3b82f6; }
         #items:hover svg, #items.active svg { color: #8b5cf6; }
         #sets:hover svg, #sets.active svg { color: #10b981; }
         #softwares:hover svg, #softwares.active svg { color: #b3621a; }
         #repairs:hover svg, #repairs.active svg { color: #ef4444; }
         #bookings:hover svg, #bookings.active svg { color: #ec4899; }
-        #roles:hover svg, #roles.active svg { color: #6366f1; }
-        #permissions:hover svg, #permissions.active svg { color: #14b8a6; }
+        #roles:hover svg, #roles.active svg { color: #14b8a6; }
+        #permissions:hover svg, #permissions.active svg { color: #6366f1; }
         #periods:hover svg, #periods.active svg { color: #f97316; }
         #matkul:hover svg, #matkul.active svg { color: #06b6d4; }
         #module:hover svg, #module.active svg { color: #22d3ee; }
         #report_repairs:hover svg, #report_repairs.active svg { color: #84cc16; }
         #repository:hover svg, #repository.active svg { color: #f59e0b; }
-        #report_bookings:hover svg, #report_bookings.active svg { color: #a855f7; }
+        #report_bookings:hover svg, #report_bookings.active svg { color: #a855f7; } */
+
+        #sidenav-8 #labs:hover svg, #sidenav-8 #labs.active svg { color: #3b82f6; }
+        #sidenav-8 #items:hover svg, #sidenav-8 #items.active svg { color: #8b5cf6; }
+        #sidenav-8 #sets:hover svg, #sidenav-8 #sets.active svg { color: #10b981; }
+        #sidenav-8 #softwares:hover svg, #sidenav-8 #softwares.active svg { color: #b3621a; }
+        #sidenav-8 #repairs:hover svg, #sidenav-8 #repairs.active svg { color: #ef4444; }
+        #sidenav-8 #bookings:hover svg, #sidenav-8 #bookings.active svg { color: #ec4899; }
+        #sidenav-8 #roles:hover svg, #sidenav-8 #roles.active svg { color: #14b8a6; }
+        #sidenav-8 #permissions:hover svg, #sidenav-8 #permissions.active svg { color: #6366f1; }
+        #sidenav-8 #periods:hover svg, #sidenav-8 #periods.active svg { color: #f97316; }
+        #sidenav-8 #matkul:hover svg, #sidenav-8 #matkul.active svg { color: #06b6d4; }
+        #sidenav-8 #report_repairs:hover svg, #sidenav-8 #report_repairs.active svg { color: #84cc16; }
+        #sidenav-8 #repository:hover svg, #sidenav-8 #repository.active svg { color: #f59e0b; }
+        #sidenav-8 #report_bookings:hover svg, #sidenav-8 #report_bookings.active svg { color: #a855f7; }
 
         .ts-control {
             display: block;
@@ -675,8 +689,8 @@
         <a class="mb-3 flex flex-col items-center justify-center border-b-2 border-solid border-gray-100 py-6 outline-none"
             href="#" data-te-ripple-init data-te-ripple-color="primary">
             <div class="flex items-center justify-center space-x-3 mb-3">
-                <img src="{{ asset('assets/logo/logo-robot.png') }}" class="h-8" alt="infor" loading="lazy" />
-                <div class="border-l-2 border-gray-300 h-8"></div>
+                <!-- <img src="{{ asset('assets/logo/logo-robot.png') }}" class="h-8" alt="infor" loading="lazy" /> -->
+                <!-- <div class="border-l-2 border-gray-300 h-8"></div> -->
                 <img src="{{ asset('assets/logo/logo-piciu.png') }}" class="h-8" alt="pcu" loading="lazy" />
             </div>
             <span class="text-center font-bold">Laboratorium Informatika <br>2025/2026</span>
