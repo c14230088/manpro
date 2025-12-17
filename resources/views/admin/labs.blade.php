@@ -26,8 +26,7 @@
         <div id="desk-grid-container" class="mb-8">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
                 <div class="text-center py-12">
-                    <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
+                    <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
                         </path>
@@ -55,10 +54,10 @@
         </div>
     </div>
 
-    {{-- 
-      =========================================================
-      MODAL BARU: Detail Item / Component
-      =========================================================
+    {{--
+    =========================================================
+    MODAL BARU: Detail Item / Component
+    =========================================================
     --}}
     <div id="detail-popup-modal" class="hidden fixed inset-0 z-[6000]" role="dialog" aria-modal="true">
         <div id="detail-popup-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>
@@ -206,16 +205,16 @@
                     <button id="action-detach-desk-card"
                         class="p-6 bg-red-500 hover:bg-red-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg hidden">
                         <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                            </path>
                         </svg>
                         <span class="font-semibold">Lepas dari Meja</span>
                     </button>
                     <button id="action-detach-lab-card"
                         class="p-6 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg flex flex-col items-center justify-center transition-all shadow-lg hidden">
                         <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                            </path>
                         </svg>
                         <span class="font-semibold">Lepas dari Lab</span>
                     </button>
@@ -347,11 +346,11 @@
             specSetValues.forEach(spec => {
                 const label = spec.spec_attributes?.name || 'SPEC';
                 html += `
-                    <li class="text-xs border border-gray-200 p-1.5 rounded bg-white">
-                        <span class="block text-[10px] text-gray-500 font-bold uppercase tracking-wide">${label}</span>
-                        <span class="font-medium text-gray-800">${spec.value}</span>
-                    </li>
-                `;
+                                        <li class="text-xs border border-gray-200 p-1.5 rounded bg-white">
+                                            <span class="block text-[10px] text-gray-500 font-bold uppercase tracking-wide">${label}</span>
+                                            <span class="font-medium text-gray-800">${spec.value}</span>
+                                        </li>
+                                    `;
             });
             html += `</ul>`;
             return html;
@@ -379,13 +378,13 @@
             let componentsHtml = '';
             if (data.components && data.components.length > 0) {
                 componentsHtml += `
-                    <div class="mt-6 pt-4 border-t border-gray-200">
-                        <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            Komponen Terpasang (${data.components.length})
-                        </h4>
-                        <div class="space-y-4">
-                `;
+                                        <div class="mt-6 pt-4 border-t border-gray-200">
+                                            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                                Komponen Terpasang (${data.components.length})
+                                            </h4>
+                                            <div class="space-y-4">
+                                    `;
 
                 data.components.forEach(comp => {
                     const compProducedAt = comp.produced_at ? formatDate(comp.produced_at) : '-';
@@ -395,72 +394,72 @@
                     const compSpecsHtml = renderSpecsGrid(comp.spec_set_values);
 
                     componentsHtml += `
-                        <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <p class="font-bold text-gray-800 text-sm">${comp.name}</p>
-                                    <p class="text-xs text-gray-500 font-mono">${comp.serial_code}</p>
-                                </div>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${compConditionClass}">${compConditionText}</span>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-4 text-xs text-gray-600 mb-2">
-                                <div>
-                                    <span class="block font-semibold text-gray-500">Tipe:</span>
-                                    ${comp.type?.name || '-'}
-                                </div>
-                                <div>
-                                    <span class="block font-semibold text-gray-500">Diproduksi Pada:</span>
-                                    ${compProducedAt}
-                                </div>
-                            </div>
+                                            <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                                <div class="flex justify-between items-start mb-2">
+                                                    <div>
+                                                        <p class="font-bold text-gray-800 text-sm">${comp.name}</p>
+                                                        <p class="text-xs text-gray-500 font-mono">${comp.serial_code}</p>
+                                                    </div>
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${compConditionClass}">${compConditionText}</span>
+                                                </div>
 
-                            <div class="mt-2">
-                                <span class="block font-semibold text-xs text-gray-500 mb-1">Spesifikasi Komponen:</span>
-                                ${compSpecsHtml}
-                            </div>
-                        </div>
-                    `;
+                                                <div class="grid grid-cols-2 gap-4 text-xs text-gray-600 mb-2">
+                                                    <div>
+                                                        <span class="block font-semibold text-gray-500">Tipe:</span>
+                                                        ${comp.type?.name || '-'}
+                                                    </div>
+                                                    <div>
+                                                        <span class="block font-semibold text-gray-500">Diproduksi Pada:</span>
+                                                        ${compProducedAt}
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-2">
+                                                    <span class="block font-semibold text-xs text-gray-500 mb-1">Spesifikasi Komponen:</span>
+                                                    ${compSpecsHtml}
+                                                </div>
+                                            </div>
+                                        `;
                 });
                 componentsHtml += `</div></div>`;
             } else if (!isComponent) {
                 // Jika Item tapi tidak punya komponen
                 componentsHtml = `
-                    <div class="mt-6 pt-4 border-t border-gray-200 text-center text-gray-400 text-sm italic">
-                        Tidak ada komponen terpasang.
-                    </div>
-                `;
+                                        <div class="mt-6 pt-4 border-t border-gray-200 text-center text-gray-400 text-sm italic">
+                                            Tidak ada komponen terpasang.
+                                        </div>
+                                    `;
             }
 
             bodyEl.innerHTML = `
-                <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 shadow-sm">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-0.5">Nama</p>
-                            <p class="text-sm font-semibold text-gray-800">${data.name}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-0.5">Serial Code</p>
-                            <p class="text-sm font-mono text-gray-700 bg-white inline-block px-1.5 rounded border border-gray-200">${data.serial_code}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-0.5">Tipe</p>
-                            <p class="text-sm text-gray-800">${data.type?.name || '-'}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-0.5">Diproduksi Pada</p>
-                            <p class="text-sm text-gray-800">${producedAt}</p>
-                        </div>
-                    </div>
-                </div>
+                                    <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 shadow-sm">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-0.5">Nama</p>
+                                                <p class="text-sm font-semibold text-gray-800">${data.name}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-0.5">Serial Code</p>
+                                                <p class="text-sm font-mono text-gray-700 bg-white inline-block px-1.5 rounded border border-gray-200">${data.serial_code}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-0.5">Tipe</p>
+                                                <p class="text-sm text-gray-800">${data.type?.name || '-'}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-0.5">Diproduksi Pada</p>
+                                                <p class="text-sm text-gray-800">${producedAt}</p>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                <div>
-                    <h4 class="font-bold text-gray-800 mb-2 pb-1 border-b border-gray-100">Spesifikasi Utama</h4>
-                    ${mainSpecsHtml}
-                </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-800 mb-2 pb-1 border-b border-gray-100">Spesifikasi Utama</h4>
+                                        ${mainSpecsHtml}
+                                    </div>
 
-                ${componentsHtml}
-            `;
+                                    ${componentsHtml}
+                                `;
 
             modal.classList.remove('hidden');
         }
@@ -613,7 +612,7 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const labSelector = document.getElementById('lab-selector');
             const deskContainer = document.getElementById('desk-grid-container');
             let desks = [];
@@ -814,17 +813,17 @@
                             try {
                                 const response = await fetch(
                                     `/admin/labs/${labId}/desks/batch-delete`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': csrfToken,
-                                            'Accept': 'application/json',
-                                        },
-                                        body: JSON.stringify({
-                                            ids: idsToDelete,
-                                            delete_mode: deleteMode
-                                        })
-                                    });
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': csrfToken,
+                                        'Accept': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        ids: idsToDelete,
+                                        delete_mode: deleteMode
+                                    })
+                                });
                                 if (!response.ok) {
                                     const errorData = await response.json();
                                     throw new Error(errorData.message || 'Gagal memproses permintaan.');
@@ -871,48 +870,122 @@
                 if (!labSelector.value) return;
                 const allDesks = [...desks, ...newDesks];
                 const occupiedSlots = new Set(allDesks.map(d => d.location));
-                const addDeskBtnText = isAddDeskMode ? 'Selesai Menambah' : '+ Tambah Meja';
-                const addDeskBtnClass = isAddDeskMode ? 'bg-blue-600 text-white hover:bg-blue-700' :
-                    'bg-gray-100 text-gray-600 hover:bg-gray-200';
-                const deleteDeskBtnText = isMainDeleteMode ? 'Selesai Menghapus' : '- Delete';
-                const deleteDeskBtnClass = isMainDeleteMode ? 'bg-rose-600 text-white hover:bg-rose-700' :
-                    'bg-gray-100 text-gray-600 hover:bg-gray-200';
 
-                let containerHTML =
-                    `
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
-                    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <h2 class="text-xl font-semibold text-gray-800">Denah Meja Laboratorium</h2>
-                            <div class="flex items-center gap-4 text-sm mt-2 flex-wrap">
-                                <div class="flex items-center gap-2"><span class="w-4 h-4 bg-emerald-100 border-2 border-emerald-400 rounded"></span><span class="text-gray-600">Baik</span></div>
-                                <div class="flex items-center gap-2"><span class="w-4 h-4 bg-amber-100 border-2 border-amber-400 rounded"></span><span class="text-gray-600">Tidak Lengkap</span></div>
-                                <div class="flex items-center gap-2"><span class="w-4 h-4 bg-rose-100 border-2 border-rose-400 rounded"></span><span class="text-gray-600">Rusak</span></div>
-                                <div class="flex items-center gap-2"><span class="w-4 h-4 bg-gray-100 border-2 border-gray-400 rounded"></span><span class="text-gray-600">Kosong</span></div>
-                                ${isEditMode ? `<div class="flex items-center gap-2"><span class="w-4 h-4 bg-blue-100 border-2 border-dashed border-blue-400 rounded"></span><span class="text-gray-600">Baru</span></div>` : ''}
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                                <div class="flex items-center border border-gray-200 rounded-lg p-1 bg-gray-50">
-                                    <button id="zoom-out-btn" class="p-2 rounded-md hover:bg-gray-200 transition-colors" title="Zoom Out"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg></button>
-                                    <button id="zoom-reset-btn" class="px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 rounded-md transition-colors" title="Reset Zoom"><span id="zoom-level-display">100%</span></button>
-                                    <button id="zoom-in-btn" class="p-2 rounded-md hover:bg-gray-200 transition-colors" title="Zoom In"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></button>
-                                </div>
-                            ${isEditMode ? `<button id="add-desk-mode-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${addDeskBtnClass}" title="Aktifkan mode tambah meja">${addDeskBtnText}</button><button id="delete-desk-mode-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${deleteDeskBtnClass}" title="Aktifkan mode hapus meja">${deleteDeskBtnText}</button><button id="add-row-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" title="Tambah Baris">+ Baris</button><button id="add-col-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" title="Tambah Kolom">+ Kolom</button>` : ''}
-                            <button id="edit-layout-btn" class="px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${isEditMode ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">${isEditMode ? 'Simpan & Keluar' : 'Edit Denah'}</button>
-                        </div>
-                    </div>
-                    <div id="grid-scroller" class="overflow-x-auto pb-4">
-                        <div id="desk-grid" class="grid gap-4 border-2 min-w-fit border-slate-500 p-8 ${isEditMode ? 'edit-mode' : ''}" style="grid-template-columns: repeat(${labConfig.maxCols}, minmax(140px, 1fr)); grid-template-rows: repeat(${labConfig.maxRows}, auto);">`;
+                // --- 1. DEFINISI KOMPONEN UI ---
 
+                // UI: Zoom Controls (Tetap Sama)
+                const zoomControlsHTML = `
+                                    <div class="flex items-center border border-gray-200 rounded-lg p-1 bg-gray-50 mr-2 h-fit">
+                                        <button id="zoom-out-btn" class="p-1.5 rounded-md hover:bg-gray-200 transition-colors" title="Zoom Out"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg></button>
+                                        <button id="zoom-reset-btn" class="px-2 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-200 rounded-md transition-colors w-12 text-center" title="Reset Zoom"><span id="zoom-level-display">${Math.round(currentZoom * 100)}%</span></button>
+                                        <button id="zoom-in-btn" class="p-1.5 rounded-md hover:bg-gray-200 transition-colors" title="Zoom In"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></button>
+                                    </div>
+                                `;
+
+                // --- PERBAIKAN 1: UI GRID CONTROL VERTIKAL (LESS SPACE) ---
+                // Menggunakan flex-col agar tombol Baris dan Kolom menumpuk ke bawah
+                const gridControlsHTML = `
+                                    <div class="flex flex-col gap-1 bg-white p-1.5 rounded-lg border border-gray-300 shadow-sm mr-2 z-10 h-fit">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span class="text-[10px] font-bold text-gray-500 uppercase w-6">Row</span>
+                                            <div class="flex items-center">
+                                                <button id="dec-row-btn" class="w-6 h-6 flex items-center justify-center bg-gray-50 border border-gray-300 rounded-l hover:bg-red-50 hover:text-red-600 transition-colors text-xs font-bold text-gray-600">-</button>
+                                                <span class="w-8 h-6 flex items-center justify-center bg-white border-y border-gray-300 text-xs font-bold text-gray-800">${labConfig.maxRows}</span>
+                                                <button id="inc-row-btn" class="w-6 h-6 flex items-center justify-center bg-gray-50 border border-gray-300 rounded-r hover:bg-blue-50 hover:text-blue-600 transition-colors text-xs font-bold text-gray-600">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span class="text-[10px] font-bold text-gray-500 uppercase w-6">Col</span>
+                                            <div class="flex items-center">
+                                                <button id="dec-col-btn" class="w-6 h-6 flex items-center justify-center bg-gray-50 border border-gray-300 rounded-l hover:bg-red-50 hover:text-red-600 transition-colors text-xs font-bold text-gray-600">-</button>
+                                                <span class="w-8 h-6 flex items-center justify-center bg-white border-y border-gray-300 text-xs font-bold text-gray-800">${labConfig.maxCols}</span>
+                                                <button id="inc-col-btn" class="w-6 h-6 flex items-center justify-center bg-gray-50 border border-gray-300 rounded-r hover:bg-blue-50 hover:text-blue-600 transition-colors text-xs font-bold text-gray-600">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+
+                // --- 2. LOGIKA TOMBOL BERDASARKAN MODE ---
+                let actionButtonsHTML = zoomControlsHTML;
+
+                if (isEditMode) {
+                    if (isAddDeskMode) {
+                        // MODE: SEDANG MENAMBAH
+                        // Gunakan ID berbeda (btn-finish-add) agar listener terpisah jelas
+                        actionButtonsHTML += `
+                                            <button id="btn-finish-add" class="h-10 px-5 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 transition-all flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                                Selesai Menambah
+                                            </button>
+                                        `;
+                    } else if (isMainDeleteMode) {
+                        // MODE: SEDANG MENGHAPUS
+                        actionButtonsHTML += `
+                                            <button id="btn-finish-delete" class="h-10 px-5 py-2 text-sm font-bold text-white bg-rose-600 rounded-lg shadow-sm hover:bg-rose-700 transition-all flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                Selesai Menghapus
+                                            </button>
+                                        `;
+                    } else {
+                        // MODE: EDIT MENU UTAMA
+                        // Masukkan Grid Control di sini agar rapi
+                        actionButtonsHTML += gridControlsHTML;
+
+                        actionButtonsHTML += `
+                                            <div class="flex flex-col gap-2 h-fit">
+                                                <button id="btn-start-add" class="px-4 py-1.5 text-sm font-semibold bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm text-left">
+                                                    + Tambah Meja
+                                                </button>
+                                                <button id="btn-start-delete" class="px-4 py-1.5 text-sm font-semibold bg-white border border-gray-300 text-rose-600 rounded-lg hover:bg-rose-50 hover:border-rose-200 transition-colors shadow-sm text-left">
+                                                    - Hapus Meja
+                                                </button>
+                                            </div>
+                                            <button id="edit-layout-btn" class="ml-2 h-10 px-5 py-2 text-sm font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm transition-colors self-start">
+                                                Simpan & Keluar
+                                            </button>
+                                        `;
+                    }
+                } else {
+                    // MODE: VIEW ONLY
+                    actionButtonsHTML += `
+                                        <button id="edit-layout-btn" class="ml-2 px-4 py-2.5 text-sm font-semibold bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors shadow-sm">
+                                            Edit Denah
+                                        </button>
+                                    `;
+                }
+
+                // --- 3. RENDER CONTAINER UTAMA ---
+                // Tambahkan items-start agar tombol tidak stretch ke bawah
+                let containerHTML = `
+                                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+                                    <div class="mb-6 flex flex-wrap items-start justify-between gap-4"> 
+                                        <div>
+                                            <h2 class="text-xl font-semibold text-gray-800">Denah Meja Laboratorium</h2>
+                                            <div class="flex items-center gap-4 text-sm mt-2 flex-wrap">
+                                                <div class="flex items-center gap-2"><span class="w-3 h-3 bg-emerald-500 rounded-full"></span><span class="text-gray-600">Baik</span></div>
+                                                <div class="flex items-center gap-2"><span class="w-3 h-3 bg-amber-500 rounded-full"></span><span class="text-gray-600">Kurang</span></div>
+                                                <div class="flex items-center gap-2"><span class="w-3 h-3 bg-rose-500 rounded-full"></span><span class="text-gray-600">Rusak</span></div>
+                                                <div class="flex items-center gap-2"><span class="w-3 h-3 bg-gray-300 rounded-full"></span><span class="text-gray-600">Kosong</span></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-start flex-wrap gap-2">
+                                            ${actionButtonsHTML}
+                                        </div>
+                                    </div>
+                                <div id="grid-scroller" class="overflow-x-auto pb-4 custom-scrollbar">
+                                    <div id="desk-grid" class="grid gap-4 border border-dashed border-slate-300 bg-slate-50/50 rounded-xl p-8 overflow-hidden relative ${isEditMode ? 'edit-mode' : ''}" 
+                                        style="grid-template-columns: repeat(${labConfig.maxCols}, minmax(130px, 1fr)); grid-template-rows: repeat(${labConfig.maxRows}, auto); zoom: ${currentZoom}">
+                                `;
+
+                // --- RENDER GRID ITEMS (Copy paste bagian loop allDesks dari kode asli Anda) ---
                 allDesks.forEach(desk => {
                     const row = desk.location.charCodeAt(0) - 64;
                     const col = parseInt(desk.location.substring(1));
                     let bgColorClass, iconColor, conditionText, draggableAttr;
 
                     if (desk.isNew) {
-                        bgColorClass =
-                            'bg-blue-50 border-blue-400 border-dashed hover:bg-blue-100 cursor-pointer';
+                        bgColorClass = 'bg-blue-50 border-blue-400 border-dashed hover:bg-blue-100 cursor-pointer shadow-sm';
                         iconColor = 'text-blue-600';
                         conditionText = 'Baru';
                         draggableAttr = '';
@@ -921,58 +994,71 @@
                         switch (desk.overall_condition) {
                             case 'item_rusak':
                             case 'component_rusak':
-                                bgColorClass = 'bg-rose-50 border-rose-300 hover:bg-rose-100';
-                                iconColor = 'text-rose-600';
+                                bgColorClass = 'bg-rose-50 border-rose-200 shadow-sm hover:shadow-md hover:border-rose-300';
+                                iconColor = 'text-rose-500';
                                 conditionText = 'Rusak';
                                 break;
                             case 'item_tidak_lengkap':
-                                bgColorClass = 'bg-amber-50 border-amber-300 hover:bg-amber-100';
-                                iconColor = 'text-amber-600';
+                                bgColorClass = 'bg-amber-50 border-amber-200 shadow-sm hover:shadow-md hover:border-amber-300';
+                                iconColor = 'text-amber-500';
                                 conditionText = 'Tidak Lengkap';
                                 break;
                             case 'item_kosong':
-                                bgColorClass = 'bg-gray-50 border-gray-300 hover:bg-gray-100';
-                                iconColor = 'text-gray-500';
+                                bgColorClass = 'bg-white border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300';
+                                iconColor = 'text-gray-400';
                                 conditionText = 'Kosong';
                                 break;
                             default:
-                                bgColorClass =
-                                    'bg-emerald-50 border-emerald-300 hover:bg-emerald-100';
+                                bgColorClass = 'bg-emerald-50 border-emerald-200 shadow-sm hover:shadow-md hover:border-emerald-300';
                                 iconColor = 'text-emerald-600';
                                 conditionText = 'Baik';
                                 break;
                         }
                     }
                     containerHTML +=
-                        `<div id="desk-${desk.id || desk.location}" data-desk-id="${desk.id || ''}" data-location="${desk.location}" style="grid-area: ${row} / ${col};" class="desk-item group transition-all duration-300 ease-in-out flex flex-col items-center justify-center p-5 border-2 rounded-xl min-h-36 ${bgColorClass} ${desk.isNew ? 'new-desk-item' : ''}" ${draggableAttr} title="${desk.isNew ? 'Klik dua kali untuk batal' : ''}"><div class="text-center pointer-events-none"><div class="mb-2"><svg class="w-8 h-8 mx-auto ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div><span class="font-bold text-lg text-gray-800 block select-none">${desk.location}</span><span class="text-sm text-gray-600 mt-1 inline-block select-none">${conditionText}</span></div></div>`;
+                        `<div id="desk-${desk.id || desk.location}" data-desk-id="${desk.id || ''}" data-location="${desk.location}" style="grid-area: ${row} / ${col};" class="desk-item group transition-all duration-200 flex flex-col items-center justify-center p-4 border rounded-xl min-h-[140px] ${bgColorClass} ${desk.isNew ? 'new-desk-item' : ''}" ${draggableAttr} title="${desk.isNew ? 'Klik dua kali untuk batal' : ''}">
+                                            <div class="text-center pointer-events-none">
+                                                <div class="mb-2 transition-transform group-hover:scale-110"><svg class="w-10 h-10 mx-auto ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
+                                                <span class="font-bold text-lg text-gray-800 block select-none">${desk.location}</span>
+                                                <span class="text-xs font-medium uppercase tracking-wide opacity-70 mt-1 inline-block select-none">${conditionText}</span>
+                                            </div>
+                                        </div>`;
                 });
 
+                // --- RENDER SLOT KOSONG (Copy paste loop empty slot) ---
                 for (let r = 1; r <= labConfig.maxRows; r++) {
                     for (let c = 1; c <= labConfig.maxCols; c++) {
                         const location = `${String.fromCharCode(64 + r)}${c}`;
                         if (!occupiedSlots.has(location)) {
-                            let slotClass = '',
-                                slotContent = '';
+                            let slotClass = '', slotContent = '';
                             if (isEditMode) {
                                 slotClass = isAddDeskMode ?
-                                    'bg-slate-50 border-dashed border-slate-300 hover:bg-blue-100 hover:border-blue-400 cursor-pointer' :
-                                    'bg-slate-100 border-dashed border-slate-200';
-                                slotContent = isAddDeskMode ? `<span class="text-slate-400 text-3xl">+</span>` :
-                                    `<span class="text-slate-300 font-semibold">${location}</span>`;
+                                    'bg-white border-dashed border-slate-300 hover:bg-blue-50 hover:border-blue-400 cursor-pointer shadow-sm' :
+                                    'bg-transparent border-dashed border-slate-200 opacity-100';
+                                slotContent = isAddDeskMode ? `<span class="text-blue-300 text-3xl font-light">+</span>` :
+                                    `<span class="text-slate-300 font-semibold text-sm">${location}</span>`;
                             } else {
-                                slotClass = 'empty-placeholder';
-                                slotContent = '';
+                                slotClass = 'invisible';
                             }
                             containerHTML +=
-                                `<div class="empty-slot transition-all duration-300 ease-in-out flex flex-col items-center justify-center p-5 border-2 rounded-xl min-h-36 ${slotClass}" data-location="${location}" style="grid-area: ${r} / ${c};">${slotContent}</div>`;
+                                `<div class="empty-slot transition-all duration-200 flex flex-col items-center justify-center border-2 rounded-xl min-h-[140px] ${slotClass}" data-location="${location}" style="grid-area: ${r} / ${c};">${slotContent}</div>`;
                         }
                     }
                 }
                 containerHTML += '</div></div></div>';
                 deskContainer.innerHTML = containerHTML;
-                setupCommonListeners();
+
+                // --- 6. SETUP LISTENERS ---
+                setupCommonListeners(); // Setup ulang listener setiap kali render
+
                 if (isEditMode) {
                     setupDragDropListeners();
+
+                    // HANYA pasang listener resize Grid jika TIDAK sedang Add Mode dan TIDAK sedang Delete Mode
+                    if (!isAddDeskMode && !isMainDeleteMode) {
+                        setupGridResizeListeners();
+                    }
+
                     if (isAddDeskMode) {
                         setupAddDeskListeners();
                         setupDeleteNewDeskListeners();
@@ -981,7 +1067,7 @@
                         setupMainDeleteListeners();
                     }
                 }
-                applyZoom();
+
                 const newScroller = document.getElementById('grid-scroller');
                 if (newScroller) {
                     newScroller.scrollLeft = scrollPos.left;
@@ -1036,126 +1122,225 @@
                 });
             }
 
+
+
             function setupCommonListeners() {
+                // Zoom Controls
                 const zoomInBtn = document.getElementById('zoom-in-btn');
                 const zoomOutBtn = document.getElementById('zoom-out-btn');
                 const zoomResetBtn = document.getElementById('zoom-reset-btn');
-                zoomInBtn.addEventListener('click', () => {
-                    if (currentZoom < maxZoom) {
-                        currentZoom = Math.min(maxZoom, currentZoom + zoomStep);
-                        applyZoom();
-                    }
+
+                if (zoomInBtn) zoomInBtn.addEventListener('click', () => {
+                    if (currentZoom < maxZoom) { currentZoom = Math.min(maxZoom, currentZoom + zoomStep); applyZoom(); }
                 });
-                zoomOutBtn.addEventListener('click', () => {
-                    if (currentZoom > minZoom) {
-                        currentZoom = Math.max(minZoom, currentZoom - zoomStep);
-                        applyZoom();
-                    }
+                if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => {
+                    if (currentZoom > minZoom) { currentZoom = Math.max(minZoom, currentZoom - zoomStep); applyZoom(); }
                 });
-                zoomResetBtn.addEventListener('click', () => {
-                    autoZoomToFit();
-                });
-                document.getElementById('edit-layout-btn').addEventListener('click', async function() {
-                    const deskGrid = document.getElementById('desk-grid');
-                    const isCurrentlyEditMode = deskGrid && deskGrid.classList.contains('edit-mode');
-                    if (isCurrentlyEditMode) {
-                        const saveResult = await saveNewDesks();
-                        if (!saveResult.success) {
-                            return;
-                        }
-                        isAddDeskMode = false;
-                        isMainDeleteMode = false;
-                        renderDeskGrid(false);
-                    } else {
-                        renderDeskGrid(true);
-                    }
-                });
-                const addRowBtn = document.getElementById('add-row-btn');
-                const addColBtn = document.getElementById('add-col-btn');
-                const addDeskModeBtn = document.getElementById('add-desk-mode-btn');
-                const deleteDeskModeBtn = document.getElementById('delete-desk-mode-btn');
-                if (addRowBtn) {
-                    addRowBtn.addEventListener('click', () => {
-                        labConfig.maxRows++;
-                        renderDeskGrid(true);
-                    });
-                }
-                if (addColBtn) {
-                    addColBtn.addEventListener('click', () => {
-                        labConfig.maxCols++;
-                        renderDeskGrid(true);
-                    });
-                }
-                if (addDeskModeBtn) {
-                    addDeskModeBtn.addEventListener('click', async function() {
-                        if (isAddDeskMode) {
+                if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => autoZoomToFit());
+
+                // Main Edit / Save Button
+                const editLayoutBtn = document.getElementById('edit-layout-btn');
+                if (editLayoutBtn) {
+                    editLayoutBtn.addEventListener('click', async function () {
+                        const deskGrid = document.getElementById('desk-grid');
+                        const isCurrentlyEditMode = deskGrid && deskGrid.classList.contains('edit-mode');
+                        if (isCurrentlyEditMode) {
                             const saveResult = await saveNewDesks();
-                            if (saveResult.success) {
-                                isAddDeskMode = false;
-                                renderDeskGrid(true);
-                            }
+                            if (!saveResult.success) { return; }
+                            isAddDeskMode = false;
+                            isMainDeleteMode = false;
+                            renderDeskGrid(false);
                         } else {
-                            isAddDeskMode = true;
-                            if (isAddDeskMode) isMainDeleteMode = false;
                             renderDeskGrid(true);
                         }
                     });
                 }
-                if (deleteDeskModeBtn) {
-                    deleteDeskModeBtn.addEventListener('click', () => {
-                        isMainDeleteMode = !isMainDeleteMode;
-                        if (isMainDeleteMode) isAddDeskMode = false;
+
+                // Grid Resize Controls (Row/Col)
+                // (Listener dipindah ke setupGridResizeListeners agar lebih rapi, tapi inisialisasi di sini jika mau)
+
+                // --- LOGIC TOMBOL TAMBAH & HAPUS YANG BARU ---
+
+                // 1. Tombol MULAI Tambah (+ Tambah Meja)
+                const btnStartAdd = document.getElementById('btn-start-add');
+                if (btnStartAdd) {
+                    btnStartAdd.addEventListener('click', () => {
+                        isAddDeskMode = true;
+                        isMainDeleteMode = false; // Reset delete mode if active
+                        renderDeskGrid(true);
+                    });
+                }
+
+                // 2. Tombol SELESAI Menambah (Ceklist)
+                const btnFinishAdd = document.getElementById('btn-finish-add');
+                if (btnFinishAdd) {
+                    btnFinishAdd.addEventListener('click', async function () {
+                        const saveResult = await saveNewDesks();
+                        if (saveResult.success) {
+                            isAddDeskMode = false;
+                            renderDeskGrid(true);
+                        }
+                    });
+                }
+
+                // 3. Tombol MULAI Hapus (- Hapus Meja)
+                const btnStartDelete = document.getElementById('btn-start-delete');
+                if (btnStartDelete) {
+                    btnStartDelete.addEventListener('click', () => {
+                        isMainDeleteMode = true;
+                        isAddDeskMode = false; // Reset add mode if active
+                        renderDeskGrid(true);
+                    });
+                }
+
+                // 4. Tombol SELESAI Menghapus
+                const btnFinishDelete = document.getElementById('btn-finish-delete');
+                if (btnFinishDelete) {
+                    btnFinishDelete.addEventListener('click', () => {
+                        isMainDeleteMode = false;
                         renderDeskGrid(true);
                     });
                 }
             }
 
-            function setupDragDropListeners() {
-                if (isAddDeskMode || isMainDeleteMode) return;
-                const draggables = document.querySelectorAll('.desk-item');
-                const dropzones = document.querySelectorAll('.empty-slot, .desk-item');
-                draggables.forEach(draggable => {
-                    draggable.addEventListener('dragstart', () => {
-                        draggable.classList.add('dragging');
-                    });
-                    draggable.addEventListener('dragend', () => {
-                        draggable.classList.remove('dragging');
-                    });
+            function getOccupiedBounds() {
+                // Gabungkan meja yang sudah tersimpan (desks) dan meja baru yang belum disave (newDesks)
+                const allDesks = [...desks, ...newDesks];
+
+                let maxRowFound = 0;
+                let maxColFound = 0;
+
+                allDesks.forEach(desk => {
+                    // Lokasi format: "A1", "C5", dll.
+                    // Ambil huruf pertama untuk Row
+                    const rowChar = desk.location.charAt(0).toUpperCase();
+                    // Ambil sisa string untuk Col
+                    const colNum = parseInt(desk.location.substring(1));
+
+                    // Konversi Huruf ke Angka (A=1, B=2, dst)
+                    const rowIndex = rowChar.charCodeAt(0) - 64;
+
+                    if (rowIndex > maxRowFound) maxRowFound = rowIndex;
+                    if (colNum > maxColFound) maxColFound = colNum;
                 });
-                dropzones.forEach(zone => {
-                    zone.addEventListener('dragover', e => {
-                        e.preventDefault();
-                        const draggingElement = document.querySelector('.dragging');
-                        if (draggingElement !== zone) {
-                            zone.classList.add('drag-over');
-                        }
-                    });
-                    zone.addEventListener('dragleave', () => {
-                        zone.classList.remove('drag-over');
-                    });
-                    zone.addEventListener('drop', async e => {
-                        e.preventDefault();
-                        zone.classList.remove('drag-over');
-                        const draggingElement = document.querySelector('.dragging');
-                        if (!draggingElement || draggingElement === zone) return;
-                        const deskId = draggingElement.dataset.deskId;
-                        const newLocation = zone.dataset.location;
-                        const labId = labSelector.value;
-                        const originalDesks = JSON.parse(JSON.stringify(desks));
-                        const movingDesk = desks.find(d => d.id == deskId);
-                        const targetDesk = desks.find(d => d.location === newLocation);
-                        if (targetDesk) {
-                            const movingDeskOldLocation = movingDesk.location;
-                            movingDesk.location = newLocation;
-                            targetDesk.location = movingDeskOldLocation;
-                        } else {
-                            movingDesk.location = newLocation;
-                        }
+
+                return { maxRow: maxRowFound, maxCol: maxColFound };
+            }
+
+
+
+
+            function setupGridResizeListeners() {
+        const incRowBtn = document.getElementById('inc-row-btn');
+        const decRowBtn = document.getElementById('dec-row-btn');
+        const incColBtn = document.getElementById('inc-col-btn');
+        const decColBtn = document.getElementById('dec-col-btn');
+
+        // --- ROW CONTROLS ---
+        if (incRowBtn) {
+            incRowBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                labConfig.maxRows++;
+                renderDeskGrid(true);
+            });
+        }
+
+        if (decRowBtn) {
+            decRowBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // 1. Cek batas meja yang ada
+                const bounds = getOccupiedBounds();
+
+                // 2. Jika Rows saat ini lebih besar dari posisi meja paling bawah, boleh kurangi
+                if (labConfig.maxRows > bounds.maxRow) {
+                    // Pastikan juga tidak kurang dari 1 (walaupun kosong)
+                    if (labConfig.maxRows > 1) {
+                        labConfig.maxRows--;
                         renderDeskGrid(true);
-                        showLoading('Memindahkan Meja...');
-                        try {
-                            const response = await fetch(
-                                `/admin/labs/${labId}/desks/update/location/${deskId}`, {
+                    }
+                } else {
+                    // Tampilkan pesan error/warning jika mentok meja
+                    showToast('Batas Maksimum', `Tidak bisa mengurangi baris. Ada meja di baris ke-${labConfig.maxRows} (${String.fromCharCode(64 + labConfig.maxRows)}).`, 'warning');
+                }
+            });
+        }
+
+        // --- COLUMN CONTROLS ---
+        if (incColBtn) {
+            incColBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                labConfig.maxCols++;
+                renderDeskGrid(true);
+            });
+        }
+
+        if (decColBtn) {
+            decColBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // 1. Cek batas meja yang ada
+                const bounds = getOccupiedBounds();
+
+                // 2. Jika Cols saat ini lebih besar dari posisi meja paling kanan
+                if (labConfig.maxCols > bounds.maxCol) {
+                    if (labConfig.maxCols > 1) {
+                        labConfig.maxCols--;
+                        renderDeskGrid(true);
+                    }
+                } else {
+                    showToast('Batas Maksimum', `Tidak bisa mengurangi kolom. Ada meja di kolom ke-${labConfig.maxCols}.`, 'warning');
+                }
+            });
+        }
+    }
+
+                function setupDragDropListeners() {
+                    if (isAddDeskMode || isMainDeleteMode) return;
+                    const draggables = document.querySelectorAll('.desk-item');
+                    const dropzones = document.querySelectorAll('.empty-slot, .desk-item');
+                    draggables.forEach(draggable => {
+                        draggable.addEventListener('dragstart', () => {
+                            draggable.classList.add('dragging');
+                        });
+                        draggable.addEventListener('dragend', () => {
+                            draggable.classList.remove('dragging');
+                        });
+                    });
+                    dropzones.forEach(zone => {
+                        zone.addEventListener('dragover', e => {
+                            e.preventDefault();
+                            const draggingElement = document.querySelector('.dragging');
+                            if (draggingElement !== zone) {
+                                zone.classList.add('drag-over');
+                            }
+                        });
+                        zone.addEventListener('dragleave', () => {
+                            zone.classList.remove('drag-over');
+                        });
+                        zone.addEventListener('drop', async e => {
+                            e.preventDefault();
+                            zone.classList.remove('drag-over');
+                            const draggingElement = document.querySelector('.dragging');
+                            if (!draggingElement || draggingElement === zone) return;
+                            const deskId = draggingElement.dataset.deskId;
+                            const newLocation = zone.dataset.location;
+                            const labId = labSelector.value;
+                            const originalDesks = JSON.parse(JSON.stringify(desks));
+                            const movingDesk = desks.find(d => d.id == deskId);
+                            const targetDesk = desks.find(d => d.location === newLocation);
+                            if (targetDesk) {
+                                const movingDeskOldLocation = movingDesk.location;
+                                movingDesk.location = newLocation;
+                                targetDesk.location = movingDeskOldLocation;
+                            } else {
+                                movingDesk.location = newLocation;
+                            }
+                            renderDeskGrid(true);
+                            showLoading('Memindahkan Meja...');
+                            try {
+                                const response = await fetch(
+                                    `/admin/labs/${labId}/desks/update/location/${deskId}`, {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
@@ -1166,827 +1351,768 @@
                                         location: newLocation
                                     })
                                 });
-                            if (!response.ok) throw new Error('Server response was not ok.');
-                            const data = await response.json();
-                            hideLoading();
-                            if (data.success) {
-                                showToast('Berhasil', data.message ||
-                                    `Posisi meja berhasil diperbarui.`, 'success');
-                            } else {
-                                throw new Error(data.message ||
-                                    'Gagal memperbarui posisi meja.');
+                                if (!response.ok) throw new Error('Server response was not ok.');
+                                const data = await response.json();
+                                hideLoading();
+                                if (data.success) {
+                                    showToast('Berhasil', data.message ||
+                                        `Posisi meja berhasil diperbarui.`, 'success');
+                                } else {
+                                    throw new Error(data.message ||
+                                        'Gagal memperbarui posisi meja.');
+                                }
+                            } catch (error) {
+                                hideLoading();
+                                console.error('Error updating desk location:', error);
+                                desks = originalDesks;
+                                renderDeskGrid(true);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: error.message || 'Terjadi kesalahan jaringan.'
+                                });
                             }
-                        } catch (error) {
-                            hideLoading();
-                            console.error('Error updating desk location:', error);
-                            desks = originalDesks;
-                            renderDeskGrid(true);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal!',
-                                text: error.message || 'Terjadi kesalahan jaringan.'
-                            });
-                        }
+                        });
                     });
-                });
-            }
+                }
 
-            function setupAddDeskListeners() {
-                const emptySlots = document.querySelectorAll('.empty-slot');
-                selectedSlots.clear();
-                emptySlots.forEach(slot => {
-                    slot.addEventListener('mousedown', (e) => {
-                        e.preventDefault();
-                        if (isDeletingMode) isDeletingMode = false;
-                        isMouseDown = true;
-                        const location = slot.dataset.location;
-                        if (!selectedSlots.has(location)) {
-                            selectedSlots.add(location);
-                            slot.classList.add('bg-blue-200', 'border-blue-500');
-                        }
-                    });
-                    slot.addEventListener('mouseover', () => {
-                        if (isMouseDown) {
+                function setupAddDeskListeners() {
+                    const emptySlots = document.querySelectorAll('.empty-slot');
+                    selectedSlots.clear();
+                    emptySlots.forEach(slot => {
+                        slot.addEventListener('mousedown', (e) => {
+                            e.preventDefault();
+                            if (isDeletingMode) isDeletingMode = false;
+                            isMouseDown = true;
                             const location = slot.dataset.location;
                             if (!selectedSlots.has(location)) {
                                 selectedSlots.add(location);
                                 slot.classList.add('bg-blue-200', 'border-blue-500');
                             }
-                        }
+                        });
+                        slot.addEventListener('mouseover', () => {
+                            if (isMouseDown) {
+                                const location = slot.dataset.location;
+                                if (!selectedSlots.has(location)) {
+                                    selectedSlots.add(location);
+                                    slot.classList.add('bg-blue-200', 'border-blue-500');
+                                }
+                            }
+                        });
                     });
-                });
-            }
+                }
 
-            function setupDeleteNewDeskListeners() {
-                const newDeskItems = document.querySelectorAll('.new-desk-item');
-                newDeskItems.forEach(desk => {
-                    desk.addEventListener('mousedown', (e) => {
-                        e.preventDefault();
-                        if (isMouseDown) isMouseDown = false;
-                        isDeletingMode = true;
-                        const location = desk.dataset.location;
-                        if (!slotsToCancel.has(location)) {
-                            slotsToCancel.add(location);
-                            desk.classList.add('bg-rose-200', 'border-rose-500', 'opacity-60');
-                        }
-                    });
-                    desk.addEventListener('mouseover', () => {
-                        if (isDeletingMode) {
+                function setupDeleteNewDeskListeners() {
+                    const newDeskItems = document.querySelectorAll('.new-desk-item');
+                    newDeskItems.forEach(desk => {
+                        desk.addEventListener('mousedown', (e) => {
+                            e.preventDefault();
+                            if (isMouseDown) isMouseDown = false;
+                            isDeletingMode = true;
                             const location = desk.dataset.location;
                             if (!slotsToCancel.has(location)) {
                                 slotsToCancel.add(location);
-                                desk.classList.add('bg-rose-200', 'border-rose-500',
-                                    'opacity-60');
+                                desk.classList.add('bg-rose-200', 'border-rose-500', 'opacity-60');
+                            }
+                        });
+                        desk.addEventListener('mouseover', () => {
+                            if (isDeletingMode) {
+                                const location = desk.dataset.location;
+                                if (!slotsToCancel.has(location)) {
+                                    slotsToCancel.add(location);
+                                    desk.classList.add('bg-rose-200', 'border-rose-500',
+                                        'opacity-60');
+                                }
+                            }
+                        });
+                    });
+                }
+
+
+                labSelector.addEventListener('change', async function () {
+                    if (typeof hideLayoutModal === 'function') hideLayoutModal();
+                    showLoading('Memuat Denah Meja...');
+                    deskContainer.innerHTML =
+                        `<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8"><div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mr-4"></div><p class="text-gray-600 text-lg">Memuat data meja...</p></div></div>`;
+                    try {
+                        const response = await fetch(`/admin/labs/${this.value}/desks`);
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        desks = await response.json();
+                        let maxRow = 0,
+                            maxCol = 0;
+                        if (desks.length > 0) {
+                            desks.forEach(d => {
+                                const row = d.location.charCodeAt(0) - 64;
+                                const col = parseInt(d.location.substring(1));
+                                if (row > maxRow) maxRow = row;
+                                if (col > maxCol) maxCol = col;
+                            });
+                        }
+                        labConfig.maxRows = Math.max(5, maxRow);
+                        labConfig.maxCols = Math.max(10, maxCol);
+                        renderDeskGrid();
+                        autoZoomToFit();
+                        await loadLabStorage(this.value);
+                    } catch (error) {
+                        console.error('Error fetching desks:', error);
+                        deskContainer.innerHTML =
+                            `<div class="bg-white rounded-xl shadow-sm border border-red-200 p-8"><div class="text-center py-12"><svg class="w-16 h-16 mx-auto text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><p class="text-red-600 text-lg font-medium">Terjadi kesalahan saat mengambil data</p><p class="text-gray-500 mt-2">Silakan coba lagi atau hubungi administrator</p></div></div>`;
+                    } finally {
+                        hideLoading();
+                    }
+                });
+
+                async function loadLabStorage(labId) {
+                    const storageContainer = document.getElementById('lab-storage-container');
+                    const storageContent = document.getElementById('lab-storage-content');
+                    storageContainer.classList.remove('hidden');
+                    storageContent.innerHTML = '<div class="text-center py-8 text-gray-500">Memuat data...</div>';
+                    try {
+                        const response = await fetch(`/admin/labs/${labId}/storage`);
+                        if (!response.ok) throw new Error('Gagal memuat data lemari lab');
+                        const data = await response.json();
+                        renderLabStorage(data.items, data.components, labId);
+                    } catch (error) {
+                        console.error('Error loading lab storage:', error);
+                        storageContent.innerHTML =
+                            `<div class="text-center py-8 text-red-500">${error.message}</div>`;
+                    }
+                }
+
+                function renderLabStorage(items, components, labId) {
+                    const storageContent = document.getElementById('lab-storage-content');
+
+                    // Jika TOTAL kosong (Items 0 DAN Components 0)
+                    if (items.length === 0 && components.length === 0) {
+                        storageContent.innerHTML =
+                            `<div class="bg-gray-50 rounded-xl p-12 text-center border-2 border-dashed border-gray-300"><svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg><p class="text-gray-500 text-lg">Lemari Lab Kosong (Tidak ada Item maupun Komponen)</p></div>`;
+                        return;
+                    }
+
+                    // Jika ada data salah satu, RENDER DUA KOLOM TETAP
+                    let html = '<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">';
+
+                    // --- KOLOM ITEMS ---
+                    html += `<div class="bg-blue-50 rounded-xl p-6 border border-blue-200 h-full flex flex-col">`;
+                    html += `  <div class="flex items-center gap-2 mb-4">
+                                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                             <h3 class="text-lg font-bold text-blue-800">Items (${items.length})</h3>
+                                           </div>`;
+
+                    html += `<div class="space-y-3 max-h-96 overflow-y-auto flex-1">`;
+
+                    if (items.length > 0) {
+                        items.forEach(item => {
+                            window.inventoryData.set(item.id, item);
+                            const conditionClass = item.condition ? 'bg-green-100 text-green-800' :
+                                'bg-red-100 text-red-800';
+                            const conditionText = item.condition ? 'Baik' : 'Rusak';
+                            const specs = item.spec_set_values?.map(s =>
+                                `${s.spec_attributes?.name}: ${s.value}`).join(', ') || '-';
+
+                            html += `
+                                            <div class="bg-white p-4 rounded-lg border border-blue-200 hover:shadow-md transition-shadow">
+                                                <div class="flex justify-between items-start mb-2">
+                                                    <div><p class="font-semibold text-gray-800">${item.name}</p><p class="text-xs text-gray-500 font-mono">${item.serial_code}</p></div>
+                                                    <span class="px-2 py-1 rounded-full text-xs font-semibold ${conditionClass}">${conditionText}</span>
+                                                </div>
+                                                <p class="text-xs text-gray-600"><span class="font-semibold">Type:</span> ${item.type?.name || 'N/A'}</p>
+                                                <p class="text-xs text-gray-600 truncate" title="${specs}"><span class="font-semibold">Spec:</span> ${specs}</p>
+                                                <div class="mt-3 flex justify-end gap-2">
+                                                    <button onclick="showDetailModal('${item.id}')" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold rounded transition-colors">Lihat Detail</button>
+                                                    <button onclick="showItemActions('${item.id}', '${item.name}', null, '${labId}')" class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded transition-colors">Aksi</button>
+                                                    <button onclick="detachItemFromLab('${item.id}')" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-semibold rounded transition-colors">Lepas dari Lab</button>
+                                                </div>
+                                            </div>`;
+                        });
+                    } else {
+                        html +=
+                            `<div class="text-center py-10 border-2 border-dashed border-blue-200 rounded-lg text-blue-400 italic text-sm">Tidak ada Item tersimpan.</div>`;
+                    }
+                    html += `  </div>`; // End scrolling div
+                    html += `</div>`; // End Item Column
+
+                    // --- KOLOM COMPONENTS ---
+                    html += `<div class="bg-purple-50 rounded-xl p-6 border border-purple-200 h-full flex flex-col">`;
+                    html += `  <div class="flex items-center gap-2 mb-4">
+                                             <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                             <h3 class="text-lg font-bold text-purple-800">Components (${components.length})</h3>
+                                           </div>`;
+
+                    html += `<div class="space-y-3 max-h-96 overflow-y-auto flex-1">`;
+
+                    if (components.length > 0) {
+                        components.forEach(comp => {
+                            window.inventoryData.set(comp.id, comp);
+                            const conditionClass = comp.condition ? 'bg-green-100 text-green-800' :
+                                'bg-red-100 text-red-800';
+                            const conditionText = comp.condition ? 'Baik' : 'Rusak';
+                            const specs = comp.spec_set_values?.map(s =>
+                                `${s.spec_attributes?.name}: ${s.value}`).join(', ') || '-';
+
+                            html += `
+                                            <div class="bg-white p-4 rounded-lg border border-purple-200 hover:shadow-md transition-shadow">
+                                                <div class="flex justify-between items-start mb-2">
+                                                    <div><p class="font-semibold text-gray-800">${comp.name}</p><p class="text-xs text-gray-500 font-mono">${comp.serial_code}</p></div>
+                                                    <span class="px-2 py-1 rounded-full text-xs font-semibold ${conditionClass}">${conditionText}</span>
+                                                </div>
+                                                <p class="text-xs text-gray-600"><span class="font-semibold">Type:</span> ${comp.type?.name || 'N/A'}</p>
+                                                <p class="text-xs text-gray-600 truncate" title="${specs}"><span class="font-semibold">Spec:</span> ${specs}</p>
+                                                <div class="mt-3 flex justify-end gap-2">
+                                                    <button onclick="showDetailModal('${comp.id}')" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold rounded transition-colors">Lihat Detail</button>
+                                                    <button onclick="showComponentActions('${comp.id}', '${comp.name}', null, '${labId}')" class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded transition-colors">Aksi</button>
+                                                    <button onclick="detachComponentFromLab('${comp.id}')" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-semibold rounded transition-colors">Lepas dari Lab</button>
+                                                </div>
+                                            </div>`;
+                        });
+                    } else {
+                        html +=
+                            `<div class="text-center py-10 border-2 border-dashed border-purple-200 rounded-lg text-purple-400 italic text-sm">Tidak ada Component tersimpan.</div>`;
+                    }
+                    html += `  </div>`; // End scrolling div
+                    html += `</div>`; // End Component Column
+
+                    html += '</div>';
+                    storageContent.innerHTML = html;
+                }
+
+                function renderAdditionalInfo(spec) {
+                    if (!spec || !spec.set_values || spec.set_values.length === 0) return '';
+                    let infoHtml = '<div class="mt-3 space-y-1">';
+                    for (const setValue of spec.set_values) {
+                        if (!setValue.spec_attributes) continue;
+                        const key = setValue.spec_attributes.name;
+                        const value = setValue.value;
+                        const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
+                        infoHtml +=
+                            `<div class="flex items-start gap-2 text-sm"><span class="text-gray-500 min-w-fit">${formattedKey}:</span><span class="text-gray-700 font-medium">${value}</span></div>`;
+                    }
+                    infoHtml += '</div>';
+                    return infoHtml;
+                }
+
+                deskContainer.addEventListener('click', function (event) {
+                    const deskGrid = document.getElementById('desk-grid');
+                    if (deskGrid && deskGrid.classList.contains('edit-mode')) return;
+                    const clickedDeskElement = event.target.closest('.desk-item');
+                    if (!clickedDeskElement) return;
+
+                    document.querySelectorAll('.desk-item').forEach(el => el.classList.remove('ring-4',
+                        'ring-indigo-400', 'ring-opacity-50'));
+                    clickedDeskElement.classList.add('ring-4', 'ring-indigo-400', 'ring-opacity-50');
+
+                    const deskId = clickedDeskElement.dataset.deskId;
+                    const selectedDesk = desks.find(d => d.id == deskId);
+
+                    if (selectedDesk) {
+                        const modalTitle = `Detail Inventaris Meja ${selectedDesk.location}`;
+                        let modalBodyHTML = ``;
+
+                        if (selectedDesk.items && selectedDesk.items.length > 0) {
+                            modalBodyHTML += '<div class="space-y-4">';
+                            selectedDesk.items.forEach((item) => {
+                                window.inventoryData.set(item.id, item); // Store item for detail view
+                                const itemConditionText = item.condition == 1 ? 'Baik' : 'Rusak';
+                                const itemConditionClass = item.condition == 1 ?
+                                    'text-emerald-600 bg-emerald-50' : 'text-rose-600 bg-rose-50';
+                                const itemBorderClass = item.condition == 1 ? 'border-emerald-200' :
+                                    'border-rose-200';
+                                modalBodyHTML +=
+                                    `<div class="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border ${itemBorderClass} transition-all duration-200"><div class="flex items-start justify-between mb-3"><div class="flex-1"><h4 class="font-bold text-lg text-gray-800">${item.name}</h4><p class="text-sm text-gray-500 font-mono mt-1">${item.serial_code}</p></div><span class="px-3 py-1 rounded-full text-sm font-semibold ${itemConditionClass}">${itemConditionText}</span></div>`;
+                                modalBodyHTML += renderAdditionalInfo(item.spec);
+                                modalBodyHTML +=
+                                    `<div class="mt-3 flex justify-end gap-2"><button onclick="showDetailModal('${item.id}')" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold rounded transition-colors">Lihat Detail</button><button onclick="showItemActions('${item.id}', '${item.name}', '${selectedDesk.id}', null)" class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded transition-colors">Aksi</button><button onclick="detachItemFromDesk('${item.id}')" class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded transition-colors">Lepas dari Meja</button></div>`;
+
+                                if (item.components && item.components.length > 0) {
+                                    modalBodyHTML +=
+                                        `<div class="mt-4 pt-4 border-t border-gray-200"><div class="flex items-center gap-2 mb-3"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg><p class="text-sm font-bold text-gray-700">Komponen (${item.components.length})</p></div><div class="space-y-3">`;
+                                    item.components.forEach(component => {
+                                        window.inventoryData.set(component.id,
+                                            component); // Store component
+                                        const compConditionText = component.condition == 1 ?
+                                            'Baik' : 'Rusak';
+                                        const compConditionClass = component.condition == 1 ?
+                                            'text-emerald-600 bg-emerald-50' :
+                                            'text-rose-600 bg-rose-50';
+                                        const compBgClass = component.condition == 1 ?
+                                            'bg-emerald-50/50' : 'bg-rose-50/50';
+                                        modalBodyHTML +=
+                                            `<div class="${compBgClass} p-4 rounded-lg border border-gray-200"><div class="flex items-start justify-between mb-2"><div><p class="font-semibold text-gray-800">${component.name}</p><p class="text-xs text-gray-500 font-mono mt-1">${component.serial_code}</p></div><span class="px-2 py-1 rounded-full text-xs font-semibold ${compConditionClass}">${compConditionText}</span></div>`;
+                                        modalBodyHTML += renderAdditionalInfo(component.spec);
+                                        modalBodyHTML +=
+                                            `<div class="mt-3 flex justify-end gap-2"><button onclick="showDetailModal('${component.id}')" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold rounded transition-colors">Lihat Detail</button><button onclick="showComponentActions('${component.id}', '${component.name}', '${item.id}')" class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded transition-colors">Aksi</button><button onclick="detachComponentFromItem('${component.id}')" class="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold rounded transition-colors">Lepas dari Item</button></div></div>`;
+                                    });
+                                    modalBodyHTML += '</div></div>';
+                                }
+                                modalBodyHTML += '</div>';
+                            });
+                            modalBodyHTML += '</div>';
+                        } else {
+                            modalBodyHTML +=
+                                `<div class="bg-gray-50 rounded-xl p-12 text-center border-2 border-dashed border-gray-300"><svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg><p class="text-gray-500 text-lg">Tidak ada item yang terdaftar untuk meja ini</p></div>`;
+                        }
+
+                        if (typeof showLayoutModal === 'function') {
+                            showLayoutModal(modalTitle, modalBodyHTML, deskId);
+                        }
+                    }
+                });
+
+                deskContainer.addEventListener('dblclick', function (event) {
+                    const clickedDesk = event.target.closest('.new-desk-item');
+                    const deskGrid = document.getElementById('desk-grid');
+                    if (!clickedDesk || !deskGrid || !deskGrid.classList.contains('edit-mode')) return;
+                    const location = clickedDesk.dataset.location;
+                    cancelNewDesk(location);
+                });
+
+                // --- Layout Modal (Existing) ---
+                const layoutModal = document.getElementById('layout-modal');
+                const layoutModalArea = document.getElementById('layout-modal-area');
+                const layoutModalTitle = document.getElementById('layout-modal-title');
+                const layoutModalBody = document.getElementById('layout-modal-body');
+                const layoutModalFooter = layoutModal.querySelector('.rounded-b');
+                const overlay = document.getElementById('layout-modal-overlay');
+                const closeButtonHeader = document.getElementById('layout-modal-close-button');
+                const closeButtonFooter = document.getElementById('layout-modal-footer-close-button');
+                if (layoutModalArea) {
+                    layoutModalArea.classList.remove('max-w-3xl');
+                    layoutModalArea.classList.add('max-w-5xl');
+                }
+                const addItemButton = document.createElement('button');
+                addItemButton.id = 'layout-modal-add-item-button';
+                addItemButton.type = 'button';
+                addItemButton.className =
+                    'text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-auto';
+                addItemButton.textContent = 'Tambah Item ke Meja Ini';
+                layoutModalFooter.prepend(addItemButton);
+
+                window.showLayoutModal = (title, bodyHTML, deskId) => {
+                    if (layoutModal && layoutModalTitle && layoutModalBody) {
+                        layoutModalTitle.textContent = title;
+                        layoutModalBody.innerHTML = bodyHTML;
+                        addItemButton.dataset.deskId = deskId;
+                        layoutModal.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden';
+                    }
+                };
+                window.hideLayoutModal = () => {
+                    if (layoutModal) {
+                        layoutModal.classList.add('hidden');
+                        if (document.getElementById('add-item-modal').classList.contains('hidden')) {
+                            document.body.style.overflow = '';
+                        }
+                    }
+                };
+                if (closeButtonHeader) closeButtonHeader.addEventListener('click', window.hideLayoutModal);
+                if (closeButtonFooter) closeButtonFooter.addEventListener('click', window.hideLayoutModal);
+                if (overlay) {
+                    overlay.addEventListener('click', function (event) {
+                        if (event.target === overlay) {
+                            window.hideLayoutModal();
+                        }
+                    });
+                }
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && layoutModal && !layoutModal.classList.contains('hidden')) {
+                        window.hideLayoutModal();
+                    }
+                });
+
+                // ... (Rest of modal initializations: AddItemModal, ActionModal, AttachDeskMapModal - kept same as original) ...
+                // [Paste the logic for initializeAddItemModal(), openAddItemModal(), closeAddItemModal(), loadFilterOptions(), etc here]
+                // ... [Paste the logic for item actions here] ...
+
+                // --- RE-INITIALIZING REQUIRED MODALS FROM ORIGINAL CODE ---
+                const addItemModal = document.getElementById('add-item-modal');
+                const addItemModalOverlay = document.getElementById('add-item-modal-overlay');
+                const addItemCloseBtn = document.getElementById('add-item-modal-close-button');
+                const addItemCancelBtn = document.getElementById('add-item-modal-footer-cancel-button');
+                const addItemSaveBtn = document.getElementById('add-item-modal-footer-save-button');
+                const itemSelectLoading = document.getElementById('item-select-loading');
+                const itemFilterFieldset = document.getElementById('item-filter-fieldset');
+
+                function initializeAddItemModal() {
+                    tomSelectType = new TomSelect('#filter-type-select', {
+                        create: false,
+                        onChange: () => loadUnaffiliatedItems()
+                    });
+                    tomSelectAttr = new TomSelect('#filter-attr-select', {
+                        create: false,
+                        onChange: (attrId) => {
+                            tomSelectValue.clear();
+                            tomSelectValue.clearOptions();
+                            if (attrId) {
+                                const selectedAttr = allSpecAttributes.find(a => a.id == attrId);
+                                if (selectedAttr && selectedAttr.spec_values) {
+                                    const valueOptions = selectedAttr.spec_values.map(v => ({
+                                        value: v.id,
+                                        text: v.value
+                                    }));
+                                    tomSelectValue.addOptions(valueOptions);
+                                    tomSelectValue.enable();
+                                }
+                            } else {
+                                tomSelectValue.disable();
+                            }
+                            loadUnaffiliatedItems();
+                        }
+                    });
+                    tomSelectValue = new TomSelect('#filter-value-select', {
+                        create: false,
+                        onChange: () => loadUnaffiliatedItems()
+                    });
+                    tomSelectItem = new TomSelect('#item-select-dropdown', {
+                        create: false,
+                        plugins: ['remove_button'],
+                        render: {
+                            no_results: function (data, escape) {
+                                return '<div class="p-3 text-sm text-gray-500 text-center">Tidak ada item yang ditemukan. Coba ubah filter Anda.</div>';
                             }
                         }
                     });
+
+                    addItemButton.addEventListener('click', openAddItemModal);
+                    addItemCloseBtn.addEventListener('click', closeAddItemModal);
+                    addItemCancelBtn.addEventListener('click', closeAddItemModal);
+                    addItemSaveBtn.addEventListener('click', submitAddItems);
+                    if (addItemModalOverlay) {
+                        addItemModalOverlay.addEventListener('click', function (event) {
+                            if (event.target === addItemModalOverlay) {
+                                closeAddItemModal();
+                            }
+                        });
+                    }
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape' && addItemModal && !addItemModal.classList.contains(
+                            'hidden')) {
+                            closeAddItemModal();
+                        }
+                    });
+                }
+
+                async function openAddItemModal() {
+                    currentDeskId = this.dataset.deskId;
+                    if (!currentDeskId) return;
+                    addItemModal.classList.remove('hidden');
+                    showLoading('Memuat Filter & Item...');
+                    await loadFilterOptions();
+                    await loadUnaffiliatedItems();
+                    hideLoading();
+                }
+
+                function closeAddItemModal() {
+                    addItemModal.classList.add('hidden');
+                    tomSelectType.clear();
+                    tomSelectAttr.clear();
+                    tomSelectValue.clear();
+                    tomSelectItem.clear();
+                    tomSelectValue.disable();
+                    if (layoutModal.classList.contains('hidden')) {
+                        document.body.style.overflow = '';
+                    }
+                }
+                async function loadFilterOptions() {
+                    itemFilterFieldset.disabled = true;
+                    try {
+                        const response = await fetch("{{ route('admin.items.filters') }}");
+                        const data = await response.json();
+                        if (!response.ok || !data.success) throw new Error(data.message);
+                        const filterData = data.data;
+                        allSpecAttributes = filterData.specifications || [];
+                        tomSelectType.clearOptions();
+                        tomSelectType.addOptions(filterData.types.map(t => ({
+                            value: t.id,
+                            text: t.name
+                        })));
+                        tomSelectAttr.clearOptions();
+                        tomSelectAttr.addOptions(allSpecAttributes.map(a => ({
+                            value: a.id,
+                            text: a.name
+                        })));
+                    } catch (error) {
+                        console.error(error);
+                        showToast('Error Filter', error.message, 'error');
+                    } finally {
+                        itemFilterFieldset.disabled = false;
+                    }
+                }
+                async function loadUnaffiliatedItems() {
+                    itemSelectLoading.classList.remove('hidden');
+                    tomSelectItem.wrapper.classList.add('hidden');
+                    tomSelectItem.clear();
+                    tomSelectItem.clearOptions();
+                    itemFilterFieldset.disabled = true;
+                    const params = new URLSearchParams();
+                    if (tomSelectType.getValue()) params.append('type_id', tomSelectType.getValue());
+                    if (tomSelectValue.getValue()) params.append('spec_value_id', tomSelectValue.getValue());
+                    try {
+                        const response = await fetch(
+                            `{{ route('admin.items.unaffiliated') }}?${params.toString()}`);
+                        const data = await response.json();
+                        if (!response.ok || !data.success) throw new Error(data.message);
+                        const items = data.data.items;
+                        tomSelectItem.addOptions(items.map(i => ({
+                            value: i.id,
+                            text: `${i.name} (${i.serial_code})`
+                        })));
+                    } catch (error) {
+                        console.error(error);
+                        showToast('Error Item', error.message, 'error');
+                    } finally {
+                        itemSelectLoading.classList.add('hidden');
+                        tomSelectItem.wrapper.classList.remove('hidden');
+                        itemFilterFieldset.disabled = false;
+                    }
+                }
+                async function submitAddItems() {
+                    const itemIds = tomSelectItem.getValue();
+                    if (!itemIds || itemIds.length === 0) {
+                        showToast('Peringatan', 'Anda belum memilih item sama sekali.', 'warning');
+                        return;
+                    }
+                    const result = await Swal.fire({
+                        title: `Tambahkan ${itemIds.length} item?`,
+                        text: 'Item yang dipilih akan ditambahkan ke meja ini.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Tambahkan!',
+                        cancelButtonText: 'Batal'
+                    });
+                    if (!result.isConfirmed) return;
+                    showLoading('Menambahkan Item...');
+                    addItemSaveBtn.disabled = true;
+                    try {
+                        const response = await fetch(`/admin/desks/${currentDeskId}/items`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                item_ids: itemIds
+                            })
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.message);
+                        hideLoading();
+                        showToast('Berhasil', data.message, 'success');
+                        closeAddItemModal();
+                        window.hideLayoutModal();
+                        labSelector.dispatchEvent(new Event('change'));
+                    } catch (error) {
+                        hideLoading();
+                        Swal.fire('Gagal', error.message, 'error');
+                    } finally {
+                        addItemSaveBtn.disabled = false;
+                    }
+                }
+
+                initializeAddItemModal();
+
+                // Action Modal Logic
+                const actionModal = document.getElementById('item-action-modal');
+                const actionOverlay = document.getElementById('item-action-modal-overlay');
+                const actionCloseBtn = document.getElementById('item-action-modal-close-btn');
+                const closeActionModal = () => {
+                    actionModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                    currentActionItemId = null;
+                    currentActionItemName = null;
+                    currentActionItemType = 'item';
+                    currentActionDeskId = null;
+                    currentActionLabId = null;
+                };
+                actionCloseBtn.addEventListener('click', closeActionModal);
+                actionOverlay.addEventListener('click', (e) => {
+                    if (e.target === actionOverlay) closeActionModal();
                 });
+                document.getElementById('action-attach-desk-card').addEventListener('click', openAttachDeskMapModal);
+                document.getElementById('action-attach-lab-card').addEventListener('click', handleAttachToLab);
+                document.getElementById('action-attach-item-card').addEventListener('click', handleAttachToItem);
+                document.getElementById('action-detach-desk-card').addEventListener('click', handleDetachFromDesk);
+                document.getElementById('action-detach-lab-card').addEventListener('click', handleDetachFromLab);
+
+                // Attach Desk Map Modal Logic
+                const attachDeskModal = document.getElementById('attach-desk-map-modal');
+                const attachDeskOverlay = document.getElementById('attach-desk-map-overlay');
+                const attachDeskCloseBtn = document.getElementById('attach-desk-map-close-btn');
+                const closeAttachDeskModal = () => {
+                    attachDeskModal.classList.add('hidden');
+                    if (tomSelectAttachLab) tomSelectAttachLab.clear();
+                    document.getElementById('attach-desk-map-container').innerHTML =
+                        '<div class="text-center py-12 text-gray-500">Pilih lab untuk melihat denah meja.</div>';
+                    document.body.style.overflow = '';
+                };
+                attachDeskCloseBtn.addEventListener('click', closeAttachDeskModal);
+                attachDeskOverlay.addEventListener('click', (e) => {
+                    if (e.target === attachDeskOverlay) closeAttachDeskModal();
+                });
+                tomSelectAttachLab = new TomSelect('#attach-lab-selector', {
+                    create: false,
+                    placeholder: 'Pilih Lab...',
+                    onChange: (labId) => {
+                        if (labId) fetchDeskMapForAttach(labId);
+                    }
+                });
+
+            }); // END DOMContentLoaded
+
+            let currentActionItemId = null,
+                currentActionItemName = null,
+                currentActionItemType = 'item',
+                currentActionDeskId = null,
+                currentActionLabId = null,
+                tomSelectAttachLab = null,
+                attachDeskMapData = [];
+
+            async function showItemActions(itemId, itemName, deskId = null, labId = null) {
+                currentActionItemId = itemId;
+                currentActionItemName = itemName;
+                currentActionItemType = 'item';
+                currentActionDeskId = deskId;
+                currentActionLabId = labId;
+                const modal = document.getElementById('item-action-modal');
+                const title = document.getElementById('item-action-modal-title');
+                const attachDeskCard = document.getElementById('action-attach-desk-card');
+                const attachLabCard = document.getElementById('action-attach-lab-card');
+                const attachItemCard = document.getElementById('action-attach-item-card');
+                const detachDeskCard = document.getElementById('action-detach-desk-card');
+                const detachLabCard = document.getElementById('action-detach-lab-card');
+                title.textContent = `Aksi untuk ${itemName}`;
+                attachDeskCard.classList.remove('hidden');
+                attachLabCard.classList.remove('hidden');
+                attachItemCard.classList.add('hidden');
+                detachDeskCard.classList.add('hidden');
+                detachLabCard.classList.add('hidden');
+                const attachDeskText = attachDeskCard.querySelector('.font-semibold');
+                attachDeskText.textContent = deskId ? 'Pasang ke Meja Lain' : 'Pasang ke Meja';
+                if (deskId) {
+                    attachLabCard.classList.add('hidden');
+                    detachDeskCard.classList.remove('hidden');
+                } else if (labId) {
+                    detachLabCard.classList.remove('hidden');
+                }
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
             }
 
-
-            labSelector.addEventListener('change', async function() {
-                if (typeof hideLayoutModal === 'function') hideLayoutModal();
-                showLoading('Memuat Denah Meja...');
-                deskContainer.innerHTML =
-                    `<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8"><div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mr-4"></div><p class="text-gray-600 text-lg">Memuat data meja...</p></div></div>`;
+            async function openAttachDeskMapModal() {
+                const modal = document.getElementById('attach-desk-map-modal');
+                const itemNameEl = document.getElementById('attach-desk-item-name');
+                itemNameEl.textContent = currentActionItemName;
+                modal.classList.remove('hidden');
+                document.getElementById('item-action-modal').classList.add('hidden');
+                showLoading('Memuat Daftar Lab...');
                 try {
-                    const response = await fetch(`/admin/labs/${this.value}/desks`);
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    desks = await response.json();
-                    let maxRow = 0,
-                        maxCol = 0;
-                    if (desks.length > 0) {
-                        desks.forEach(d => {
+                    const response = await fetch('/admin/labs/list');
+                    if (!response.ok) throw new Error('Gagal memuat daftar lab.');
+                    const labs = await response.json();
+                    if (tomSelectAttachLab) {
+                        tomSelectAttachLab.clearOptions();
+                        tomSelectAttachLab.addOptions(labs.map(lab => ({
+                            value: lab.id,
+                            text: lab.name
+                        })));
+                        hideLoading();
+                        tomSelectAttachLab.open();
+                    }
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Error', error.message, 'error');
+                    modal.classList.add('hidden');
+                }
+            }
+
+            async function fetchDeskMapForAttach(labId) {
+                const container = document.getElementById('attach-desk-map-container');
+                container.innerHTML =
+                    '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div></div>';
+                try {
+                    const response = await fetch(`/admin/labs/${labId}/desks`);
+                    if (!response.ok) throw new Error('Gagal memuat denah meja.');
+                    attachDeskMapData = await response.json();
+                    let maxRow = 5,
+                        maxCol = 10;
+                    if (attachDeskMapData.length > 0) {
+                        attachDeskMapData.forEach(d => {
                             const row = d.location.charCodeAt(0) - 64;
                             const col = parseInt(d.location.substring(1));
                             if (row > maxRow) maxRow = row;
                             if (col > maxCol) maxCol = col;
                         });
                     }
-                    labConfig.maxRows = Math.max(5, maxRow);
-                    labConfig.maxCols = Math.max(10, maxCol);
-                    renderDeskGrid();
-                    autoZoomToFit();
-                    await loadLabStorage(this.value);
+                    renderAttachDeskMap(attachDeskMapData, maxRow, maxCol, currentActionItemType === 'component');
                 } catch (error) {
-                    console.error('Error fetching desks:', error);
-                    deskContainer.innerHTML =
-                        `<div class="bg-white rounded-xl shadow-sm border border-red-200 p-8"><div class="text-center py-12"><svg class="w-16 h-16 mx-auto text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><p class="text-red-600 text-lg font-medium">Terjadi kesalahan saat mengambil data</p><p class="text-gray-500 mt-2">Silakan coba lagi atau hubungi administrator</p></div></div>`;
-                } finally {
-                    hideLoading();
-                }
-            });
-
-            async function loadLabStorage(labId) {
-                const storageContainer = document.getElementById('lab-storage-container');
-                const storageContent = document.getElementById('lab-storage-content');
-                storageContainer.classList.remove('hidden');
-                storageContent.innerHTML = '<div class="text-center py-8 text-gray-500">Memuat data...</div>';
-                try {
-                    const response = await fetch(`/admin/labs/${labId}/storage`);
-                    if (!response.ok) throw new Error('Gagal memuat data lemari lab');
-                    const data = await response.json();
-                    renderLabStorage(data.items, data.components, labId);
-                } catch (error) {
-                    console.error('Error loading lab storage:', error);
-                    storageContent.innerHTML =
-                        `<div class="text-center py-8 text-red-500">${error.message}</div>`;
+                    container.innerHTML = `<div class="text-center py-12 text-red-500">${error.message}</div>`;
                 }
             }
 
-            function renderLabStorage(items, components, labId) {
-                const storageContent = document.getElementById('lab-storage-content');
-
-                // Jika TOTAL kosong (Items 0 DAN Components 0)
-                if (items.length === 0 && components.length === 0) {
-                    storageContent.innerHTML =
-                        `<div class="bg-gray-50 rounded-xl p-12 text-center border-2 border-dashed border-gray-300"><svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg><p class="text-gray-500 text-lg">Lemari Lab Kosong (Tidak ada Item maupun Komponen)</p></div>`;
-                    return;
-                }
-
-                // Jika ada data salah satu, RENDER DUA KOLOM TETAP
-                let html = '<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">';
-
-                // --- KOLOM ITEMS ---
-                html += `<div class="bg-blue-50 rounded-xl p-6 border border-blue-200 h-full flex flex-col">`;
-                html += `  <div class="flex items-center gap-2 mb-4">
-                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                         <h3 class="text-lg font-bold text-blue-800">Items (${items.length})</h3>
-                       </div>`;
-
-                html += `<div class="space-y-3 max-h-96 overflow-y-auto flex-1">`;
-
-                if (items.length > 0) {
-                    items.forEach(item => {
-                        window.inventoryData.set(item.id, item);
-                        const conditionClass = item.condition ? 'bg-green-100 text-green-800' :
-                            'bg-red-100 text-red-800';
-                        const conditionText = item.condition ? 'Baik' : 'Rusak';
-                        const specs = item.spec_set_values?.map(s =>
-                            `${s.spec_attributes?.name}: ${s.value}`).join(', ') || '-';
-
-                        html += `
-                        <div class="bg-white p-4 rounded-lg border border-blue-200 hover:shadow-md transition-shadow">
-                            <div class="flex justify-between items-start mb-2">
-                                <div><p class="font-semibold text-gray-800">${item.name}</p><p class="text-xs text-gray-500 font-mono">${item.serial_code}</p></div>
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold ${conditionClass}">${conditionText}</span>
-                            </div>
-                            <p class="text-xs text-gray-600"><span class="font-semibold">Type:</span> ${item.type?.name || 'N/A'}</p>
-                            <p class="text-xs text-gray-600 truncate" title="${specs}"><span class="font-semibold">Spec:</span> ${specs}</p>
-                            <div class="mt-3 flex justify-end gap-2">
-                                <button onclick="showDetailModal('${item.id}')" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold rounded transition-colors">Lihat Detail</button>
-                                <button onclick="showItemActions('${item.id}', '${item.name}', null, '${labId}')" class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded transition-colors">Aksi</button>
-                                <button onclick="detachItemFromLab('${item.id}')" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-semibold rounded transition-colors">Lepas dari Lab</button>
-                            </div>
-                        </div>`;
-                    });
-                } else {
+            function renderAttachDeskMap(desks, maxRows, maxCols, isComponentMode = false) {
+                const container = document.getElementById('attach-desk-map-container');
+                const instruction = isComponentMode ? 'Klik pada meja untuk melihat items' :
+                    'Klik pada meja untuk memasang item';
+                let html =
+                    `<div class="bg-white rounded-xl border border-gray-200 p-6"><div class="mb-4"><h3 class="text-lg font-semibold text-gray-800 mb-2">Denah Meja</h3><p class="text-sm text-gray-600">${instruction}</p></div><div class="overflow-x-auto pb-4"><div class="grid gap-3 border-2 border-slate-300 p-6 min-w-fit" style="grid-template-columns: repeat(${maxCols}, minmax(120px, 1fr)); grid-template-rows: repeat(${maxRows}, auto);">`;
+                const occupiedSlots = new Set(desks.map(d => d.location));
+                desks.forEach(desk => {
+                    const row = desk.location.charCodeAt(0) - 64;
+                    const col = parseInt(desk.location.substring(1));
+                    let bgClass, iconColor, conditionText;
+                    switch (desk.overall_condition) {
+                        case 'item_rusak':
+                        case 'component_rusak':
+                            bgClass = 'bg-rose-50 border-rose-300 hover:bg-rose-100';
+                            iconColor = 'text-rose-600';
+                            conditionText = 'Rusak';
+                            break;
+                        case 'item_tidak_lengkap':
+                            bgClass = 'bg-amber-50 border-amber-300 hover:bg-amber-100';
+                            iconColor = 'text-amber-600';
+                            conditionText = 'Tidak Lengkap';
+                            break;
+                        case 'item_kosong':
+                            bgClass = 'bg-gray-50 border-gray-300 hover:bg-gray-100';
+                            iconColor = 'text-gray-500';
+                            conditionText = 'Kosong';
+                            break;
+                        default:
+                            bgClass = 'bg-emerald-50 border-emerald-300 hover:bg-emerald-100';
+                            iconColor = 'text-emerald-600';
+                            conditionText = 'Baik';
+                    }
+                    const clickHandler = isComponentMode ? `showDeskItems('${desk.id}', '${desk.location}')` :
+                        `confirmAttachToDesk('${desk.id}', '${desk.location}')`;
                     html +=
-                        `<div class="text-center py-10 border-2 border-dashed border-blue-200 rounded-lg text-blue-400 italic text-sm">Tidak ada Item tersimpan.</div>`;
-                }
-                html += `  </div>`; // End scrolling div
-                html += `</div>`; // End Item Column
-
-                // --- KOLOM COMPONENTS ---
-                html += `<div class="bg-purple-50 rounded-xl p-6 border border-purple-200 h-full flex flex-col">`;
-                html += `  <div class="flex items-center gap-2 mb-4">
-                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                         <h3 class="text-lg font-bold text-purple-800">Components (${components.length})</h3>
-                       </div>`;
-
-                html += `<div class="space-y-3 max-h-96 overflow-y-auto flex-1">`;
-
-                if (components.length > 0) {
-                    components.forEach(comp => {
-                        window.inventoryData.set(comp.id, comp);
-                        const conditionClass = comp.condition ? 'bg-green-100 text-green-800' :
-                            'bg-red-100 text-red-800';
-                        const conditionText = comp.condition ? 'Baik' : 'Rusak';
-                        const specs = comp.spec_set_values?.map(s =>
-                            `${s.spec_attributes?.name}: ${s.value}`).join(', ') || '-';
-
-                        html += `
-                        <div class="bg-white p-4 rounded-lg border border-purple-200 hover:shadow-md transition-shadow">
-                            <div class="flex justify-between items-start mb-2">
-                                <div><p class="font-semibold text-gray-800">${comp.name}</p><p class="text-xs text-gray-500 font-mono">${comp.serial_code}</p></div>
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold ${conditionClass}">${conditionText}</span>
-                            </div>
-                            <p class="text-xs text-gray-600"><span class="font-semibold">Type:</span> ${comp.type?.name || 'N/A'}</p>
-                            <p class="text-xs text-gray-600 truncate" title="${specs}"><span class="font-semibold">Spec:</span> ${specs}</p>
-                            <div class="mt-3 flex justify-end gap-2">
-                                <button onclick="showDetailModal('${comp.id}')" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold rounded transition-colors">Lihat Detail</button>
-                                <button onclick="showComponentActions('${comp.id}', '${comp.name}', null, '${labId}')" class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded transition-colors">Aksi</button>
-                                <button onclick="detachComponentFromLab('${comp.id}')" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-semibold rounded transition-colors">Lepas dari Lab</button>
-                            </div>
-                        </div>`;
-                    });
-                } else {
-                    html +=
-                        `<div class="text-center py-10 border-2 border-dashed border-purple-200 rounded-lg text-purple-400 italic text-sm">Tidak ada Component tersimpan.</div>`;
-                }
-                html += `  </div>`; // End scrolling div
-                html += `</div>`; // End Component Column
-
-                html += '</div>';
-                storageContent.innerHTML = html;
-            }
-
-            function renderAdditionalInfo(spec) {
-                if (!spec || !spec.set_values || spec.set_values.length === 0) return '';
-                let infoHtml = '<div class="mt-3 space-y-1">';
-                for (const setValue of spec.set_values) {
-                    if (!setValue.spec_attributes) continue;
-                    const key = setValue.spec_attributes.name;
-                    const value = setValue.value;
-                    const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
-                    infoHtml +=
-                        `<div class="flex items-start gap-2 text-sm"><span class="text-gray-500 min-w-fit">${formattedKey}:</span><span class="text-gray-700 font-medium">${value}</span></div>`;
-                }
-                infoHtml += '</div>';
-                return infoHtml;
-            }
-
-            deskContainer.addEventListener('click', function(event) {
-                const deskGrid = document.getElementById('desk-grid');
-                if (deskGrid && deskGrid.classList.contains('edit-mode')) return;
-                const clickedDeskElement = event.target.closest('.desk-item');
-                if (!clickedDeskElement) return;
-
-                document.querySelectorAll('.desk-item').forEach(el => el.classList.remove('ring-4',
-                    'ring-indigo-400', 'ring-opacity-50'));
-                clickedDeskElement.classList.add('ring-4', 'ring-indigo-400', 'ring-opacity-50');
-
-                const deskId = clickedDeskElement.dataset.deskId;
-                const selectedDesk = desks.find(d => d.id == deskId);
-
-                if (selectedDesk) {
-                    const modalTitle = `Detail Inventaris Meja ${selectedDesk.location}`;
-                    let modalBodyHTML = ``;
-
-                    if (selectedDesk.items && selectedDesk.items.length > 0) {
-                        modalBodyHTML += '<div class="space-y-4">';
-                        selectedDesk.items.forEach((item) => {
-                            window.inventoryData.set(item.id, item); // Store item for detail view
-                            const itemConditionText = item.condition == 1 ? 'Baik' : 'Rusak';
-                            const itemConditionClass = item.condition == 1 ?
-                                'text-emerald-600 bg-emerald-50' : 'text-rose-600 bg-rose-50';
-                            const itemBorderClass = item.condition == 1 ? 'border-emerald-200' :
-                                'border-rose-200';
-                            modalBodyHTML +=
-                                `<div class="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border ${itemBorderClass} transition-all duration-200"><div class="flex items-start justify-between mb-3"><div class="flex-1"><h4 class="font-bold text-lg text-gray-800">${item.name}</h4><p class="text-sm text-gray-500 font-mono mt-1">${item.serial_code}</p></div><span class="px-3 py-1 rounded-full text-sm font-semibold ${itemConditionClass}">${itemConditionText}</span></div>`;
-                            modalBodyHTML += renderAdditionalInfo(item.spec);
-                            modalBodyHTML +=
-                                `<div class="mt-3 flex justify-end gap-2"><button onclick="showDetailModal('${item.id}')" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold rounded transition-colors">Lihat Detail</button><button onclick="showItemActions('${item.id}', '${item.name}', '${selectedDesk.id}', null)" class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded transition-colors">Aksi</button><button onclick="detachItemFromDesk('${item.id}')" class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded transition-colors">Lepas dari Meja</button></div>`;
-
-                            if (item.components && item.components.length > 0) {
-                                modalBodyHTML +=
-                                    `<div class="mt-4 pt-4 border-t border-gray-200"><div class="flex items-center gap-2 mb-3"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg><p class="text-sm font-bold text-gray-700">Komponen (${item.components.length})</p></div><div class="space-y-3">`;
-                                item.components.forEach(component => {
-                                    window.inventoryData.set(component.id,
-                                        component); // Store component
-                                    const compConditionText = component.condition == 1 ?
-                                        'Baik' : 'Rusak';
-                                    const compConditionClass = component.condition == 1 ?
-                                        'text-emerald-600 bg-emerald-50' :
-                                        'text-rose-600 bg-rose-50';
-                                    const compBgClass = component.condition == 1 ?
-                                        'bg-emerald-50/50' : 'bg-rose-50/50';
-                                    modalBodyHTML +=
-                                        `<div class="${compBgClass} p-4 rounded-lg border border-gray-200"><div class="flex items-start justify-between mb-2"><div><p class="font-semibold text-gray-800">${component.name}</p><p class="text-xs text-gray-500 font-mono mt-1">${component.serial_code}</p></div><span class="px-2 py-1 rounded-full text-xs font-semibold ${compConditionClass}">${compConditionText}</span></div>`;
-                                    modalBodyHTML += renderAdditionalInfo(component.spec);
-                                    modalBodyHTML +=
-                                        `<div class="mt-3 flex justify-end gap-2"><button onclick="showDetailModal('${component.id}')" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold rounded transition-colors">Lihat Detail</button><button onclick="showComponentActions('${component.id}', '${component.name}', '${item.id}')" class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded transition-colors">Aksi</button><button onclick="detachComponentFromItem('${component.id}')" class="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold rounded transition-colors">Lepas dari Item</button></div></div>`;
-                                });
-                                modalBodyHTML += '</div></div>';
-                            }
-                            modalBodyHTML += '</div>';
-                        });
-                        modalBodyHTML += '</div>';
-                    } else {
-                        modalBodyHTML +=
-                            `<div class="bg-gray-50 rounded-xl p-12 text-center border-2 border-dashed border-gray-300"><svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg><p class="text-gray-500 text-lg">Tidak ada item yang terdaftar untuk meja ini</p></div>`;
-                    }
-
-                    if (typeof showLayoutModal === 'function') {
-                        showLayoutModal(modalTitle, modalBodyHTML, deskId);
-                    }
-                }
-            });
-
-            deskContainer.addEventListener('dblclick', function(event) {
-                const clickedDesk = event.target.closest('.new-desk-item');
-                const deskGrid = document.getElementById('desk-grid');
-                if (!clickedDesk || !deskGrid || !deskGrid.classList.contains('edit-mode')) return;
-                const location = clickedDesk.dataset.location;
-                cancelNewDesk(location);
-            });
-
-            // --- Layout Modal (Existing) ---
-            const layoutModal = document.getElementById('layout-modal');
-            const layoutModalArea = document.getElementById('layout-modal-area');
-            const layoutModalTitle = document.getElementById('layout-modal-title');
-            const layoutModalBody = document.getElementById('layout-modal-body');
-            const layoutModalFooter = layoutModal.querySelector('.rounded-b');
-            const overlay = document.getElementById('layout-modal-overlay');
-            const closeButtonHeader = document.getElementById('layout-modal-close-button');
-            const closeButtonFooter = document.getElementById('layout-modal-footer-close-button');
-            if (layoutModalArea) {
-                layoutModalArea.classList.remove('max-w-3xl');
-                layoutModalArea.classList.add('max-w-5xl');
-            }
-            const addItemButton = document.createElement('button');
-            addItemButton.id = 'layout-modal-add-item-button';
-            addItemButton.type = 'button';
-            addItemButton.className =
-                'text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-auto';
-            addItemButton.textContent = 'Tambah Item ke Meja Ini';
-            layoutModalFooter.prepend(addItemButton);
-
-            window.showLayoutModal = (title, bodyHTML, deskId) => {
-                if (layoutModal && layoutModalTitle && layoutModalBody) {
-                    layoutModalTitle.textContent = title;
-                    layoutModalBody.innerHTML = bodyHTML;
-                    addItemButton.dataset.deskId = deskId;
-                    layoutModal.classList.remove('hidden');
-                    document.body.style.overflow = 'hidden';
-                }
-            };
-            window.hideLayoutModal = () => {
-                if (layoutModal) {
-                    layoutModal.classList.add('hidden');
-                    if (document.getElementById('add-item-modal').classList.contains('hidden')) {
-                        document.body.style.overflow = '';
-                    }
-                }
-            };
-            if (closeButtonHeader) closeButtonHeader.addEventListener('click', window.hideLayoutModal);
-            if (closeButtonFooter) closeButtonFooter.addEventListener('click', window.hideLayoutModal);
-            if (overlay) {
-                overlay.addEventListener('click', function(event) {
-                    if (event.target === overlay) {
-                        window.hideLayoutModal();
-                    }
+                        `<div data-desk-id="${desk.id}" data-desk-location="${desk.location}" style="grid-area: ${row} / ${col};" class="attach-desk-card cursor-pointer transition-all duration-200 flex flex-col items-center justify-center p-4 border-2 rounded-lg min-h-32 ${bgClass} hover:ring-2 hover:ring-indigo-400" onclick="${clickHandler}"><svg class="w-6 h-6 ${iconColor} mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span class="font-bold text-base text-gray-800">${desk.location}</span><span class="text-xs text-gray-600 mt-1">${conditionText}</span></div>`;
                 });
-            }
-            document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && layoutModal && !layoutModal.classList.contains('hidden')) {
-                    window.hideLayoutModal();
-                }
-            });
-
-            // ... (Rest of modal initializations: AddItemModal, ActionModal, AttachDeskMapModal - kept same as original) ...
-            // [Paste the logic for initializeAddItemModal(), openAddItemModal(), closeAddItemModal(), loadFilterOptions(), etc here]
-            // ... [Paste the logic for item actions here] ...
-
-            // --- RE-INITIALIZING REQUIRED MODALS FROM ORIGINAL CODE ---
-            const addItemModal = document.getElementById('add-item-modal');
-            const addItemModalOverlay = document.getElementById('add-item-modal-overlay');
-            const addItemCloseBtn = document.getElementById('add-item-modal-close-button');
-            const addItemCancelBtn = document.getElementById('add-item-modal-footer-cancel-button');
-            const addItemSaveBtn = document.getElementById('add-item-modal-footer-save-button');
-            const itemSelectLoading = document.getElementById('item-select-loading');
-            const itemFilterFieldset = document.getElementById('item-filter-fieldset');
-
-            function initializeAddItemModal() {
-                tomSelectType = new TomSelect('#filter-type-select', {
-                    create: false,
-                    onChange: () => loadUnaffiliatedItems()
-                });
-                tomSelectAttr = new TomSelect('#filter-attr-select', {
-                    create: false,
-                    onChange: (attrId) => {
-                        tomSelectValue.clear();
-                        tomSelectValue.clearOptions();
-                        if (attrId) {
-                            const selectedAttr = allSpecAttributes.find(a => a.id == attrId);
-                            if (selectedAttr && selectedAttr.spec_values) {
-                                const valueOptions = selectedAttr.spec_values.map(v => ({
-                                    value: v.id,
-                                    text: v.value
-                                }));
-                                tomSelectValue.addOptions(valueOptions);
-                                tomSelectValue.enable();
-                            }
-                        } else {
-                            tomSelectValue.disable();
-                        }
-                        loadUnaffiliatedItems();
+                for (let r = 1; r <= maxRows; r++) {
+                    for (let c = 1; c <= maxCols; c++) {
+                        const location = `${String.fromCharCode(64 + r)}${c}`;
+                        if (!occupiedSlots.has(location)) html +=
+                            `<div style="grid-area: ${r} / ${c}; visibility: hidden;"></div>`;
                     }
-                });
-                tomSelectValue = new TomSelect('#filter-value-select', {
-                    create: false,
-                    onChange: () => loadUnaffiliatedItems()
-                });
-                tomSelectItem = new TomSelect('#item-select-dropdown', {
-                    create: false,
-                    plugins: ['remove_button'],
-                    render: {
-                        no_results: function(data, escape) {
-                            return '<div class="p-3 text-sm text-gray-500 text-center">Tidak ada item yang ditemukan. Coba ubah filter Anda.</div>';
-                        }
-                    }
-                });
-
-                addItemButton.addEventListener('click', openAddItemModal);
-                addItemCloseBtn.addEventListener('click', closeAddItemModal);
-                addItemCancelBtn.addEventListener('click', closeAddItemModal);
-                addItemSaveBtn.addEventListener('click', submitAddItems);
-                if (addItemModalOverlay) {
-                    addItemModalOverlay.addEventListener('click', function(event) {
-                        if (event.target === addItemModalOverlay) {
-                            closeAddItemModal();
-                        }
-                    });
                 }
-                document.addEventListener('keydown', (event) => {
-                    if (event.key === 'Escape' && addItemModal && !addItemModal.classList.contains(
-                            'hidden')) {
-                        closeAddItemModal();
-                    }
-                });
+                html += '</div></div></div>';
+                container.innerHTML = html;
             }
 
-            async function openAddItemModal() {
-                currentDeskId = this.dataset.deskId;
-                if (!currentDeskId) return;
-                addItemModal.classList.remove('hidden');
-                showLoading('Memuat Filter & Item...');
-                await loadFilterOptions();
-                await loadUnaffiliatedItems();
-                hideLoading();
-            }
-
-            function closeAddItemModal() {
-                addItemModal.classList.add('hidden');
-                tomSelectType.clear();
-                tomSelectAttr.clear();
-                tomSelectValue.clear();
-                tomSelectItem.clear();
-                tomSelectValue.disable();
-                if (layoutModal.classList.contains('hidden')) {
-                    document.body.style.overflow = '';
-                }
-            }
-            async function loadFilterOptions() {
-                itemFilterFieldset.disabled = true;
-                try {
-                    const response = await fetch("{{ route('admin.items.filters') }}");
-                    const data = await response.json();
-                    if (!response.ok || !data.success) throw new Error(data.message);
-                    const filterData = data.data;
-                    allSpecAttributes = filterData.specifications || [];
-                    tomSelectType.clearOptions();
-                    tomSelectType.addOptions(filterData.types.map(t => ({
-                        value: t.id,
-                        text: t.name
-                    })));
-                    tomSelectAttr.clearOptions();
-                    tomSelectAttr.addOptions(allSpecAttributes.map(a => ({
-                        value: a.id,
-                        text: a.name
-                    })));
-                } catch (error) {
-                    console.error(error);
-                    showToast('Error Filter', error.message, 'error');
-                } finally {
-                    itemFilterFieldset.disabled = false;
-                }
-            }
-            async function loadUnaffiliatedItems() {
-                itemSelectLoading.classList.remove('hidden');
-                tomSelectItem.wrapper.classList.add('hidden');
-                tomSelectItem.clear();
-                tomSelectItem.clearOptions();
-                itemFilterFieldset.disabled = true;
-                const params = new URLSearchParams();
-                if (tomSelectType.getValue()) params.append('type_id', tomSelectType.getValue());
-                if (tomSelectValue.getValue()) params.append('spec_value_id', tomSelectValue.getValue());
-                try {
-                    const response = await fetch(
-                        `{{ route('admin.items.unaffiliated') }}?${params.toString()}`);
-                    const data = await response.json();
-                    if (!response.ok || !data.success) throw new Error(data.message);
-                    const items = data.data.items;
-                    tomSelectItem.addOptions(items.map(i => ({
-                        value: i.id,
-                        text: `${i.name} (${i.serial_code})`
-                    })));
-                } catch (error) {
-                    console.error(error);
-                    showToast('Error Item', error.message, 'error');
-                } finally {
-                    itemSelectLoading.classList.add('hidden');
-                    tomSelectItem.wrapper.classList.remove('hidden');
-                    itemFilterFieldset.disabled = false;
-                }
-            }
-            async function submitAddItems() {
-                const itemIds = tomSelectItem.getValue();
-                if (!itemIds || itemIds.length === 0) {
-                    showToast('Peringatan', 'Anda belum memilih item sama sekali.', 'warning');
-                    return;
-                }
+            async function confirmAttachToDesk(deskId, deskLocation) {
                 const result = await Swal.fire({
-                    title: `Tambahkan ${itemIds.length} item?`,
-                    text: 'Item yang dipilih akan ditambahkan ke meja ini.',
+                    title: `Pasang ke Meja ${deskLocation}?`,
+                    text: `Item '${currentActionItemName}' akan dipasang ke meja ${deskLocation}`,
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Ya, Tambahkan!',
-                    cancelButtonText: 'Batal'
+                    confirmButtonText: 'Ya, Pasang!',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#3b82f6'
                 });
                 if (!result.isConfirmed) return;
-                showLoading('Menambahkan Item...');
-                addItemSaveBtn.disabled = true;
+                showLoading('Memasang Item...');
                 try {
-                    const response = await fetch(`/admin/desks/${currentDeskId}/items`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            item_ids: itemIds
-                        })
-                    });
-                    const data = await response.json();
-                    if (!response.ok) throw new Error(data.message);
-                    hideLoading();
-                    showToast('Berhasil', data.message, 'success');
-                    closeAddItemModal();
-                    window.hideLayoutModal();
-                    labSelector.dispatchEvent(new Event('change'));
-                } catch (error) {
-                    hideLoading();
-                    Swal.fire('Gagal', error.message, 'error');
-                } finally {
-                    addItemSaveBtn.disabled = false;
-                }
-            }
-
-            initializeAddItemModal();
-
-            // Action Modal Logic
-            const actionModal = document.getElementById('item-action-modal');
-            const actionOverlay = document.getElementById('item-action-modal-overlay');
-            const actionCloseBtn = document.getElementById('item-action-modal-close-btn');
-            const closeActionModal = () => {
-                actionModal.classList.add('hidden');
-                document.body.style.overflow = '';
-                currentActionItemId = null;
-                currentActionItemName = null;
-                currentActionItemType = 'item';
-                currentActionDeskId = null;
-                currentActionLabId = null;
-            };
-            actionCloseBtn.addEventListener('click', closeActionModal);
-            actionOverlay.addEventListener('click', (e) => {
-                if (e.target === actionOverlay) closeActionModal();
-            });
-            document.getElementById('action-attach-desk-card').addEventListener('click', openAttachDeskMapModal);
-            document.getElementById('action-attach-lab-card').addEventListener('click', handleAttachToLab);
-            document.getElementById('action-attach-item-card').addEventListener('click', handleAttachToItem);
-            document.getElementById('action-detach-desk-card').addEventListener('click', handleDetachFromDesk);
-            document.getElementById('action-detach-lab-card').addEventListener('click', handleDetachFromLab);
-
-            // Attach Desk Map Modal Logic
-            const attachDeskModal = document.getElementById('attach-desk-map-modal');
-            const attachDeskOverlay = document.getElementById('attach-desk-map-overlay');
-            const attachDeskCloseBtn = document.getElementById('attach-desk-map-close-btn');
-            const closeAttachDeskModal = () => {
-                attachDeskModal.classList.add('hidden');
-                if (tomSelectAttachLab) tomSelectAttachLab.clear();
-                document.getElementById('attach-desk-map-container').innerHTML =
-                    '<div class="text-center py-12 text-gray-500">Pilih lab untuk melihat denah meja.</div>';
-                document.body.style.overflow = '';
-            };
-            attachDeskCloseBtn.addEventListener('click', closeAttachDeskModal);
-            attachDeskOverlay.addEventListener('click', (e) => {
-                if (e.target === attachDeskOverlay) closeAttachDeskModal();
-            });
-            tomSelectAttachLab = new TomSelect('#attach-lab-selector', {
-                create: false,
-                placeholder: 'Pilih Lab...',
-                onChange: (labId) => {
-                    if (labId) fetchDeskMapForAttach(labId);
-                }
-            });
-
-        }); // END DOMContentLoaded
-
-        let currentActionItemId = null,
-            currentActionItemName = null,
-            currentActionItemType = 'item',
-            currentActionDeskId = null,
-            currentActionLabId = null,
-            tomSelectAttachLab = null,
-            attachDeskMapData = [];
-
-        async function showItemActions(itemId, itemName, deskId = null, labId = null) {
-            currentActionItemId = itemId;
-            currentActionItemName = itemName;
-            currentActionItemType = 'item';
-            currentActionDeskId = deskId;
-            currentActionLabId = labId;
-            const modal = document.getElementById('item-action-modal');
-            const title = document.getElementById('item-action-modal-title');
-            const attachDeskCard = document.getElementById('action-attach-desk-card');
-            const attachLabCard = document.getElementById('action-attach-lab-card');
-            const attachItemCard = document.getElementById('action-attach-item-card');
-            const detachDeskCard = document.getElementById('action-detach-desk-card');
-            const detachLabCard = document.getElementById('action-detach-lab-card');
-            title.textContent = `Aksi untuk ${itemName}`;
-            attachDeskCard.classList.remove('hidden');
-            attachLabCard.classList.remove('hidden');
-            attachItemCard.classList.add('hidden');
-            detachDeskCard.classList.add('hidden');
-            detachLabCard.classList.add('hidden');
-            const attachDeskText = attachDeskCard.querySelector('.font-semibold');
-            attachDeskText.textContent = deskId ? 'Pasang ke Meja Lain' : 'Pasang ke Meja';
-            if (deskId) {
-                attachLabCard.classList.add('hidden');
-                detachDeskCard.classList.remove('hidden');
-            } else if (labId) {
-                detachLabCard.classList.remove('hidden');
-            }
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        async function openAttachDeskMapModal() {
-            const modal = document.getElementById('attach-desk-map-modal');
-            const itemNameEl = document.getElementById('attach-desk-item-name');
-            itemNameEl.textContent = currentActionItemName;
-            modal.classList.remove('hidden');
-            document.getElementById('item-action-modal').classList.add('hidden');
-            showLoading('Memuat Daftar Lab...');
-            try {
-                const response = await fetch('/admin/labs/list');
-                if (!response.ok) throw new Error('Gagal memuat daftar lab.');
-                const labs = await response.json();
-                if (tomSelectAttachLab) {
-                    tomSelectAttachLab.clearOptions();
-                    tomSelectAttachLab.addOptions(labs.map(lab => ({
-                        value: lab.id,
-                        text: lab.name
-                    })));
-                    hideLoading();
-                    tomSelectAttachLab.open();
-                }
-            } catch (error) {
-                hideLoading();
-                Swal.fire('Error', error.message, 'error');
-                modal.classList.add('hidden');
-            }
-        }
-
-        async function fetchDeskMapForAttach(labId) {
-            const container = document.getElementById('attach-desk-map-container');
-            container.innerHTML =
-                '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div></div>';
-            try {
-                const response = await fetch(`/admin/labs/${labId}/desks`);
-                if (!response.ok) throw new Error('Gagal memuat denah meja.');
-                attachDeskMapData = await response.json();
-                let maxRow = 5,
-                    maxCol = 10;
-                if (attachDeskMapData.length > 0) {
-                    attachDeskMapData.forEach(d => {
-                        const row = d.location.charCodeAt(0) - 64;
-                        const col = parseInt(d.location.substring(1));
-                        if (row > maxRow) maxRow = row;
-                        if (col > maxCol) maxCol = col;
-                    });
-                }
-                renderAttachDeskMap(attachDeskMapData, maxRow, maxCol, currentActionItemType === 'component');
-            } catch (error) {
-                container.innerHTML = `<div class="text-center py-12 text-red-500">${error.message}</div>`;
-            }
-        }
-
-        function renderAttachDeskMap(desks, maxRows, maxCols, isComponentMode = false) {
-            const container = document.getElementById('attach-desk-map-container');
-            const instruction = isComponentMode ? 'Klik pada meja untuk melihat items' :
-                'Klik pada meja untuk memasang item';
-            let html =
-                `<div class="bg-white rounded-xl border border-gray-200 p-6"><div class="mb-4"><h3 class="text-lg font-semibold text-gray-800 mb-2">Denah Meja</h3><p class="text-sm text-gray-600">${instruction}</p></div><div class="overflow-x-auto pb-4"><div class="grid gap-3 border-2 border-slate-300 p-6 min-w-fit" style="grid-template-columns: repeat(${maxCols}, minmax(120px, 1fr)); grid-template-rows: repeat(${maxRows}, auto);">`;
-            const occupiedSlots = new Set(desks.map(d => d.location));
-            desks.forEach(desk => {
-                const row = desk.location.charCodeAt(0) - 64;
-                const col = parseInt(desk.location.substring(1));
-                let bgClass, iconColor, conditionText;
-                switch (desk.overall_condition) {
-                    case 'item_rusak':
-                    case 'component_rusak':
-                        bgClass = 'bg-rose-50 border-rose-300 hover:bg-rose-100';
-                        iconColor = 'text-rose-600';
-                        conditionText = 'Rusak';
-                        break;
-                    case 'item_tidak_lengkap':
-                        bgClass = 'bg-amber-50 border-amber-300 hover:bg-amber-100';
-                        iconColor = 'text-amber-600';
-                        conditionText = 'Tidak Lengkap';
-                        break;
-                    case 'item_kosong':
-                        bgClass = 'bg-gray-50 border-gray-300 hover:bg-gray-100';
-                        iconColor = 'text-gray-500';
-                        conditionText = 'Kosong';
-                        break;
-                    default:
-                        bgClass = 'bg-emerald-50 border-emerald-300 hover:bg-emerald-100';
-                        iconColor = 'text-emerald-600';
-                        conditionText = 'Baik';
-                }
-                const clickHandler = isComponentMode ? `showDeskItems('${desk.id}', '${desk.location}')` :
-                    `confirmAttachToDesk('${desk.id}', '${desk.location}')`;
-                html +=
-                    `<div data-desk-id="${desk.id}" data-desk-location="${desk.location}" style="grid-area: ${row} / ${col};" class="attach-desk-card cursor-pointer transition-all duration-200 flex flex-col items-center justify-center p-4 border-2 rounded-lg min-h-32 ${bgClass} hover:ring-2 hover:ring-indigo-400" onclick="${clickHandler}"><svg class="w-6 h-6 ${iconColor} mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span class="font-bold text-base text-gray-800">${desk.location}</span><span class="text-xs text-gray-600 mt-1">${conditionText}</span></div>`;
-            });
-            for (let r = 1; r <= maxRows; r++) {
-                for (let c = 1; c <= maxCols; c++) {
-                    const location = `${String.fromCharCode(64 + r)}${c}`;
-                    if (!occupiedSlots.has(location)) html +=
-                        `<div style="grid-area: ${r} / ${c}; visibility: hidden;"></div>`;
-                }
-            }
-            html += '</div></div></div>';
-            container.innerHTML = html;
-        }
-
-        async function confirmAttachToDesk(deskId, deskLocation) {
-            const result = await Swal.fire({
-                title: `Pasang ke Meja ${deskLocation}?`,
-                text: `Item '${currentActionItemName}' akan dipasang ke meja ${deskLocation}`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Pasang!',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#3b82f6'
-            });
-            if (!result.isConfirmed) return;
-            showLoading('Memasang Item...');
-            try {
-                const response = await fetch(`/admin/items/${currentActionItemId}/attach-desk/${deskId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    }
-                });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || 'Gagal memasang item');
-                hideLoading();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: data.message,
-                    timer: 2000
-                }).then(() => location.reload());
-            } catch (error) {
-                hideLoading();
-                Swal.fire('Gagal', error.message, 'error');
-            }
-        }
-
-        async function handleAttachToLab() {
-            const result = await Swal.fire({
-                title: 'Pilih Laboratorium',
-                html: '<select id="swal-lab-select" class="swal2-input" style="width: 80%; padding:0"><option value="">-- Pilih Lab --</option></select>',
-                showCancelButton: true,
-                confirmButtonText: 'Pasang',
-                cancelButtonText: 'Batal',
-                didOpen: async () => {
-                    const select = document.getElementById('swal-lab-select');
-                    try {
-                        const response = await fetch('/admin/labs/list');
-                        const labs = await response.json();
-                        labs.forEach(lab => {
-                            const option = document.createElement('option');
-                            option.value = lab.id;
-                            option.textContent = lab.name;
-                            select.appendChild(option);
-                        });
-                    } catch (error) {
-                        console.error('Error loading labs:', error);
-                    }
-                },
-                preConfirm: () => {
-                    const labId = document.getElementById('swal-lab-select').value;
-                    if (!labId) {
-                        Swal.showValidationMessage('Silakan pilih laboratorium');
-                        return false;
-                    }
-                    return labId;
-                }
-            });
-            if (result.isConfirmed && result.value) {
-                showLoading('Memasang ke Lab...');
-                try {
-                    const url = currentActionItemType === 'item' ?
-                        `/admin/items/${currentActionItemId}/attach-lab/${result.value}` :
-                        `/admin/components/${currentActionItemId}/attach-lab/${result.value}`;
-                    const response = await fetch(url, {
+                    const response = await fetch(`/admin/items/${currentActionItemId}/attach-desk/${deskId}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1994,7 +2120,7 @@
                         }
                     });
                     const data = await response.json();
-                    if (!response.ok) throw new Error(data.message || 'Gagal memasang ke lab');
+                    if (!response.ok) throw new Error(data.message || 'Gagal memasang item');
                     hideLoading();
                     Swal.fire({
                         icon: 'success',
@@ -2007,201 +2133,260 @@
                     Swal.fire('Gagal', error.message, 'error');
                 }
             }
-        }
 
-        async function handleDetachFromDesk() {
-            const result = await Swal.fire({
-                title: 'Lepas dari Meja?',
-                text: `Item '${currentActionItemName}' akan dilepas dari meja`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Lepas!',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#ef4444'
-            });
-            if (!result.isConfirmed) return;
-            showLoading('Melepas Item...');
-            try {
-                const response = await fetch(`/admin/items/${currentActionItemId}/detach-desk`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
+            async function handleAttachToLab() {
+                const result = await Swal.fire({
+                    title: 'Pilih Laboratorium',
+                    html: '<select id="swal-lab-select" class="swal2-input" style="width: 80%; padding:0"><option value="">-- Pilih Lab --</option></select>',
+                    showCancelButton: true,
+                    confirmButtonText: 'Pasang',
+                    cancelButtonText: 'Batal',
+                    didOpen: async () => {
+                        const select = document.getElementById('swal-lab-select');
+                        try {
+                            const response = await fetch('/admin/labs/list');
+                            const labs = await response.json();
+                            labs.forEach(lab => {
+                                const option = document.createElement('option');
+                                option.value = lab.id;
+                                option.textContent = lab.name;
+                                select.appendChild(option);
+                            });
+                        } catch (error) {
+                            console.error('Error loading labs:', error);
+                        }
+                    },
+                    preConfirm: () => {
+                        const labId = document.getElementById('swal-lab-select').value;
+                        if (!labId) {
+                            Swal.showValidationMessage('Silakan pilih laboratorium');
+                            return false;
+                        }
+                        return labId;
                     }
                 });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || 'Gagal melepas item');
-                hideLoading();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: data.message,
-                    timer: 2000
-                }).then(() => location.reload());
-            } catch (error) {
-                hideLoading();
-                Swal.fire('Gagal', error.message, 'error');
-            }
-        }
-
-        async function handleDetachFromLab() {
-            const result = await Swal.fire({
-                title: 'Lepas dari Lab?',
-                text: `${currentActionItemType === 'item' ? 'Item' : 'Component'} '${currentActionItemName}' akan dilepas dari lab`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Lepas!',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#6366f1'
-            });
-            if (!result.isConfirmed) return;
-            showLoading('Melepas...');
-            try {
-                const url = currentActionItemType === 'item' ?
-                    `/admin/items/${currentActionItemId}/detach-lab` :
-                    `/admin/components/${currentActionItemId}/detach-lab`;
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
+                if (result.isConfirmed && result.value) {
+                    showLoading('Memasang ke Lab...');
+                    try {
+                        const url = currentActionItemType === 'item' ?
+                            `/admin/items/${currentActionItemId}/attach-lab/${result.value}` :
+                            `/admin/components/${currentActionItemId}/attach-lab/${result.value}`;
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.message || 'Gagal memasang ke lab');
+                        hideLoading();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message,
+                            timer: 2000
+                        }).then(() => location.reload());
+                    } catch (error) {
+                        hideLoading();
+                        Swal.fire('Gagal', error.message, 'error');
                     }
-                });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || 'Gagal melepas');
-                hideLoading();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: data.message,
-                    timer: 2000
-                }).then(() => location.reload());
-            } catch (error) {
-                hideLoading();
-                Swal.fire('Gagal', error.message, 'error');
-            }
-        }
-
-        async function showComponentActions(componentId, componentName, itemId = null, labId = null) {
-            currentActionItemId = componentId;
-            currentActionItemName = componentName;
-            currentActionItemType = 'component';
-            currentActionDeskId = null;
-            currentActionLabId = labId;
-            const modal = document.getElementById('item-action-modal');
-            const title = document.getElementById('item-action-modal-title');
-            const attachDeskCard = document.getElementById('action-attach-desk-card');
-            const attachLabCard = document.getElementById('action-attach-lab-card');
-            const attachItemCard = document.getElementById('action-attach-item-card');
-            const detachDeskCard = document.getElementById('action-detach-desk-card');
-            const detachLabCard = document.getElementById('action-detach-lab-card');
-            title.textContent = `Aksi untuk ${componentName}`;
-            attachDeskCard.classList.add('hidden');
-            attachLabCard.classList.add('hidden');
-            attachItemCard.classList.remove('hidden');
-            detachDeskCard.classList.add('hidden');
-            detachLabCard.classList.add('hidden');
-            const attachItemText = attachItemCard.querySelector('.font-semibold');
-            attachItemText.textContent = itemId ? 'Pasang ke Item Lain' : 'Pasang ke Item';
-            if (itemId) {
-                detachDeskCard.classList.remove('hidden');
-            } else {
-                attachLabCard.classList.remove('hidden');
-                if (labId) {
-                    detachLabCard.classList.remove('hidden');
                 }
             }
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
 
-        async function handleAttachToItem() {
-            document.getElementById('item-action-modal').classList.add('hidden');
-            document.getElementById('attach-desk-map-modal').classList.remove('hidden');
-            document.getElementById('attach-desk-item-name').textContent = currentActionItemName;
-            showLoading('Memuat Daftar Lab...');
-            try {
-                const response = await fetch('/admin/labs/list');
-                if (!response.ok) throw new Error('Gagal memuat daftar lab.');
-                const labs = await response.json();
-                if (tomSelectAttachLab) {
-                    tomSelectAttachLab.clearOptions();
-                    tomSelectAttachLab.addOptions(labs.map(lab => ({
-                        value: lab.id,
-                        text: lab.name
-                    })));
+            async function handleDetachFromDesk() {
+                const result = await Swal.fire({
+                    title: 'Lepas dari Meja?',
+                    text: `Item '${currentActionItemName}' akan dilepas dari meja`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Lepas!',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#ef4444'
+                });
+                if (!result.isConfirmed) return;
+                showLoading('Melepas Item...');
+                try {
+                    const response = await fetch(`/admin/items/${currentActionItemId}/detach-desk`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Gagal melepas item');
                     hideLoading();
-                    tomSelectAttachLab.open();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                        timer: 2000
+                    }).then(() => location.reload());
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Gagal', error.message, 'error');
                 }
-            } catch (error) {
-                hideLoading();
-                Swal.fire('Error', error.message, 'error');
-                document.getElementById('attach-desk-map-modal').classList.add('hidden');
             }
-        }
 
-        async function showDeskItems(deskId, deskLocation) {
-            const desk = attachDeskMapData.find(d => d.id == deskId);
-            if (!desk || !desk.items || desk.items.length === 0) {
-                Swal.fire('Info', `Meja ${deskLocation} tidak memiliki item`, 'info');
-                return;
-            }
-            let itemsHtml = '<div class="space-y-2 max-h-96 overflow-y-auto">';
-            desk.items.forEach(item => {
-                itemsHtml +=
-                    `<div class="p-3 border border-gray-300 rounded-lg hover:bg-blue-50 cursor-pointer transition-colors" onclick="confirmAttachToItem('${item.id}', '${item.name}')"><p class="font-semibold text-gray-800">${item.name}</p><p class="text-xs text-gray-500">${item.serial_code}</p></div>`;
-            });
-            itemsHtml += '</div>';
-            Swal.fire({
-                title: `Items di Meja ${deskLocation}`,
-                html: itemsHtml,
-                showCancelButton: true,
-                showConfirmButton: false,
-                cancelButtonText: 'Tutup',
-                width: '500px'
-            });
-        }
-
-        async function confirmAttachToItem(itemId, itemName) {
-            Swal.close();
-            const result = await Swal.fire({
-                title: `Pasang ke Item ${itemName}?`,
-                text: `Component '${currentActionItemName}' akan dipasang ke item ${itemName}`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Pasang!',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#a855f7'
-            });
-            if (!result.isConfirmed) return;
-            showLoading('Memasang Component...');
-            try {
-                const response = await fetch(`/admin/items/${itemId}/attach-component/${currentActionItemId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    }
+            async function handleDetachFromLab() {
+                const result = await Swal.fire({
+                    title: 'Lepas dari Lab?',
+                    text: `${currentActionItemType === 'item' ? 'Item' : 'Component'} '${currentActionItemName}' akan dilepas dari lab`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Lepas!',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#6366f1'
                 });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || 'Gagal memasang component');
-                hideLoading();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: data.message || 'Component berhasil dipasang ke item',
-                    timer: 2000
-                }).then(() => location.reload());
-            } catch (error) {
-                hideLoading();
-                Swal.fire('Gagal', error.message, 'error');
+                if (!result.isConfirmed) return;
+                showLoading('Melepas...');
+                try {
+                    const url = currentActionItemType === 'item' ?
+                        `/admin/items/${currentActionItemId}/detach-lab` :
+                        `/admin/components/${currentActionItemId}/detach-lab`;
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Gagal melepas');
+                    hideLoading();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                        timer: 2000
+                    }).then(() => location.reload());
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Gagal', error.message, 'error');
+                }
             }
-        }
 
-        window.showItemActions = showItemActions;
-        window.showComponentActions = showComponentActions;
-        window.confirmAttachToDesk = confirmAttachToDesk;
-        window.showDeskItems = showDeskItems;
-        window.confirmAttachToItem = confirmAttachToItem;
-    </script>
+            async function showComponentActions(componentId, componentName, itemId = null, labId = null) {
+                currentActionItemId = componentId;
+                currentActionItemName = componentName;
+                currentActionItemType = 'component';
+                currentActionDeskId = null;
+                currentActionLabId = labId;
+                const modal = document.getElementById('item-action-modal');
+                const title = document.getElementById('item-action-modal-title');
+                const attachDeskCard = document.getElementById('action-attach-desk-card');
+                const attachLabCard = document.getElementById('action-attach-lab-card');
+                const attachItemCard = document.getElementById('action-attach-item-card');
+                const detachDeskCard = document.getElementById('action-detach-desk-card');
+                const detachLabCard = document.getElementById('action-detach-lab-card');
+                title.textContent = `Aksi untuk ${componentName}`;
+                attachDeskCard.classList.add('hidden');
+                attachLabCard.classList.add('hidden');
+                attachItemCard.classList.remove('hidden');
+                detachDeskCard.classList.add('hidden');
+                detachLabCard.classList.add('hidden');
+                const attachItemText = attachItemCard.querySelector('.font-semibold');
+                attachItemText.textContent = itemId ? 'Pasang ke Item Lain' : 'Pasang ke Item';
+                if (itemId) {
+                    detachDeskCard.classList.remove('hidden');
+                } else {
+                    attachLabCard.classList.remove('hidden');
+                    if (labId) {
+                        detachLabCard.classList.remove('hidden');
+                    }
+                }
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            async function handleAttachToItem() {
+                document.getElementById('item-action-modal').classList.add('hidden');
+                document.getElementById('attach-desk-map-modal').classList.remove('hidden');
+                document.getElementById('attach-desk-item-name').textContent = currentActionItemName;
+                showLoading('Memuat Daftar Lab...');
+                try {
+                    const response = await fetch('/admin/labs/list');
+                    if (!response.ok) throw new Error('Gagal memuat daftar lab.');
+                    const labs = await response.json();
+                    if (tomSelectAttachLab) {
+                        tomSelectAttachLab.clearOptions();
+                        tomSelectAttachLab.addOptions(labs.map(lab => ({
+                            value: lab.id,
+                            text: lab.name
+                        })));
+                        hideLoading();
+                        tomSelectAttachLab.open();
+                    }
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Error', error.message, 'error');
+                    document.getElementById('attach-desk-map-modal').classList.add('hidden');
+                }
+            }
+
+            async function showDeskItems(deskId, deskLocation) {
+                const desk = attachDeskMapData.find(d => d.id == deskId);
+                if (!desk || !desk.items || desk.items.length === 0) {
+                    Swal.fire('Info', `Meja ${deskLocation} tidak memiliki item`, 'info');
+                    return;
+                }
+                let itemsHtml = '<div class="space-y-2 max-h-96 overflow-y-auto">';
+                desk.items.forEach(item => {
+                    itemsHtml +=
+                        `<div class="p-3 border border-gray-300 rounded-lg hover:bg-blue-50 cursor-pointer transition-colors" onclick="confirmAttachToItem('${item.id}', '${item.name}')"><p class="font-semibold text-gray-800">${item.name}</p><p class="text-xs text-gray-500">${item.serial_code}</p></div>`;
+                });
+                itemsHtml += '</div>';
+                Swal.fire({
+                    title: `Items di Meja ${deskLocation}`,
+                    html: itemsHtml,
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    cancelButtonText: 'Tutup',
+                    width: '500px'
+                });
+            }
+
+            async function confirmAttachToItem(itemId, itemName) {
+                Swal.close();
+                const result = await Swal.fire({
+                    title: `Pasang ke Item ${itemName}?`,
+                    text: `Component '${currentActionItemName}' akan dipasang ke item ${itemName}`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Pasang!',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#a855f7'
+                });
+                if (!result.isConfirmed) return;
+                showLoading('Memasang Component...');
+                try {
+                    const response = await fetch(`/admin/items/${itemId}/attach-component/${currentActionItemId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Gagal memasang component');
+                    hideLoading();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message || 'Component berhasil dipasang ke item',
+                        timer: 2000
+                    }).then(() => location.reload());
+                } catch (error) {
+                    hideLoading();
+                    Swal.fire('Gagal', error.message, 'error');
+                }
+            }
+
+            window.showItemActions = showItemActions;
+            window.showComponentActions = showComponentActions;
+            window.confirmAttachToDesk = confirmAttachToDesk;
+            window.showDeskItems = showDeskItems;
+            window.confirmAttachToItem = confirmAttachToItem;
+        </script>
 @endsection
